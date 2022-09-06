@@ -1,5 +1,7 @@
 package gui;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -37,17 +39,26 @@ public class chatWindow extends VBox {
 		ScrollPane chatPane = new ScrollPane(textFlow);
 		chatPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);// always show vertical scroll bar.
 		chatPane.setHbarPolicy(ScrollBarPolicy.NEVER);// never show horizontal scroll bar.
-		chatPane.setPrefHeight(Integer.MAX_VALUE);// make it expand when possible
+		chatPane.setPrefHeight(Integer.MAX_VALUE);// make the chatPane expand when possible.
 		chatPane.setFitToWidth(true);// make sure the elements in the scrollPane are restricted to the width of the
 										// scrollPane.
 
-		Region bottomSpacing = new Region();// used so the buttons will not be completely be at the but will use the
-											// vertical spacing.
-
 		// create message input and send button.
-		TextField textInput = new TextField();
+		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
 		HBox textInputContainer = new HBox(SPACING, textInput, sendButton);
+
+		// make send button run the send function with the provided text and clear the
+		// text input.
+		sendButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				send(textInput.getText());
+				textInput.clear();
+			}
+		});
+
+		Region bottomSpacing = new Region();// used so the buttons will not be completely be at the bottom but will use
+											// the vertical spacing.
 
 		// populate the chatBox with some dummy text.
 		addText("hello\n");
@@ -75,13 +86,22 @@ public class chatWindow extends VBox {
 	private void addText(String contents, Paint color) {
 		Text text = new Text(contents.toString());
 
-		text.setFill(color);// set the colour of the text
+		text.setFill(color);// set the colour of the text.
 
-		FontWeight weight = FontWeight.NORMAL; // font weight may be used for bold text
-		FontPosture posture = FontPosture.REGULAR;// font posture might be used for italics
+		FontWeight weight = FontWeight.NORMAL; // font weight may be used for bold text.
+		FontPosture posture = FontPosture.REGULAR;// font posture might be used for italics.
 
 		text.setFont(Font.font(fontFamily, weight, posture, fontSize));
 
 		textFlow.getChildren().add(text);// add this text to the chat dialogue.
+	}
+
+	/**
+	 * function that gets run when the button is clicked.
+	 * 
+	 * @param text the text from the input field
+	 */
+	private void send(String text) {
+		System.out.println(text);
 	}
 }
