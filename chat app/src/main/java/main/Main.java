@@ -1,5 +1,6 @@
 package main;
 
+import gui.chatWindow;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -19,7 +20,7 @@ public class Main extends Application {
     @Override
     public void start(final Stage primaryStage) {
         primaryStage.setTitle("Hello World!");
-        Pane root = new Pane();
+        chatWindow root = new chatWindow();
         primaryStage.setScene(new Scene(root, 1280, 720));
         primaryStage.show();
         
