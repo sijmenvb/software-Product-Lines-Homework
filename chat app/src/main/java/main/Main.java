@@ -2,15 +2,15 @@ package main;
 
 import gui.Authentication;
 import gui.chatWindow;
+import gui.chatWindow;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-	
+
 	private final long[] frameTimes = new long[100];
     private int frameTimeIndex = 0 ;
     private boolean arrayFilled = false ;
