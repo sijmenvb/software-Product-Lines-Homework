@@ -30,7 +30,7 @@ public class chatWindow extends VBox {
 	private ColorPicker colorSelector;
 
 	/**
-	 * a window providing a view of messages and an input fi eld + send button.
+	 * a window providing a view of messages and an input field + send button.
 	 * 
 	 */
 	public chatWindow() {
