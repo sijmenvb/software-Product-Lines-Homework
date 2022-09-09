@@ -3,8 +3,10 @@ package gui;
 import javafx.scene.control.PasswordField;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
@@ -21,13 +23,15 @@ public class Authentication extends VBox {
     private String[] passwords = {"admin"};
     
     
-    private VBox nextPage;  
+    private Stage primaryStage;  
+    private Scene nextScene;
       
     //calling constructor 
-    public Authentication(VBox nextPage)  
+    public Authentication(Stage primaryStage, Scene nextScene)  
     {     
         //set the next page
-    	this.nextPage = nextPage;
+    	this.primaryStage = primaryStage;
+    	this.nextScene = nextScene;
     	
         //create label for username   
         userLabel = new Label();  
@@ -63,6 +67,7 @@ public class Authentication extends VBox {
     	for (int i = 0; i < this.usernames.length; i++) {
     		if (this.usernames[i].equals(inputUsername) && this.passwords[i].equals(inputPassword)) {
     			System.out.println("Welcome, user");
+    			primaryStage.setScene(nextScene);
     			return;
     		}    	
     	}

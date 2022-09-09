@@ -23,8 +23,7 @@ public class Main extends Application {
     @Override
     public void start(final Stage primaryStage) {
         primaryStage.setTitle("Hello World!");
-        //Pane root = new Pane();
-        Authentication root = new Authentication(new VBox());
+        Authentication root = new Authentication(primaryStage, new Scene(new chatWindow(), 1280, 720));
         primaryStage.setScene(new Scene(root, 1280, 720));
         primaryStage.show();
         
