@@ -1,9 +1,10 @@
 package main;
+
 import java.io.*;
 import java.net.*;
 
 // Server code taken from https://www.ashishmyles.com/tutorials/tcpchat/index.html 
-class Server {
+public class Server {
 	static int portNumber = 42069;
 	
 	public static void main(String args[]) {
