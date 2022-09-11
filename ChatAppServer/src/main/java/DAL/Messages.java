@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.LinkedList;
 
 import models.Message;
-import models.User;
 
 public class Messages {
 	/**
@@ -21,10 +20,10 @@ public class Messages {
                 + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
                 + "	message_text text NOT NULL,\n"
                 + "	token text NOT NULL,\n"
-                + "	color text NOT NULL,\n"
+                + "	color text NOT NULL\n"
                 + ");";
         try (Statement stmt = connection.createStatement()) {
-            System.out.println(stmt.executeUpdate(query));
+            stmt.executeUpdate(query);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -35,7 +34,7 @@ public class Messages {
      * Code: https://www.sqlitetutorial.net/sqlite-java/select/
      */
     public static LinkedList<Message> selectAll(){
-        String sql = "SELECT id, message_text, token, colot FROM messages";
+        String sql = "SELECT id, message_text, token, color FROM messages";
         
         LinkedList<Message> messages = new LinkedList<Message>();
         
@@ -62,6 +61,8 @@ public class Messages {
     /**
      * Get all the messages from one sender.
      * Code: https://www.sqlitetutorial.net/sqlite-java/select/
+     * 
+     * @param sender is the sender of the messages we want to retrieve
      */
     public static LinkedList<Message> selectBySender(String sender){
     	String sql = "SELECT id, message_text, token, color "
@@ -96,6 +97,10 @@ public class Messages {
     /**
      * Insert new message to the messages table.
      * Code: https://www.sqlitetutorial.net/sqlite-java/insert/
+     * 
+     * @param text is message text
+     * @param sender is message sender
+     * @param color is message text color
      */
     public static int insert(String text, String token, String color){
         String sql = "INSERT INTO messages(message_text,token,color) VALUES(?,?,?)";
@@ -107,8 +112,8 @@ public class Messages {
         		pstmt.setString(1, text);
                 pstmt.setString(2, token);
                 pstmt.setString(3, color);
-                int id = pstmt.executeUpdate();
-                return id;
+                int res = pstmt.executeUpdate();
+                return res;
         	} catch (SQLException e) {
         		System.out.println(e.getMessage());
         	}

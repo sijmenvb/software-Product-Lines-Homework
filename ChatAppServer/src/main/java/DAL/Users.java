@@ -107,8 +107,8 @@ public class Users {
             	try (PreparedStatement pstmt = conn.prepareStatement(sql)){
             		pstmt.setString(1, username);
                     pstmt.setString(2, password);
-                    int id = pstmt.executeUpdate();
-                    return id;
+                    int res = pstmt.executeUpdate();
+                    return res;
             	} catch (SQLException e) {
             		System.out.println(e.getMessage());
             	}
