@@ -1,5 +1,12 @@
 package gui;
 
+import java.util.Iterator;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import backend.JSONKeys;
+import backend.ServerConnection;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -19,8 +26,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 //extends VBox so it is a javaFX element and can be used as such.
-public class chatWindow extends VBox {
+public class ChatWindow extends VBox {
 	private final int SPACING = 5;// how much space is between the different elements.
+	private ServerConnection serverConnectionRef;
 
 	// font settings
 	private String fontFamily = "Helvetica";
@@ -29,11 +37,16 @@ public class chatWindow extends VBox {
 	private TextFlow textFlow;// special box to combine and display formatted (e.g. colored) text.
 	private ColorPicker colorSelector;
 
+	private JSONArray currentMessages = new JSONArray();
+
 	/**
 	 * a window providing a view of messages and an input field + send button.
 	 * 
 	 */
-	public chatWindow() {
+	public ChatWindow(ServerConnection serverConnection) {
+
+		serverConnectionRef = serverConnection;
+
 		this.setSpacing(SPACING);// set vertical spacing.
 
 		// add text view with scroll bar.
@@ -55,7 +68,7 @@ public class chatWindow extends VBox {
 		// text input.
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				send(textInput.getText(),colorSelector.getValue());
+				send(textInput.getText(), colorSelector.getValue());
 				textInput.clear();
 			}
 		});
@@ -69,6 +82,26 @@ public class chatWindow extends VBox {
 
 		this.getChildren().addAll(chatPane, textInputContainer, bottomSpacing);// add all the elements of the UI to this
 																				// VBox.
+	}
+
+	
+	public void updateMessages(JSONArray messages) {
+		//check if the messages actually changed
+		if (currentMessages != messages) {
+			textFlow.getChildren().clear();// remove all the text
+
+			// TODO: add user name to text.
+
+			// add all the text to the dialogue.
+			for (Object object : messages) {
+				if (object instanceof JSONObject) {
+					JSONObject textObject = (JSONObject) object;// cast to jsonObject
+					addText(textObject.getString(JSONKeys.TEXT.toString()),
+							Color.web(textObject.getString(JSONKeys.COLOR.toString())));
+				}
+			}
+			currentMessages = messages;//update current.
+		}
 	}
 
 	/**
@@ -102,10 +135,10 @@ public class chatWindow extends VBox {
 	/**
 	 * function that gets run when the button is clicked.
 	 * 
-	 * @param text the text from the input field
+	 * @param text  the text from the input field
 	 * @param color the selected color.
 	 */
-	private void send(String text,Color color) {
-		System.out.println(text + " color:" + color.toString());
+	private void send(String text, Color color) {
+		serverConnectionRef.sendMessage(text, color);
 	}
 }
