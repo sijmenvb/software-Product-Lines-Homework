@@ -131,13 +131,14 @@ public class ServerConnection {
 			// send the data
 			PrintWriter out = new PrintWriter(skt.getOutputStream(), true);
 			out.print(data);
-			out.close();
-
-			// receive the reply.
+			
+			
+			//receive the reply.
 			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 			while (!in.ready()) {
 			}
 			output = new JSONObject(in.readLine()); // Read one line and output it
+			out.close();
 			in.close();
 			skt.close();
 		} catch (JSONException e) {
