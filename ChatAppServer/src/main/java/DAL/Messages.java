@@ -24,7 +24,7 @@ public class Messages {
                 + "	color text NOT NULL\n"
                 + ");";
         try (Statement stmt = connection.createStatement()) {
-            System.out.println(stmt.executeUpdate(query));
+            stmt.executeUpdate(query);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -113,8 +113,8 @@ public class Messages {
         		pstmt.setString(1, text);
                 pstmt.setString(2, sender);
                 pstmt.setString(3, color);
-                int id = pstmt.executeUpdate();
-                return id;
+                int res = pstmt.executeUpdate();
+                return res;
         	} catch (SQLException e) {
         		System.out.println(e.getMessage());
         	}

@@ -35,38 +35,41 @@ public class Main {
 			System.out.println(dbMessages.size());
 			while(true) {
 				ServerSocket server = new ServerSocket(portNumber);
+				Socket socket = server.accept();
+				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				System.out.println(String.format("Server socket started with the port: %s.", portNumber));
 				try {
-					JSONObject json = readIncommingMessage(server);
+					JSONObject json = readIncommingMessage(in);
 					String actionType = json.getString(JSONKeys.ACTION_TYPE.toString());
 					switch (ActionType.getEnum(actionType)) {
 						case AUTHENTICATION:
 							if (login(json)) {
-								sendToken(json.getString(JSONKeys.USERNAME.toString()), server);
+								sendToken(json.getString(JSONKeys.USERNAME.toString()), socket);
 							} else {
-								sendFailed(server);
+								sendFailed(socket);
 							}
 							break;
 						case SEND_MESSAGE:
 							System.out.println("Send message!");
 							if (receiveMessage(json)) {
-								sendAllMessages(server);
+								sendAllMessages(socket);
 							} else {
 								System.out.println("Failed!");
-								sendFailed(server);
+								sendFailed(socket);
 							}
 							break;
 						case UPDATE_MESSAGES:
-							sendAllMessages(server);
+							sendAllMessages(socket);
 							break;
 						default:
-							sendFailed(server);
+							sendFailed(socket);
 							break;
 					}
 				} catch (JSONException e) {
-					sendJSONParseError(server);
+					sendJSONParseError(socket);
 				}
-				
+				in.close();
+				socket.close();
 				server.close();
 			}
 		}
@@ -78,18 +81,14 @@ public class Main {
 	/**
 	 * The function takes the ServerSocket parameter and reads the incoming message from it.
 	 * 
-	 * @param server is the server socket where the information is read from.
+	 * @param in is the buffer reader to get the incoming data from
 	 * @return JSON object with the message data
 	 */
-	private static JSONObject readIncommingMessage(ServerSocket server) {
+	private static JSONObject readIncommingMessage(BufferedReader in) {
 		JSONObject output;
 		try {
-			Socket skt = server.accept();
-			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 			while (!in.ready()) {} // Buffer reader not ready
 			output = new JSONObject(in.readLine()); // Read one line and output it
-			in.close();
-	        skt.close();
 	        return output;
 		} catch (JSONException e) {
 			output = new JSONObject();
@@ -138,7 +137,7 @@ public class Main {
 	 * Retrieves all the messages from the database and sends them to the client.
 	 * @param server socket server to send the data to
 	 */
-	private static void sendAllMessages(ServerSocket server) {
+	private static void sendAllMessages(Socket socket) {
 		JSONObject output = new JSONObject();
 		try {
 			JSONArray messageArray = new JSONArray();
@@ -159,12 +158,11 @@ public class Main {
 		}
 		
 		try {
-			Socket skt = server.accept();
-			PrintWriter out = new PrintWriter(skt.getOutputStream());
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.print(output.toString());
 		 	out.close();
 		} catch (Exception e) {
-			System.out.println("Sending OK response failed.");
+			System.out.println("Sending all messages failed.");
 		}		
 	}
 	
@@ -173,17 +171,16 @@ public class Main {
 	 * @param token to be send
 	 * @param server socket server to send the data to
 	 */
-	private static void sendToken(String token, ServerSocket server) {
+	private static void sendToken(String token, Socket socket) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.TOKEN.toString(), token);
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
 		try {
-			Socket skt = server.accept();
-			PrintWriter out = new PrintWriter(skt.getOutputStream());
+			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
 		 	out.close();
 		} catch (Exception e) {
-			System.out.println("Sending OK response failed.");
+			System.out.println("Sending token response failed.");
 		}	
 	}
 	
@@ -191,12 +188,11 @@ public class Main {
 	 * Sends success message to the client.
 	 * @param server socket server to send the data to
 	 */
-	private static void sendSuccess(ServerSocket server) {
+	private static void sendSuccess(Socket socket) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
 		try {
-			Socket skt = server.accept();
-			PrintWriter out = new PrintWriter(skt.getOutputStream());
+			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
 		 	out.close();
 		} catch (Exception e) {
@@ -208,16 +204,15 @@ public class Main {
 	 * Sends JSONParseError message to the client.
 	 * @param server socket server to send the data to
 	 */
-	private static void sendJSONParseError(ServerSocket server) {
+	private static void sendJSONParseError(Socket socket) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
 		try {
-			Socket skt = server.accept();
-			PrintWriter out = new PrintWriter(skt.getOutputStream());
+			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
 		 	out.close();
 		} catch (Exception e) {
-			System.out.println("Sending OK response failed.");
+			System.out.println("Sending JSONParseError response failed.");
 		}	
 	}
 	
@@ -225,16 +220,15 @@ public class Main {
 	 * Sends "failed" message to the client.
 	 * @param server socket server to send the data to
 	 */
-	private static void sendFailed(ServerSocket server) {
+	private static void sendFailed(Socket socket) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
 		try {
-			Socket skt = server.accept();
-			PrintWriter out = new PrintWriter(skt.getOutputStream());
+			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
 		 	out.close();
 		} catch (Exception e) {
-			System.out.println("Sending OK response failed.");
+			System.out.println("Sending Failed response failed.");
 		}	
 	}
 }
