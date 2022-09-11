@@ -27,7 +27,7 @@ public class Main {
 				Socket skt = srvr.accept();
 				BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 				while (!in.ready()) {} // Buffer reader not ready
-				//System.out.println(in.readLine()); // Read one line and output it
+				System.out.println(in.readLine()); // Read one line and output it
 				in.close();
 		        skt.close();
 		        srvr.close();
