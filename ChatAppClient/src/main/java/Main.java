@@ -3,7 +3,7 @@ import java.net.Socket;
 
 // Server code taken from https://www.ashishmyles.com/tutorials/tcpchat/index.html 
 // Remove this project after ChatApp is configured to send messages.
-class Client {
+class Main {
 	public static void main(String args[]) {
 		String data = "Toobie ornaught toobie";
 		try {
