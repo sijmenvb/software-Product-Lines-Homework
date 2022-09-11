@@ -144,9 +144,9 @@ public class Communication {
 				messageJSON.put(JSONKeys.TEXT.toString(), message.getText());
 				messageJSON.put(JSONKeys.TOKEN.toString(), message.getToken());
 				messageJSON.put(JSONKeys.COLOR.toString(), message.getColor());
-				messageArray.put(messageJSON.toString());
+				messageArray.put(messageJSON);
 			}
-			output.put(JSONKeys.MESSAGES.toString(), messageArray.toString());
+			output.put(JSONKeys.MESSAGES.toString(), messageArray);
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
 		} catch (JSONException e) {
 			output = new JSONObject();
