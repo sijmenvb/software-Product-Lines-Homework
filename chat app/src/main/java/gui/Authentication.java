@@ -15,14 +15,14 @@ public class Authentication extends VBox {
 
 	 //initialize button, panel, label, and text field  
     Button b1;  
-    Label userLabel, passLabel;  
+    Label userLabel, passLabel, feedbackLabel;  
     final TextField  textField1;
     final PasswordField textField2;  
     
     private String[] usernames = {"admin"};
     private String[] passwords = {"admin"};
-    
-    
+    private int loginAttempts = 0;
+        
     private Stage primaryStage;  
     private Scene nextScene;
       
@@ -49,9 +49,13 @@ public class Authentication extends VBox {
           
         //create submit button  
         b1 = new Button("SUBMIT"); //set label to button  
+        
+        //create label for feedback to the user
+        feedbackLabel = new Label();
+        
           
         //create panel to put form elements  
-        this.getChildren().addAll(userLabel, textField1, passLabel, textField2, b1);
+        this.getChildren().addAll(userLabel, textField1, passLabel, textField2, b1, feedbackLabel);
           
         //perform action on button click   
         b1.setOnAction(new EventHandler<ActionEvent>() {
@@ -66,12 +70,12 @@ public class Authentication extends VBox {
     public void verifyCredentials(String inputUsername, String inputPassword) {
     	for (int i = 0; i < this.usernames.length; i++) {
     		if (this.usernames[i].equals(inputUsername) && this.passwords[i].equals(inputPassword)) {
-    			System.out.println("Welcome, user");
     			primaryStage.setScene(nextScene);
     			return;
     		}    	
     	}
-    	System.out.println("Please enter valid username and password");  
+    	feedbackLabel.setText(String.format("(%d) username/password invalid", loginAttempts));
+    	loginAttempts++;
     }
 		 
 
