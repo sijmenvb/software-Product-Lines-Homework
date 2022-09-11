@@ -108,15 +108,20 @@ public class ServerConnection {
 
 	private JSONObject sendData(String data) {
 		JSONObject output;
-		PrintWriter out;
 		try {
 			Socket skt = new Socket("localhost", portNumber);
+			//send the data
+			PrintWriter out = new PrintWriter(skt.getOutputStream(), true);
+			out.print(data);
+			out.close();
+			
+			//receive the reply.
 			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
-
 			while (!in.ready()) {
 			}
 			output = new JSONObject(in.readLine()); // Read one line and output it
 			in.close();
+			skt.close();
 		} catch (JSONException e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
