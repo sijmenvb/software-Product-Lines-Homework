@@ -20,7 +20,7 @@ public class Messages {
         String query = "CREATE TABLE IF NOT EXISTS messages (\n"
                 + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
                 + "	message_text text NOT NULL,\n"
-                + "	sender text NOT NULL,\n"
+                + "	token text NOT NULL,\n"
                 + "	color text NOT NULL,\n"
                 + ");";
         try (Statement stmt = connection.createStatement()) {
@@ -35,7 +35,7 @@ public class Messages {
      * Code: https://www.sqlitetutorial.net/sqlite-java/select/
      */
     public static LinkedList<Message> selectAll(){
-        String sql = "SELECT id, message_text, sender, colot FROM messages";
+        String sql = "SELECT id, message_text, token, colot FROM messages";
         
         LinkedList<Message> messages = new LinkedList<Message>();
         
@@ -46,7 +46,7 @@ public class Messages {
         			ResultSet rs = stmt.executeQuery(sql)){
         		// loop through the result set
         		while (rs.next()) {
-        			Message message = new Message(rs.getInt("id"), rs.getString("message_text"), rs.getString("sender"), rs.getString("color"));
+        			Message message = new Message(rs.getInt("id"), rs.getString("message_text"), rs.getString("token"), rs.getString("color"));
         			messages.add(message);
         		}
         	} catch (SQLException e) {
@@ -64,7 +64,7 @@ public class Messages {
      * Code: https://www.sqlitetutorial.net/sqlite-java/select/
      */
     public static LinkedList<Message> selectBySender(String sender){
-    	String sql = "SELECT id, message_text, sender, color "
+    	String sql = "SELECT id, message_text, token, color "
                 + "FROM messages WHERE sender = ?";
 
         LinkedList<Message> messages = new LinkedList<Message>();
@@ -80,7 +80,7 @@ public class Messages {
                    
                    // loop through the result set
                    while (rs.next()) {
-                	   Message message = new Message(rs.getInt("id"), rs.getString("message_text"), rs.getString("sender"), rs.getString("color"));
+                	   Message message = new Message(rs.getInt("id"), rs.getString("message_text"), rs.getString("token"), rs.getString("color"));
                 	   messages.add(message);
                    }
         	} catch (SQLException e) {
@@ -97,15 +97,15 @@ public class Messages {
      * Insert new message to the messages table.
      * Code: https://www.sqlitetutorial.net/sqlite-java/insert/
      */
-    public static int insert(String text, String sender, String color){
-        String sql = "INSERT INTO messages(message_text,sender,color) VALUES(?,?,?)";
+    public static int insert(String text, String token, String color){
+        String sql = "INSERT INTO messages(message_text,token,color) VALUES(?,?,?)";
         
         Connect c = new Connect();
         try (Connection conn = c.connect();) {
         	createNewMessageTableIfNotExist(conn);
         	try (PreparedStatement pstmt = conn.prepareStatement(sql)){
         		pstmt.setString(1, text);
-                pstmt.setString(2, sender);
+                pstmt.setString(2, token);
                 pstmt.setString(3, color);
                 int id = pstmt.executeUpdate();
                 return id;

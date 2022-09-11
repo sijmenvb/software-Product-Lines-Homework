@@ -8,16 +8,21 @@ import java.net.Socket;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import gui.Authentication;
 import gui.ChatWindow;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 public class ServerConnection {
 	static final int portNumber = 42069;
 	private ChatWindow chatWindow;
+	private Authentication authentication;
 	private String token = "";
 
-	public ServerConnection() {
+	public ServerConnection(Stage primaryStage) {
 		this.chatWindow = new ChatWindow(this);
+		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720));
 	}
 
 	/**
@@ -27,8 +32,9 @@ public class ServerConnection {
 	 * expects { "resultCode" : "ok", "token" : new token}
 	 * 
 	 * will save the new token for further communication.
+	 * returns true if authenticated, false otherwise.
 	 */
-	public void Authenticate(String username, String password) {
+	public boolean Authenticate(String username, String password) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.AUTHENTICATION.toString());
 		message.put(JSONKeys.USERNAME.toString(), username);
@@ -39,7 +45,9 @@ public class ServerConnection {
 		// if authentication was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()) == ResultCodes.OK.toString()) {
 			token = res.getString(JSONKeys.TOKEN.toString());// update the token
+			return true;
 		}
+		return false;
 	}
 
 	// TODO: actually add password hashing
@@ -137,4 +145,9 @@ public class ServerConnection {
 	public ChatWindow getChatWindow() {
 		return chatWindow;
 	}
+
+	public Authentication getAuthentication() {
+		return authentication;
+	}
+	
 }

@@ -2,27 +2,31 @@ package main;
 
 import backend.ServerConnection;
 import gui.ChatWindow;
+import gui.Authentication;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
 	private final long[] frameTimes = new long[100];
+
 	private int frameTimeIndex = 0;
 	private boolean arrayFilled = false;
 
 	public static void main(String[] args) {
 		launch(args);
+		// AuthenticationScreen();
 	}
 
 	@Override
 	public void start(final Stage primaryStage) {
-		ServerConnection serverConnection = new ServerConnection();
-		
+		ServerConnection serverConnection = new ServerConnection(primaryStage);
+
 		primaryStage.setTitle("Hello World!");
-		ChatWindow root = serverConnection.getChatWindow();
+		Authentication root = serverConnection.getAuthentication();
 		primaryStage.setScene(new Scene(root, 1280, 720));
 		primaryStage.show();
 
@@ -49,4 +53,5 @@ public class Main extends Application {
 
 		frameRateMeter.start();
 	}
+
 }
