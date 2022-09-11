@@ -48,7 +48,6 @@ public class Communication {
 							}
 							break;
 						case SEND_MESSAGE:
-							System.out.println("Send message!");
 							if (receiveMessage(json)) {
 								sendAllMessages(socket);
 							} else {
@@ -107,7 +106,7 @@ public class Communication {
 		String username = json.getString(JSONKeys.USERNAME.toString());
 		String password = json.getString(JSONKeys.PASSWORD.toString());
 		User user = Users.selectByUsername(username);
-		if(user.getPassword() == password) {
+		if(user.getPassword().equals(password)) {
 			System.out.println("User login succeeded!");
 			return true;
 		}else {
