@@ -142,6 +142,13 @@ public class ChatWindow extends VBox {
 		serverConnectionRef.sendMessage(text, color);
 	}
 
+	
+	/**
+	 * function that decrypts the input applying first AES decryption and then reversing the string
+	 * 
+	 * @param s	encrypted string
+	 * @return	decrypted string
+	 */
 	private String decrypt(String s) {
 		System.out.println(s);
 		StringBuilder s_reverse = new StringBuilder(AES.decrypt(s, "key"));

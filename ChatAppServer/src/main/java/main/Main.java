@@ -50,6 +50,7 @@ public class Main {
 		}
 	}
 
+	// placeholder decryption function
 	private static String decrypt(String s) {
 		System.out.println(s);
 		StringBuilder s_reverse = new StringBuilder(AES.decrypt(s, "key"));
