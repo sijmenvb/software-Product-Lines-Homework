@@ -12,6 +12,7 @@ import gui.ChatWindow;
 import javafx.scene.paint.Color;
 
 public class ServerConnection {
+	static final int portNumber = 42069;
 	private ChatWindow chatWindow;
 	private String token = "";
 
@@ -109,7 +110,7 @@ public class ServerConnection {
 		JSONObject output;
 		PrintWriter out;
 		try {
-			Socket skt = new Socket("localhost", 1234);
+			Socket skt = new Socket("localhost", portNumber);
 			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 
 			while (!in.ready()) {
