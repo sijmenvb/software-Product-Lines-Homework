@@ -5,8 +5,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -16,22 +21,35 @@ import org.json.JSONObject;
 
 import DAL.Messages;
 import DAL.Users;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import models.Message;
 import models.User;
 
 public class Communication {
 	private int portNumber;
-	static Logger log = Logger.getLogger(Communication.class.getName()); 
-	
+	static Logger log = Logger.getLogger(Communication.class.getName());
+	SecretKey tokenKey;//key for generating tokens
+
 	public Communication(int portNr) {
 		this.portNumber = portNr;
+
+		//generate a key
+		try {
+			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+			keyGen.init(256);
+			tokenKey = keyGen.generateKey();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
+
 	public void communication() {
 		try {
 			LinkedList<Message> dbMessages = Messages.selectAll();
 			System.out.println(dbMessages.size());
-			while(true) {
+			while (true) {
 				ServerSocket server = new ServerSocket(portNumber);
 				Socket socket = server.accept();
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -40,27 +58,27 @@ public class Communication {
 					JSONObject json = readIncommingMessage(in);
 					String actionType = json.getString(JSONKeys.ACTION_TYPE.toString());
 					switch (ActionType.getEnum(actionType)) {
-						case AUTHENTICATION:
-							if (login(json)) {
-								sendToken(json.getString(JSONKeys.USERNAME.toString()), socket);
-							} else {
-								sendFailed(socket);
-							}
-							break;
-						case SEND_MESSAGE:
-							if (receiveMessage(json)) {
-								sendAllMessages(socket);
-							} else {
-								System.out.println("Failed!");
-								sendFailed(socket);
-							}
-							break;
-						case UPDATE_MESSAGES:
-							sendAllMessages(socket);
-							break;
-						default:
+					case AUTHENTICATION:
+						if (login(json)) {
+							sendToken(json.getString(JSONKeys.USERNAME.toString()), socket);
+						} else {
 							sendFailed(socket);
-							break;
+						}
+						break;
+					case SEND_MESSAGE:
+						if (receiveMessage(json)) {
+							sendAllMessages(socket);
+						} else {
+							System.out.println("Failed!");
+							sendFailed(socket);
+						}
+						break;
+					case UPDATE_MESSAGES:
+						sendAllMessages(socket);
+						break;
+					default:
+						sendFailed(socket);
+						break;
 					}
 				} catch (JSONException e) {
 					sendJSONParseError(socket);
@@ -73,9 +91,10 @@ public class Communication {
 			log.error(String.format("Error occured while running the server. %s", ExceptionUtils.getStackTrace(e)));
 		}
 	}
-	
+
 	/**
-	 * The function takes the ServerSocket parameter and reads the incoming message from it.
+	 * The function takes the ServerSocket parameter and reads the incoming message
+	 * from it.
 	 * 
 	 * @param in is the buffer reader to get the incoming data from
 	 * @return JSON object with the message data
@@ -83,22 +102,24 @@ public class Communication {
 	private JSONObject readIncommingMessage(BufferedReader in) {
 		JSONObject output;
 		try {
-			while (!in.ready()) {} // Buffer reader not ready
+			while (!in.ready()) {
+			} // Buffer reader not ready
 			output = new JSONObject(in.readLine()); // Read one line and output it
-	        return output;
+			return output;
 		} catch (JSONException e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
-	        return output;
+			return output;
 		} catch (Exception e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
-	        return output;
-		}		
+			return output;
+		}
 	}
-	
+
 	/**
 	 * Logs in user with the specified in the JSON object credentials.
+	 * 
 	 * @param json credentials of the user
 	 * @return boolean value whether login succeeded
 	 */
@@ -106,17 +127,19 @@ public class Communication {
 		String username = json.getString(JSONKeys.USERNAME.toString());
 		String password = json.getString(JSONKeys.PASSWORD.toString());
 		User user = Users.selectByUsername(username);
-		if(user.getPassword().equals(password)) {
+		if (user.getPassword().equals(password)) {
 			System.out.println("User login succeeded!");
 			return true;
-		}else {
+		} else {
 			System.out.println("Wrong password, user login did not succeed!");
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Function takes a message data in JSON format and saves it to the local database. 
+	 * Function takes a message data in JSON format and saves it to the local
+	 * database.
+	 * 
 	 * @param json data with the message information
 	 * @return boolean value whether message information saved successfully
 	 */
@@ -131,6 +154,7 @@ public class Communication {
 
 	/**
 	 * Retrieves all the messages from the database and sends them to the client.
+	 * 
 	 * @param server socket server to send the data to
 	 */
 	private void sendAllMessages(Socket socket) {
@@ -152,36 +176,42 @@ public class Communication {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
 		}
-		
+
 		try {
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.print(output.toString());
-		 	out.close();
+			out.close();
 		} catch (Exception e) {
 			System.out.println("Sending all messages failed.");
-		}		
+		}
 	}
-	
+
 	/**
 	 * Sends user token to the client.
-	 * @param token to be send
+	 * 
+	 * @param token  to be send
 	 * @param server socket server to send the data to
 	 */
-	private void sendToken(String token, Socket socket) {
+	private void sendToken(String username, Socket socket) {
+
+		String token = Jwts.builder().setSubject(username).setExpiration(new Date(System.currentTimeMillis() + 36000000)) //token is valid for 1 hour
+				.signWith(tokenKey, SignatureAlgorithm.HS256).compact();
+		System.out.println(token);
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.TOKEN.toString(), token);
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
 		try {
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
-		 	out.close();
+			out.close();
 		} catch (Exception e) {
 			System.out.println("Sending token response failed.");
-		}	
+		}
 	}
-	
+
 	/**
 	 * Sends success message to the client.
+	 * 
 	 * @param server socket server to send the data to
 	 */
 	private void sendSuccess(Socket socket) {
@@ -190,14 +220,15 @@ public class Communication {
 		try {
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
-		 	out.close();
+			out.close();
 		} catch (Exception e) {
 			System.out.println("Sending OK response failed.");
-		}	
+		}
 	}
-	
+
 	/**
 	 * Sends JSONParseError message to the client.
+	 * 
 	 * @param server socket server to send the data to
 	 */
 	private void sendJSONParseError(Socket socket) {
@@ -206,14 +237,15 @@ public class Communication {
 		try {
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
-		 	out.close();
+			out.close();
 		} catch (Exception e) {
 			System.out.println("Sending JSONParseError response failed.");
-		}	
+		}
 	}
-	
+
 	/**
 	 * Sends "failed" message to the client.
+	 * 
 	 * @param server socket server to send the data to
 	 */
 	private void sendFailed(Socket socket) {
@@ -222,10 +254,10 @@ public class Communication {
 		try {
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
-		 	out.close();
+			out.close();
 		} catch (Exception e) {
 			System.out.println("Sending Failed response failed.");
-		}	
+		}
 	}
 
 }
