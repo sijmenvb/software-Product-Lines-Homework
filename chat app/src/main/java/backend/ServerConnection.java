@@ -22,7 +22,7 @@ public class ServerConnection {
 
 	public ServerConnection(Stage primaryStage) {
 		this.chatWindow = new ChatWindow(this);
-		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720));
+		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720),this);
 	}
 
 	/**
@@ -121,13 +121,14 @@ public class ServerConnection {
 			//send the data
 			PrintWriter out = new PrintWriter(skt.getOutputStream(), true);
 			out.print(data);
-			out.close();
+			
 			
 			//receive the reply.
 			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 			while (!in.ready()) {
 			}
 			output = new JSONObject(in.readLine()); // Read one line and output it
+			out.close();
 			in.close();
 			skt.close();
 		} catch (JSONException e) {
