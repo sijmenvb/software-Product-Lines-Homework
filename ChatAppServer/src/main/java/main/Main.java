@@ -13,10 +13,9 @@ public class Main {
 	
 	public static void main(String args[]) {
 		try {
-			ServerSocket srvr;
+			ServerSocket srvr = new ServerSocket(portNumber);
+			System.out.println(String.format("Server socket started with the port: %s.", portNumber));
 			while(true) {
-				srvr = new ServerSocket(portNumber);
-				System.out.println(String.format("Server socket started with the port: %s.", portNumber));
 				/* Playground 
 	            int id = Users.insert("elanto", "VeryStrongPassword");
 				System.out.println("New id: " + id);
@@ -30,7 +29,6 @@ public class Main {
 				System.out.println(in.readLine()); // Read one line and output it
 				in.close();
 		        skt.close();
-		        srvr.close();
 			}
 		}
 	    catch(Exception e) {
