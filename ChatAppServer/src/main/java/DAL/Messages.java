@@ -21,7 +21,7 @@ public class Messages {
                 + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
                 + "	message_text text NOT NULL,\n"
                 + "	sender text NOT NULL,\n"
-                + "	color text NOT NULL,\n"
+                + "	color text NOT NULL\n"
                 + ");";
         try (Statement stmt = connection.createStatement()) {
             System.out.println(stmt.executeUpdate(query));
@@ -35,7 +35,7 @@ public class Messages {
      * Code: https://www.sqlitetutorial.net/sqlite-java/select/
      */
     public static LinkedList<Message> selectAll(){
-        String sql = "SELECT id, message_text, sender, colot FROM messages";
+        String sql = "SELECT id, message_text, sender, color FROM messages";
         
         LinkedList<Message> messages = new LinkedList<Message>();
         
