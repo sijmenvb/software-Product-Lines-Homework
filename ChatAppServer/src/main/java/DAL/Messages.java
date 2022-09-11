@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.LinkedList;
 
 import models.Message;
-import models.User;
 
 public class Messages {
 	/**
@@ -20,7 +19,7 @@ public class Messages {
         String query = "CREATE TABLE IF NOT EXISTS messages (\n"
                 + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
                 + "	message_text text NOT NULL,\n"
-                + "	sender text NOT NULL,\n"
+                + "	token text NOT NULL,\n"
                 + "	color text NOT NULL\n"
                 + ");";
         try (Statement stmt = connection.createStatement()) {
@@ -35,7 +34,7 @@ public class Messages {
      * Code: https://www.sqlitetutorial.net/sqlite-java/select/
      */
     public static LinkedList<Message> selectAll(){
-        String sql = "SELECT id, message_text, token, colot FROM messages";
+        String sql = "SELECT id, message_text, token, color FROM messages";
         
         LinkedList<Message> messages = new LinkedList<Message>();
         
