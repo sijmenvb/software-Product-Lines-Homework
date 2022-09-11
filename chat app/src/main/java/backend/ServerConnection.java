@@ -41,9 +41,9 @@ public class ServerConnection {
 		message.put(JSONKeys.PASSWORD.toString(), hash(password));
 
 		JSONObject res = sendData(encrypt(message.toString()));
-
+		
 		// if authentication was successful
-		if (res.getString(JSONKeys.RESULT_CODE.toString()) == ResultCodes.OK.toString()) {
+		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			token = res.getString(JSONKeys.TOKEN.toString());// update the token
 			return true;
 		}
@@ -88,7 +88,7 @@ public class ServerConnection {
 		JSONObject res = sendData(encrypt(message.toString()));
 
 		// if message sending was successful
-		if (res.getString(JSONKeys.RESULT_CODE.toString()) == ResultCodes.OK.toString()) {
+		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
 	}
@@ -114,7 +114,7 @@ public class ServerConnection {
 		JSONObject res = sendData(encrypt(message.toString()));
 
 		// if message sending was successful
-		if (res.getString(JSONKeys.RESULT_CODE.toString()) == ResultCodes.OK.toString()) {
+		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
 	}
@@ -128,15 +128,16 @@ public class ServerConnection {
 		JSONObject output;
 		try {
 			Socket skt = new Socket("localhost", portNumber);
-			// send the data
+			//send the data
+
 			PrintWriter out = new PrintWriter(skt.getOutputStream(), true);
-			out.print(data);
-			
+			out.println(data);
 			
 			//receive the reply.
 			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 			while (!in.ready()) {
 			}
+			
 			output = new JSONObject(in.readLine()); // Read one line and output it
 			out.close();
 			in.close();
