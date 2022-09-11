@@ -27,11 +27,13 @@ public class Communication {
 		this.portNumber = portNr;
 	}
 	
+	/**
+	 * The main server communication point, where it gets requests and responds to the clients.
+	 */
 	public void communication() {
 		try {
-			LinkedList<Message> dbMessages = Messages.selectAll();
-			System.out.println(dbMessages.size());
 			while(true) {
+				// Setup socket and create a BufferedReader for coming messages
 				ServerSocket server = new ServerSocket(portNumber);
 				Socket socket = server.accept();
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -39,6 +41,7 @@ public class Communication {
 				try {
 					JSONObject json = readIncommingMessage(in);
 					String actionType = json.getString(JSONKeys.ACTION_TYPE.toString());
+					log.debug(String.format("Server got a message with an action type: %s.", actionType));
 					switch (ActionType.getEnum(actionType)) {
 						case AUTHENTICATION:
 							if (login(json)) {
@@ -65,9 +68,11 @@ public class Communication {
 				} catch (JSONException e) {
 					sendJSONParseError(socket);
 				}
+				log.debug("Closing all BufferedReader and sockets.");
 				in.close();
 				socket.close();
 				server.close();
+				log.debug("Buffered reader and sockets closed.");
 			}
 		} catch (Exception e) {
 			log.error(String.format("Error occured while running the server. %s", ExceptionUtils.getStackTrace(e)));
@@ -85,12 +90,15 @@ public class Communication {
 		try {
 			while (!in.ready()) {} // Buffer reader not ready
 			output = new JSONObject(in.readLine()); // Read one line and output it
+			log.debug("Incoming message read and processed.");
 	        return output;
 		} catch (JSONException e) {
+			log.error(String.format("Error occured while reading incomming message. %s", ExceptionUtils.getStackTrace(e)));
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
 	        return output;
 		} catch (Exception e) {
+			log.error(String.format("Error occured while reading incomming message. %s", ExceptionUtils.getStackTrace(e)));
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
 	        return output;
@@ -107,10 +115,10 @@ public class Communication {
 		String password = json.getString(JSONKeys.PASSWORD.toString());
 		User user = Users.selectByUsername(username);
 		if(user.getPassword().equals(password)) {
-			System.out.println("User login succeeded!");
+			log.info(String.format("User '%s' logged in successfully.", username));
 			return true;
 		}else {
-			System.out.println("Wrong password, user login did not succeed!");
+			log.info(String.format("User '%s' login did not succeed. Wrong password!", username));
 			return false;
 		}
 	}
@@ -121,12 +129,22 @@ public class Communication {
 	 * @return boolean value whether message information saved successfully
 	 */
 	private Boolean receiveMessage(JSONObject json) {
-		System.out.println("Update messages!");
-		String text = json.getString(JSONKeys.TEXT.toString());
-		String token = json.getString(JSONKeys.TOKEN.toString());
-		String color = json.getString(JSONKeys.COLOR.toString());
-		int id = Messages.insert(text, token, color);
-		return id > 0 ? true : false;
+		try {
+			String text = json.getString(JSONKeys.TEXT.toString());
+			String token = json.getString(JSONKeys.TOKEN.toString());
+			String color = json.getString(JSONKeys.COLOR.toString());
+			Boolean success = Messages.insert(text, token, color) > 0 ? true : false;
+			if(success) {
+				log.info(String.format("User '%s' sent a message '%s'.", token, text));
+			}else {
+				log.error(String.format("Message from user '%s' was not saved.", token));
+			}
+			return success;
+		} catch (JSONException e) {
+			log.error(String.format("Error occured while saving the message. %s", ExceptionUtils.getStackTrace(e)));
+			return false;
+		}
+		
 	}
 
 	/**
@@ -136,6 +154,7 @@ public class Communication {
 	private void sendAllMessages(Socket socket) {
 		JSONObject output = new JSONObject();
 		try {
+			log.debug("Starting retrieving the messages from the database.");
 			JSONArray messageArray = new JSONArray();
 			LinkedList<Message> dbMessages = Messages.selectAll();
 			for (Iterator<Message> iterator = dbMessages.iterator(); iterator.hasNext();) {
@@ -148,16 +167,21 @@ public class Communication {
 			}
 			output.put(JSONKeys.MESSAGES.toString(), messageArray);
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
+			log.debug("All the messages retrieved from the database.");
 		} catch (JSONException e) {
+			log.error(String.format("Error occured while retrieving all the messages. %s", ExceptionUtils.getStackTrace(e)));
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
 		}
 		
 		try {
+			log.debug("Sending all the messages to the user.");
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.print(output.toString());
 		 	out.close();
+			log.debug("All the messages sent to the client.");
 		} catch (Exception e) {
+			log.error(String.format("Error occured while sending array of all the messages. %s", ExceptionUtils.getStackTrace(e)));
 			System.out.println("Sending all messages failed.");
 		}		
 	}
@@ -168,15 +192,18 @@ public class Communication {
 	 * @param server socket server to send the data to
 	 */
 	private void sendToken(String token, Socket socket) {
-		JSONObject message = new JSONObject();
-		message.put(JSONKeys.TOKEN.toString(), token);
-		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
 		try {
+			log.debug(String.format("Sending token '%s' to the client.", token));
+			JSONObject message = new JSONObject();
+			message.put(JSONKeys.TOKEN.toString(), token);
+			message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
+			
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
 		 	out.close();
+			log.debug(String.format("Token '%s' sent to the client.", token));
 		} catch (Exception e) {
-			System.out.println("Sending token response failed.");
+			log.error(String.format("Sending token response failed. %s", ExceptionUtils.getStackTrace(e)));
 		}	
 	}
 	
@@ -185,14 +212,17 @@ public class Communication {
 	 * @param server socket server to send the data to
 	 */
 	private void sendSuccess(Socket socket) {
-		JSONObject message = new JSONObject();
-		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
 		try {
+			log.debug("Sending OK response to the client.");
+			JSONObject message = new JSONObject();
+			message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
+			
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
 		 	out.close();
+			log.debug("OK response sent to the client.");
 		} catch (Exception e) {
-			System.out.println("Sending OK response failed.");
+			log.error(String.format("Sending OK response failed. %s", ExceptionUtils.getStackTrace(e)));
 		}	
 	}
 	
@@ -201,14 +231,17 @@ public class Communication {
 	 * @param server socket server to send the data to
 	 */
 	private void sendJSONParseError(Socket socket) {
-		JSONObject message = new JSONObject();
-		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
 		try {
+			log.debug("Sending JSONParseError response to the client.");
+			JSONObject message = new JSONObject();
+			message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
+			
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
 		 	out.close();
+			log.debug("JSONParseError response sent to the client.");
 		} catch (Exception e) {
-			System.out.println("Sending JSONParseError response failed.");
+			log.error(String.format("Sending JSONParseError response failed. %s", ExceptionUtils.getStackTrace(e)));
 		}	
 	}
 	
@@ -217,14 +250,17 @@ public class Communication {
 	 * @param server socket server to send the data to
 	 */
 	private void sendFailed(Socket socket) {
-		JSONObject message = new JSONObject();
-		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
 		try {
+			log.debug("Sending Failed response to the client.");
+			JSONObject message = new JSONObject();
+			message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
+			
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());
 		 	out.close();
+			log.debug("Failed response sent to the client.");
 		} catch (Exception e) {
-			System.out.println("Sending Failed response failed.");
+			log.error(String.format("Sending Failed response failed. %s", ExceptionUtils.getStackTrace(e)));
 		}	
 	}
 
