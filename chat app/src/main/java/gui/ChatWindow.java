@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import backend.AES;
 import backend.JSONKeys;
 import backend.ServerConnection;
 import javafx.event.ActionEvent;
@@ -84,9 +85,8 @@ public class ChatWindow extends VBox {
 																				// VBox.
 	}
 
-	
 	public void updateMessages(JSONArray messages) {
-		//check if the messages actually changed
+		// check if the messages actually changed
 		if (currentMessages != messages) {
 			textFlow.getChildren().clear();// remove all the text
 
@@ -96,11 +96,11 @@ public class ChatWindow extends VBox {
 			for (Object object : messages) {
 				if (object instanceof JSONObject) {
 					JSONObject textObject = (JSONObject) object;// cast to jsonObject
-					addText(textObject.getString(JSONKeys.TEXT.toString()),
+					addText(decrypt(textObject.getString(JSONKeys.TEXT.toString())),
 							Color.web(textObject.getString(JSONKeys.COLOR.toString())));
 				}
 			}
-			currentMessages = messages;//update current.
+			currentMessages = messages;// update current.
 		}
 	}
 
@@ -140,5 +140,13 @@ public class ChatWindow extends VBox {
 	 */
 	private void send(String text, Color color) {
 		serverConnectionRef.sendMessage(text, color);
+	}
+
+	private String decrypt(String s) {
+		System.out.println(s);
+		StringBuilder s_reverse = new StringBuilder(AES.decrypt(s, "key"));
+		s = s_reverse.reverse().toString();
+		System.out.println(s);
+		return s;
 	}
 }

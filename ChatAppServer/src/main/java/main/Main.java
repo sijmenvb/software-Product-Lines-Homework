@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import java.util.LinkedList;
 import DAL.Users;
+import DAL.AES;
 import models.User; 
 
 // Server code taken from https://www.ashishmyles.com/tutorials/tcpchat/index.html 
@@ -19,6 +20,7 @@ public class Main {
 	public static void main(String args[]) {
 		try {
 			while (true) {
+				System.out.println("Server is running");
 				ServerSocket srvr = new ServerSocket(portNumber);
 				log.debug(String.format("Server socket started with the port: %s.", portNumber));
 				/*
@@ -34,7 +36,8 @@ public class Main {
 				log.debug("Message from the connection received.");
 				while (!in.ready()) {
 				} // Buffer reader not ready
-				System.out.println(in.readLine());
+				System.out.println("This is the server speaking");
+				System.out.println(decrypt(in.readLine()));
 				in.close();
 				log.debug("Buffer closed.");
 				skt.close();
@@ -46,4 +49,15 @@ public class Main {
 			log.error(String.format("Error occured while running the server. %s", ExceptionUtils.getStackTrace(e)));
 		}
 	}
+
+	private static String decrypt(String s) {
+		System.out.println(s);
+		StringBuilder s_reverse = new StringBuilder(AES.decrypt(s, "key"));
+		s = s_reverse.reverse().toString();
+		System.out.println(s);
+		return s;
+	}
+	
+	
+	
 }
