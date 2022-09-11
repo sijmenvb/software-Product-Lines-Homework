@@ -1,14 +1,13 @@
 package backend;
 
-public enum JSONKeys {
-	ACTION_TYPE("actionType"), TOKEN("token"), TEXT("text"), COLOR("color"), USERNAME("username"), PASSWORD("password"),
-	RESULT_CODE("resultCode"), MESSAGES("messages");
+public enum ActionType {
+	AUTHENTICATION("authentication"), SEND_MESSAGE("sendMessage"), UPDATE_MESSAGES("updateMessages");
 
 	// the code below make sit possible to change the name of the ENUM without
 	// having to change the code.
 	private final String label;
 
-	JSONKeys(String s) {
+	ActionType(String s) {
 		label = s;
 	}
 

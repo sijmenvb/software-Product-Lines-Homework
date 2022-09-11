@@ -1,6 +1,7 @@
 package main;
 
-import gui.chatWindow;
+import backend.ServerConnection;
+import gui.ChatWindow;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -18,8 +19,10 @@ public class Main extends Application {
 
 	@Override
 	public void start(final Stage primaryStage) {
+		ServerConnection serverConnection = new ServerConnection();
+		
 		primaryStage.setTitle("Hello World!");
-		chatWindow root = new chatWindow();
+		ChatWindow root = serverConnection.getChatWindow();
 		primaryStage.setScene(new Scene(root, 1280, 720));
 		primaryStage.show();
 
