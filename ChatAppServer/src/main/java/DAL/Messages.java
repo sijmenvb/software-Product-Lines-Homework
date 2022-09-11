@@ -62,6 +62,8 @@ public class Messages {
     /**
      * Get all the messages from one sender.
      * Code: https://www.sqlitetutorial.net/sqlite-java/select/
+     * 
+     * @param sender is the sender of the messages we want to retrieve
      */
     public static LinkedList<Message> selectBySender(String sender){
     	String sql = "SELECT id, message_text, sender, color "
@@ -96,6 +98,10 @@ public class Messages {
     /**
      * Insert new message to the messages table.
      * Code: https://www.sqlitetutorial.net/sqlite-java/insert/
+     * 
+     * @param text is message text
+     * @param sender is message sender
+     * @param color is message text color
      */
     public static int insert(String text, String sender, String color){
         String sql = "INSERT INTO messages(message_text,sender,color) VALUES(?,?,?)";

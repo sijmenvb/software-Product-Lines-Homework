@@ -21,8 +21,18 @@ import models.User;
 public class Main {
 	static int portNumber = 42069;
 	
+	/**
+	 * Main function of the server. 
+	 * Runs the SocketServer at the specified port and every loop iteration accepts the socket message 
+	 *   and takes actions specified by the message.
+	 *   
+	 * @param args
+	 */
+	
 	public static void main(String args[]) {
 		try {
+			LinkedList<Message> dbMessages = Messages.selectAll();
+			System.out.println(dbMessages.size());
 			while(true) {
 				ServerSocket server = new ServerSocket(portNumber);
 				System.out.println(String.format("Server socket started with the port: %s.", portNumber));
@@ -38,14 +48,16 @@ public class Main {
 							}
 							break;
 						case SEND_MESSAGE:
-							sendAllMessages(json, server);
-							break;
-						case UPDATE_MESSAGES:
+							System.out.println("Send message!");
 							if (receiveMessage(json)) {
-								sendAllMessages(json, server);
+								sendAllMessages(server);
 							} else {
+								System.out.println("Failed!");
 								sendFailed(server);
 							}
+							break;
+						case UPDATE_MESSAGES:
+							sendAllMessages(server);
 							break;
 						default:
 							sendFailed(server);
@@ -67,6 +79,7 @@ public class Main {
 	 * The function takes the ServerSocket parameter and reads the incoming message from it.
 	 * 
 	 * @param server is the server socket where the information is read from.
+	 * @return JSON object with the message data
 	 */
 	private static JSONObject readIncommingMessage(ServerSocket server) {
 		JSONObject output;
@@ -89,6 +102,11 @@ public class Main {
 		}		
 	}
 	
+	/**
+	 * Logs in user with the specified in the JSON object credentials.
+	 * @param json credentials of the user
+	 * @return boolean value whether login succeeded
+	 */
 	private static Boolean login(JSONObject json) {
 		String username = json.getString(JSONKeys.USERNAME.toString());
 		String password = json.getString(JSONKeys.PASSWORD.toString());
@@ -102,7 +120,13 @@ public class Main {
 		}
 	}
 	
+	/**
+	 * Function takes a message data in JSON format and saves it to the local database. 
+	 * @param json data with the message information
+	 * @return boolean value whether message information saved successfully
+	 */
 	private static Boolean receiveMessage(JSONObject json) {
+		System.out.println("Update messages!");
 		String text = json.getString(JSONKeys.TEXT.toString());
 		String token = json.getString(JSONKeys.TOKEN.toString());
 		String color = json.getString(JSONKeys.COLOR.toString());
@@ -110,7 +134,11 @@ public class Main {
 		return id > 0 ? true : false;
 	}
 
-	private static void sendAllMessages(JSONObject json, ServerSocket server) {
+	/**
+	 * Retrieves all the messages from the database and sends them to the client.
+	 * @param server socket server to send the data to
+	 */
+	private static void sendAllMessages(ServerSocket server) {
 		JSONObject output = new JSONObject();
 		try {
 			JSONArray messageArray = new JSONArray();
@@ -140,6 +168,11 @@ public class Main {
 		}		
 	}
 	
+	/**
+	 * Sends user token to the client.
+	 * @param token to be send
+	 * @param server socket server to send the data to
+	 */
 	private static void sendToken(String token, ServerSocket server) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.TOKEN.toString(), token);
@@ -154,6 +187,10 @@ public class Main {
 		}	
 	}
 	
+	/**
+	 * Sends success message to the client.
+	 * @param server socket server to send the data to
+	 */
 	private static void sendSuccess(ServerSocket server) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
@@ -167,8 +204,10 @@ public class Main {
 		}	
 	}
 	
-
-	
+	/**
+	 * Sends JSONParseError message to the client.
+	 * @param server socket server to send the data to
+	 */
 	private static void sendJSONParseError(ServerSocket server) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
@@ -182,6 +221,10 @@ public class Main {
 		}	
 	}
 	
+	/**
+	 * Sends "failed" message to the client.
+	 * @param server socket server to send the data to
+	 */
 	private static void sendFailed(ServerSocket server) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
