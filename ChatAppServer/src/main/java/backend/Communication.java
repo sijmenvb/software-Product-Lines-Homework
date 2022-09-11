@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -20,7 +21,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 import DAL.Messages;
 import DAL.Users;
@@ -31,20 +35,21 @@ import models.User;
 public class Communication {
 	private int portNumber;
 	static Logger log = Logger.getLogger(Communication.class.getName());
-	
-	
-	//token source: https://simplesolution.dev/java-json-web-token-using-java-jwt-library/
-	SecretKey tokenKey;//key for generating tokens
-	Algorithm algorithm = Algorithm.HMAC512(tokenKey.toString());//algorithm used for token encryption.
+
+	// token source:
+	// https://simplesolution.dev/java-json-web-token-using-java-jwt-library/
+	SecretKey tokenKey;// key for generating tokens
+	Algorithm algorithm;// algorithm used for token encryption.
 
 	public Communication(int portNr) {
 		this.portNumber = portNr;
 
-		//generate a key
+		// generate a key
 		try {
 			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
 			keyGen.init(256);
 			tokenKey = keyGen.generateKey();
+			algorithm = Algorithm.HMAC512(tokenKey.toString());
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -72,15 +77,27 @@ public class Communication {
 						}
 						break;
 					case SEND_MESSAGE:
-						if (receiveMessage(json)) {
-							sendAllMessages(socket);
+						if (verifyToken(json.getString(JSONKeys.TOKEN.toString()),
+								json.getString(JSONKeys.USERNAME.toString()))) {
+
+							if (receiveMessage(json)) {
+								sendAllMessages(socket);
+							} else {
+								System.out.println("Failed!");
+								sendFailed(socket);
+							}
 						} else {
-							System.out.println("Failed!");
-							sendFailed(socket);
+							sendNotAuthenticated(socket);// if token not valid
 						}
 						break;
 					case UPDATE_MESSAGES:
-						sendAllMessages(socket);
+						if (verifyToken(json.getString(JSONKeys.TOKEN.toString()),
+								json.getString(JSONKeys.USERNAME.toString()))) {
+							sendAllMessages(socket);
+						} else {
+							sendNotAuthenticated(socket);// if token not valid
+						}
+
 						break;
 					default:
 						sendFailed(socket);
@@ -193,6 +210,25 @@ public class Communication {
 	}
 
 	/**
+	 * check if the token is valid for this user.
+	 * 
+	 * @param token
+	 * @param username
+	 * @return
+	 */
+	private boolean verifyToken(String token, String username) {
+		try {
+			JWTVerifier verifier = JWT.require(algorithm).withIssuer("Simple Solution").build();
+
+			DecodedJWT decodedJWT = verifier.verify(token);
+
+			return decodedJWT.getClaims().get("username").equals(username);
+		} catch (JWTVerificationException ex) {
+			return false;
+		}
+	}
+
+	/**
 	 * Sends user token to the client.
 	 * 
 	 * @param token  to be send
@@ -200,17 +236,15 @@ public class Communication {
 	 */
 	private void sendToken(String username, Socket socket) {
 		long expireTime = (new Date().getTime()) + 60000; // 60000 milliseconds = 60 seconds = 1 minute
-        Date expireDate = new Date(expireTime);
-        
-        System.out.println(tokenKey.toString());
-		String token = JWT.create()
-                .withIssuer("Simple Solution")
-                .withClaim("username", "TestUser")
-                .withClaim("role", "User")
-                .withExpiresAt(expireDate)
-                .sign(algorithm);
+		Date expireDate = new Date(expireTime);
+
+		// create token
+		System.out.println(tokenKey.toString());
+		String token = JWT.create().withIssuer("Simple Solution").withClaim("username", username)
+				.withClaim("role", "User").withExpiresAt(expireDate).sign(algorithm);
 		System.out.println(token);
-		
+
+		// send token
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.TOKEN.toString(), token);
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
@@ -265,6 +299,23 @@ public class Communication {
 	private void sendFailed(Socket socket) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
+		try {
+			PrintWriter out = new PrintWriter(socket.getOutputStream());
+			out.print(message.toString());
+			out.close();
+		} catch (Exception e) {
+			System.out.println("Sending Failed response failed.");
+		}
+	}
+
+	/**
+	 * Sends "notAuthenticated" message to the client.
+	 * 
+	 * @param server socket server to send the data to
+	 */
+	private void sendNotAuthenticated(Socket socket) {
+		JSONObject message = new JSONObject();
+		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.NotAuthenticated.toString());
 		try {
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			out.print(message.toString());

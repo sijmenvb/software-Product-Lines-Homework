@@ -19,7 +19,7 @@ public class ServerConnection {
 	private ChatWindow chatWindow;
 	private Authentication authentication;
 	private String token = "";
-
+	private String username = "";
 	public ServerConnection(Stage primaryStage) {
 		this.chatWindow = new ChatWindow(this);
 		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
@@ -46,6 +46,7 @@ public class ServerConnection {
 		// if authentication was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			token = res.getString(JSONKeys.TOKEN.toString());// update the token
+			this.username = username;//update the user name
 			return true;
 		}
 		return false;
@@ -62,7 +63,7 @@ public class ServerConnection {
 	}
 
 	/**
-	 * sends { "actionType" : "updateMessages", "token" : token}
+	 * sends { "actionType" : "updateMessages", "token" : token, "username" : username}
 	 * 
 	 * expects { "resultCode" : "ok", "messages" : array_with_messages} where
 	 * array_with_messages is
@@ -75,6 +76,7 @@ public class ServerConnection {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.UPDATE_MESSAGES.toString());
 		message.put(JSONKeys.TOKEN.toString(), token);
+		message.put(JSONKeys.USERNAME.toString(), username);
 
 		JSONObject res = sendData(encrypt(message.toString()));
 
@@ -86,7 +88,7 @@ public class ServerConnection {
 
 	/**
 	 * sends { "actionType" : "sendMessage", "token" : token, "text" : text, "color"
-	 * : color}
+	 * : color,"username" : username}
 	 * 
 	 * expects { "resultCode" : "ok", "messages" : array_with_messages}
 	 * 
@@ -101,6 +103,7 @@ public class ServerConnection {
 		message.put(JSONKeys.TOKEN.toString(), token);
 		message.put(JSONKeys.TEXT.toString(), text);
 		message.put(JSONKeys.COLOR.toString(), color.toString());
+		message.put(JSONKeys.USERNAME.toString(), username);
 
 		JSONObject res = sendData(encrypt(message.toString()));
 
