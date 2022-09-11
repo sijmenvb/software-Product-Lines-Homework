@@ -120,8 +120,8 @@ public class ServerConnection {
 			Socket skt = new Socket("localhost", portNumber);
 			//send the data
 			PrintWriter out = new PrintWriter(skt.getOutputStream(), true);
-			out.print(data);
-			
+			out.println(data);
+
 			
 			//receive the reply.
 			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
