@@ -12,6 +12,7 @@ local.properties
 .recommenders
 .classpath
 log4j/
+target/
 
 # External tool builders
 .externalToolBuilders/
