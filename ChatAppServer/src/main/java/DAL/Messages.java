@@ -35,7 +35,7 @@ public class Messages {
      * Code: https://www.sqlitetutorial.net/sqlite-java/select/
      */
     public static LinkedList<Message> selectAll(){
-        String sql = "SELECT id, message_text, sender, color FROM messages";
+        String sql = "SELECT id, message_text, token, colot FROM messages";
         
         LinkedList<Message> messages = new LinkedList<Message>();
         
@@ -46,7 +46,7 @@ public class Messages {
         			ResultSet rs = stmt.executeQuery(sql)){
         		// loop through the result set
         		while (rs.next()) {
-        			Message message = new Message(rs.getInt("id"), rs.getString("message_text"), rs.getString("sender"), rs.getString("color"));
+        			Message message = new Message(rs.getInt("id"), rs.getString("message_text"), rs.getString("token"), rs.getString("color"));
         			messages.add(message);
         		}
         	} catch (SQLException e) {
@@ -66,7 +66,7 @@ public class Messages {
      * @param sender is the sender of the messages we want to retrieve
      */
     public static LinkedList<Message> selectBySender(String sender){
-    	String sql = "SELECT id, message_text, sender, color "
+    	String sql = "SELECT id, message_text, token, color "
                 + "FROM messages WHERE sender = ?";
 
         LinkedList<Message> messages = new LinkedList<Message>();
@@ -82,7 +82,7 @@ public class Messages {
                    
                    // loop through the result set
                    while (rs.next()) {
-                	   Message message = new Message(rs.getInt("id"), rs.getString("message_text"), rs.getString("sender"), rs.getString("color"));
+                	   Message message = new Message(rs.getInt("id"), rs.getString("message_text"), rs.getString("token"), rs.getString("color"));
                 	   messages.add(message);
                    }
         	} catch (SQLException e) {
@@ -103,15 +103,15 @@ public class Messages {
      * @param sender is message sender
      * @param color is message text color
      */
-    public static int insert(String text, String sender, String color){
-        String sql = "INSERT INTO messages(message_text,sender,color) VALUES(?,?,?)";
+    public static int insert(String text, String token, String color){
+        String sql = "INSERT INTO messages(message_text,token,color) VALUES(?,?,?)";
         
         Connect c = new Connect();
         try (Connection conn = c.connect();) {
         	createNewMessageTableIfNotExist(conn);
         	try (PreparedStatement pstmt = conn.prepareStatement(sql)){
         		pstmt.setString(1, text);
-                pstmt.setString(2, sender);
+                pstmt.setString(2, token);
                 pstmt.setString(3, color);
                 int res = pstmt.executeUpdate();
                 return res;

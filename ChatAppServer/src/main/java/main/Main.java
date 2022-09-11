@@ -4,11 +4,9 @@ import java.io.*;
 import java.net.*;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import DAL.Messages;
 import DAL.Users;
 import backend.ActionType;
@@ -16,11 +14,14 @@ import backend.JSONKeys;
 import backend.ResultCodes;
 import models.Message;
 import models.User;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 
 // Server code taken from https://www.ashishmyles.com/tutorials/tcpchat/index.html 
 public class Main {
 	static int portNumber = 42069;
-	
+	static Logger log = Logger.getLogger(Main.class.getName()); 
+
 	/**
 	 * Main function of the server. 
 	 * Runs the SocketServer at the specified port and every loop iteration accepts the socket message 
@@ -37,7 +38,7 @@ public class Main {
 				ServerSocket server = new ServerSocket(portNumber);
 				Socket socket = server.accept();
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				System.out.println(String.format("Server socket started with the port: %s.", portNumber));
+				log.debug(String.format("Server socket started with the port: %s.", portNumber));
 				try {
 					JSONObject json = readIncommingMessage(in);
 					String actionType = json.getString(JSONKeys.ACTION_TYPE.toString());
@@ -72,10 +73,9 @@ public class Main {
 				socket.close();
 				server.close();
 			}
+		} catch (Exception e) {
+			log.error(String.format("Error occured while running the server. %s", ExceptionUtils.getStackTrace(e)));
 		}
-	    catch(Exception e) {
-	    	e.printStackTrace();
-	    }
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class Main {
 				Message message = (Message) iterator.next();
 				JSONObject messageJSON = new JSONObject();
 				messageJSON.put(JSONKeys.TEXT.toString(), message.getText());
-				messageJSON.put(JSONKeys.TOKEN.toString(), message.getSender());
+				messageJSON.put(JSONKeys.TOKEN.toString(), message.getToken());
 				messageJSON.put(JSONKeys.COLOR.toString(), message.getColor());
 				messageArray.put(messageJSON.toString());
 			}
