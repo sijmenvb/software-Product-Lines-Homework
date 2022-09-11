@@ -3,6 +3,7 @@ package gui;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
@@ -26,6 +27,7 @@ public class chatWindow extends VBox {
 	private double fontSize = 20;
 
 	private TextFlow textFlow;// special box to combine and display formatted (e.g. colored) text.
+	private ColorPicker colorSelector;
 
 	/**
 	 * a window providing a view of messages and an input field + send button.
@@ -43,16 +45,17 @@ public class chatWindow extends VBox {
 		chatPane.setFitToWidth(true);// make sure the elements in the scrollPane are restricted to the width of the
 										// scrollPane.
 
-		// create message input and send button.
+		// create message input, send button and color selector.
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
-		HBox textInputContainer = new HBox(SPACING, textInput, sendButton);
+		colorSelector = new ColorPicker(Color.BLACK);
+		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, colorSelector);
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				send(textInput.getText());
+				send(textInput.getText(),colorSelector.getValue());
 				textInput.clear();
 			}
 		});
@@ -86,7 +89,7 @@ public class chatWindow extends VBox {
 	private void addText(String contents, Paint color) {
 		Text text = new Text(contents.toString());
 
-		text.setFill(color);// set the colour of the text.
+		text.setFill(color);// set the color of the text.
 
 		FontWeight weight = FontWeight.NORMAL; // font weight may be used for bold text.
 		FontPosture posture = FontPosture.REGULAR;// font posture might be used for italics.
@@ -100,8 +103,9 @@ public class chatWindow extends VBox {
 	 * function that gets run when the button is clicked.
 	 * 
 	 * @param text the text from the input field
+	 * @param color the selected color.
 	 */
-	private void send(String text) {
-		System.out.println(text);
+	private void send(String text,Color color) {
+		System.out.println(text + " color:" + color.toString());
 	}
 }
