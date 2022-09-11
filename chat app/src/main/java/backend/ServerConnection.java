@@ -22,7 +22,7 @@ public class ServerConnection {
 
 	public ServerConnection(Stage primaryStage) {
 		this.chatWindow = new ChatWindow(this);
-		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720),this);
+		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
 	}
 
 	/**
@@ -31,8 +31,8 @@ public class ServerConnection {
 	 * 
 	 * expects { "resultCode" : "ok", "token" : new token}
 	 * 
-	 * will save the new token for further communication.
-	 * returns true if authenticated, false otherwise.
+	 * will save the new token for further communication. returns true if
+	 * authenticated, false otherwise.
 	 */
 	public boolean Authenticate(String username, String password) {
 		JSONObject message = new JSONObject();
@@ -41,7 +41,8 @@ public class ServerConnection {
 		message.put(JSONKeys.PASSWORD.toString(), hash(password));
 
 		JSONObject res = sendData(encrypt(message.toString()));
-		
+
+		System.out.println(res);
 		// if authentication was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			token = res.getString(JSONKeys.TOKEN.toString());// update the token
@@ -118,16 +119,16 @@ public class ServerConnection {
 		JSONObject output;
 		try {
 			Socket skt = new Socket("localhost", portNumber);
-			//send the data
+			// send the data
 
 			PrintWriter out = new PrintWriter(skt.getOutputStream(), true);
 			out.println(data);
-			
-			//receive the reply.
+
+			// receive the reply.
 			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 			while (!in.ready()) {
 			}
-			
+
 			output = new JSONObject(in.readLine()); // Read one line and output it
 			out.close();
 			in.close();
@@ -151,5 +152,5 @@ public class ServerConnection {
 	public Authentication getAuthentication() {
 		return authentication;
 	}
-	
+
 }

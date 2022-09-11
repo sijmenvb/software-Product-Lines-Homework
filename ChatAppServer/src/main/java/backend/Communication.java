@@ -19,17 +19,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+
 import DAL.Messages;
 import DAL.Users;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+
 import models.Message;
 import models.User;
 
 public class Communication {
 	private int portNumber;
 	static Logger log = Logger.getLogger(Communication.class.getName());
+	
+	
+	//token source: https://simplesolution.dev/java-json-web-token-using-java-jwt-library/
 	SecretKey tokenKey;//key for generating tokens
+	Algorithm algorithm = Algorithm.HMAC512(tokenKey.toString());//algorithm used for token encryption.
 
 	public Communication(int portNr) {
 		this.portNumber = portNr;
@@ -193,10 +199,18 @@ public class Communication {
 	 * @param server socket server to send the data to
 	 */
 	private void sendToken(String username, Socket socket) {
-
-		String token = Jwts.builder().setSubject(username).setExpiration(new Date(System.currentTimeMillis() + 36000000)) //token is valid for 1 hour
-				.signWith(tokenKey, SignatureAlgorithm.HS256).compact();
+		long expireTime = (new Date().getTime()) + 60000; // 60000 milliseconds = 60 seconds = 1 minute
+        Date expireDate = new Date(expireTime);
+        
+        System.out.println(tokenKey.toString());
+		String token = JWT.create()
+                .withIssuer("Simple Solution")
+                .withClaim("username", "TestUser")
+                .withClaim("role", "User")
+                .withExpiresAt(expireDate)
+                .sign(algorithm);
 		System.out.println(token);
+		
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.TOKEN.toString(), token);
 		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
