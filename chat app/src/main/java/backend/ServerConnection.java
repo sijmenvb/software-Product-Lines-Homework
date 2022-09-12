@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +20,9 @@ public class ServerConnection {
 	private ChatWindow chatWindow;
 	private Authentication authentication;
 	private String token = "";
+	
+	static Logger log = Logger.getLogger(ChatWindow.class.getName()); 
+
 	private String username = "";
 	public ServerConnection(Stage primaryStage) {
 		this.chatWindow = new ChatWindow(this);
@@ -46,9 +50,11 @@ public class ServerConnection {
 		// if authentication was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			token = res.getString(JSONKeys.TOKEN.toString());// update the token
+			log.info("user logged in");
 			this.username = username;//update the user name
 			return true;
 		}
+		log.info("failed login attempt");
 		return false;
 	}
 
@@ -93,6 +99,7 @@ public class ServerConnection {
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
+		log.info("messages updated");
 	}
 
 	/**
@@ -120,6 +127,7 @@ public class ServerConnection {
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
+		log.info("message with text:\n" + text + "\nsend in color:'\n" + color.toString());
 	}
 
 	/**
@@ -132,7 +140,6 @@ public class ServerConnection {
 		try {
 			Socket skt = new Socket("localhost", portNumber);
 			// send the data
-
 			PrintWriter out = new PrintWriter(skt.getOutputStream(), true);
 			out.println(data);
 
@@ -148,12 +155,15 @@ public class ServerConnection {
 		} catch (JSONException e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
+			log.debug("JSONParseError occured when trying to send data");
 
 		} catch (Exception e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
+			log.info("an error occured when trying to send data");
 		}
 
+		log.info("data was successfully sent");
 		return output;
 	}
 

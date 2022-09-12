@@ -2,6 +2,7 @@ package gui;
 
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,12 +40,16 @@ public class ChatWindow extends VBox {
 	private ColorPicker colorSelector;
 
 	private JSONArray currentMessages = new JSONArray();
+	
+	static Logger log = Logger.getLogger(ChatWindow.class.getName()); 
 
 	/**
 	 * a window providing a view of messages and an input field + send button.
 	 * 
 	 */
 	public ChatWindow(ServerConnection serverConnection) {
+		
+		log.debug("ChatWindow created");
 
 		serverConnectionRef = serverConnection;
 
@@ -88,6 +93,7 @@ public class ChatWindow extends VBox {
 	public void updateMessages(JSONArray messages) {
 		// check if the messages actually changed
 		if (currentMessages != messages) {
+			log.debug("Messages have been updated");
 			textFlow.getChildren().clear();// remove all the text
 
 			// TODO: add user name to text.
@@ -139,6 +145,7 @@ public class ChatWindow extends VBox {
 	 * @param color the selected color.
 	 */
 	private void send(String text, Color color) {
+		log.debug("The following message:\n" + text + " was sent in the color:\n" + color.toString());
 		serverConnectionRef.sendMessage(text + "\n", color);
 	}
 
