@@ -248,7 +248,7 @@ public class Communication {
 	 * 
 	 * @param token
 	 * @param username
-	 * @return
+	 * 
 	 */
 	private boolean verifyToken(String token, String username) {
 		try {
