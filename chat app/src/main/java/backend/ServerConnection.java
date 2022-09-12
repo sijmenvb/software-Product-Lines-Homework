@@ -57,9 +57,18 @@ public class ServerConnection {
 		return s;
 	}
 
-	// TODO: actually add encryption
+	/**
+	 * function which encrypts a string by reversing it and then applying AES encryption
+	 * 
+	 * @param s plaintext string to encrypt
+	 * @return encrypted string
+	 */
 	private String encrypt(String s) {
-		return s;
+		StringBuilder s_reverse = new StringBuilder(s).reverse();
+		
+		s = AES.encrypt(s_reverse.toString(), "key");
+		
+;		return s;
 	}
 
 	/**

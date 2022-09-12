@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import backend.AES;
 import backend.JSONKeys;
 import backend.ServerConnection;
 import javafx.event.ActionEvent;
@@ -84,9 +85,8 @@ public class ChatWindow extends VBox {
 																				// VBox.
 	}
 
-	
 	public void updateMessages(JSONArray messages) {
-		//check if the messages actually changed
+		// check if the messages actually changed
 		if (currentMessages != messages) {
 			textFlow.getChildren().clear();// remove all the text
 
@@ -100,7 +100,7 @@ public class ChatWindow extends VBox {
 							Color.web(textObject.getString(JSONKeys.COLOR.toString())));
 				}
 			}
-			currentMessages = messages;//update current.
+			currentMessages = messages;// update current.
 		}
 	}
 
@@ -140,5 +140,20 @@ public class ChatWindow extends VBox {
 	 */
 	private void send(String text, Color color) {
 		serverConnectionRef.sendMessage(text + "\n", color);
+	}
+
+	
+	/**
+	 * function that decrypts the input applying first AES decryption and then reversing the string
+	 * 
+	 * @param s	encrypted string
+	 * @return	decrypted string
+	 */
+	private String decrypt(String s) {
+		System.out.println(s);
+		StringBuilder s_reverse = new StringBuilder(AES.decrypt(s, "key"));
+		s = s_reverse.reverse().toString();
+		System.out.println(s);
+		return s;
 	}
 }

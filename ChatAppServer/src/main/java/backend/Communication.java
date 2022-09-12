@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import DAL.AES;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -131,10 +132,8 @@ public class Communication {
 	private JSONObject readIncommingMessage(BufferedReader in) {
 		JSONObject output;
 		try {
-			while (!in.ready()) {
-			} // Buffer reader not ready
-			output = new JSONObject(in.readLine()); // Read one line and output it
-
+			while (!in.ready()) {} // Buffer reader not ready
+			output = new JSONObject(decrypt(in.readLine())); // Read one line and output it
 			log.debug("Incoming message read and processed.");
 			return output;
 
@@ -373,6 +372,19 @@ public class Communication {
 			System.out.println("Sending Failed response failed.");
 		}
 
+	}
+	
+	
+	/**
+	 * function that decrypts the input applying first AES decryption and then reversing the string
+	 * 
+	 * @param s	encrypted string
+	 * @return	decrypted string
+	 */
+	private String decrypt(String s) {
+		StringBuilder s_reverse = new StringBuilder(AES.decrypt(s, "key"));
+		s = s_reverse.reverse().toString();
+		return s;
 	}
 
 }
