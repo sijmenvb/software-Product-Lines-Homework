@@ -255,8 +255,8 @@ public class Communication {
 			JWTVerifier verifier = JWT.require(algorithm).withIssuer("Simple Solution").build();
 
 			DecodedJWT decodedJWT = verifier.verify(token);
-
-			return decodedJWT.getClaims().get("username").equals(username);
+			//TODO: figure oput how to get this as a propper string and not one with extra quotes.
+			return decodedJWT.getClaims().get(JSONKeys.USERNAME.toString()).toString().equals("\""+username+ "\"");
 		} catch (JWTVerificationException ex) {
 			return false;
 		}
@@ -275,7 +275,7 @@ public class Communication {
 
 		// create token
 		System.out.println(tokenKey.toString());
-		String token = JWT.create().withIssuer("Simple Solution").withClaim("username", username)
+		String token = JWT.create().withIssuer("Simple Solution").withClaim(JSONKeys.USERNAME.toString(), username)
 				.withClaim("role", "User").withExpiresAt(expireDate).sign(algorithm);
 		System.out.println(token);
 
