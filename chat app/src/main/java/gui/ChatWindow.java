@@ -63,7 +63,7 @@ public class ChatWindow extends VBox {
 		Button sendButton = new Button("send");
 		colorSelector = new ColorPicker(Color.BLACK);
 		Button refreshButton = new Button("Refresh");
-		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, colorSelector,refreshButton);
+		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, colorSelector, refreshButton);
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
@@ -73,7 +73,7 @@ public class ChatWindow extends VBox {
 				textInput.clear();
 			}
 		});
-		
+
 		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
 				serverConnectionRef.updateMessages();
@@ -83,17 +83,13 @@ public class ChatWindow extends VBox {
 		Region bottomSpacing = new Region();// used so the buttons will not be completely be at the bottom but will use
 											// the vertical spacing.
 
-		// populate the chatBox with some dummy text.
-		addText("hello\n");
-		addText("I am jeffrey :) i am a very good boiiiii!\n", Color.ORANGE);
-
 		this.getChildren().addAll(chatPane, textInputContainer, bottomSpacing);// add all the elements of the UI to this
 																				// VBox.
+		
 	}
 
-	
 	public void updateMessages(JSONArray messages) {
-		//check if the messages actually changed
+		// check if the messages actually changed
 		if (currentMessages != messages) {
 			textFlow.getChildren().clear();// remove all the text
 
@@ -107,7 +103,7 @@ public class ChatWindow extends VBox {
 							Color.web(textObject.getString(JSONKeys.COLOR.toString())));
 				}
 			}
-			currentMessages = messages;//update current.
+			currentMessages = messages;// update current.
 		}
 	}
 
