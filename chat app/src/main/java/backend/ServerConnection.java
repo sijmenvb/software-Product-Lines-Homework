@@ -62,7 +62,6 @@ public class ServerConnection {
 	 * @return encrypted string
 	 */
 	private String encrypt(String s) {
-		System.out.println(s);
 		StringBuilder s_reverse = new StringBuilder(s).reverse();
 		
 		s = AES.encrypt(s_reverse.toString(), "key");

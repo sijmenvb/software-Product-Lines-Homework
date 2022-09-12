@@ -96,7 +96,7 @@ public class ChatWindow extends VBox {
 			for (Object object : messages) {
 				if (object instanceof JSONObject) {
 					JSONObject textObject = (JSONObject) object;// cast to jsonObject
-					addText(decrypt(textObject.getString(JSONKeys.TEXT.toString())),
+					addText(textObject.getString(JSONKeys.TEXT.toString()),
 							Color.web(textObject.getString(JSONKeys.COLOR.toString())));
 				}
 			}
