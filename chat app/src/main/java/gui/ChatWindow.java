@@ -64,11 +64,12 @@ public class ChatWindow extends VBox {
 		chatPane.setFitToWidth(true);// make sure the elements in the scrollPane are restricted to the width of the
 										// scrollPane.
 
-		// create message input, send button and color selector.
+		// create message input, send button and color selector and refresh button.
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
 		colorSelector = new ColorPicker(Color.BLACK);
-		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, colorSelector);
+		Button refreshButton = new Button("Refresh");
+		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, colorSelector, refreshButton);
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
@@ -79,15 +80,18 @@ public class ChatWindow extends VBox {
 			}
 		});
 
+		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				serverConnectionRef.updateMessages();
+			}
+		});
+
 		Region bottomSpacing = new Region();// used so the buttons will not be completely be at the bottom but will use
 											// the vertical spacing.
 
-		// populate the chatBox with some dummy text.
-		addText("hello\n");
-		addText("I am jeffrey :) i am a very good boiiiii!\n", Color.ORANGE);
-
 		this.getChildren().addAll(chatPane, textInputContainer, bottomSpacing);// add all the elements of the UI to this
 																				// VBox.
+		
 	}
 
 	public void updateMessages(JSONArray messages) {

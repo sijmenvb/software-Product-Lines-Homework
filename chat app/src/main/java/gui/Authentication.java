@@ -68,6 +68,8 @@ public class Authentication extends VBox {
 	public void verifyCredentials(String inputUsername, String inputPassword) {
 		if (serverConnectionRef.Authenticate(inputUsername, inputPassword)) {
 			primaryStage.setScene(nextScene);
+			// populate the chatBox
+			serverConnectionRef.updateMessages();
 			return;
 		}
 		feedbackLabel.setText(String.format("(%d) username/password invalid", loginAttempts));
