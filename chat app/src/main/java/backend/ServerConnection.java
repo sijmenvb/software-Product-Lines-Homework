@@ -48,10 +48,10 @@ public class ServerConnection {
 		// if authentication was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			token = res.getString(JSONKeys.TOKEN.toString());// update the token
-			log.debug("user logged in");
+			log.info("user logged in");
 			return true;
 		}
-		log.debug("failed login attempt");
+		log.info("failed login attempt");
 		return false;
 	}
 
@@ -96,7 +96,7 @@ public class ServerConnection {
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
-		log.debug("messages updated");
+		log.info("messages updated");
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class ServerConnection {
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
-		log.debug("message sent");
+		log.info("message with text:\n" + text + "\nsend in color:'\n" + color.toString());
 	}
 
 	/**
@@ -156,10 +156,10 @@ public class ServerConnection {
 		} catch (Exception e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
-			log.debug("An error occured when trying to send data");
+			log.info("an error occured when trying to send data");
 		}
 
-		log.debug("Data was successfully sent");
+		log.info("data was successfully sent");
 		return output;
 	}
 
