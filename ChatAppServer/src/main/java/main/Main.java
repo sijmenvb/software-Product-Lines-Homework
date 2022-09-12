@@ -4,11 +4,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import backend.Communication;
 import DAL.Users;
-<<<<<<< HEAD
 import DAL.AES;
 import models.User; 
-=======
->>>>>>> a7f89386cfbf12e2d53a16b61885f43eccfb86d1
+
 
 // Server code taken from https://www.ashishmyles.com/tutorials/tcpchat/index.html 
 public class Main {
@@ -26,7 +24,7 @@ public class Main {
 	 */
 	
 	public static void main(String args[]) {
-		try {
+		try {			
 			Users.insert(user, pass);
 		} catch (Exception e) {
 			log.error(String.format("Error occured while adding user. %s", ExceptionUtils.getStackTrace(e)));
@@ -34,5 +32,5 @@ public class Main {
 		Communication comm = new Communication(portNumber);
 		comm.communication();
 	}
-	
+		
 }

@@ -23,6 +23,7 @@ public class ServerConnection {
 	
 	static Logger log = Logger.getLogger(ChatWindow.class.getName()); 
 
+	private String username = "";
 	public ServerConnection(Stage primaryStage) {
 		this.chatWindow = new ChatWindow(this);
 		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
@@ -44,11 +45,13 @@ public class ServerConnection {
 		message.put(JSONKeys.PASSWORD.toString(), hash(password));
 
 		JSONObject res = sendData(encrypt(message.toString()));
-		
+
+		System.out.println(res);
 		// if authentication was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			token = res.getString(JSONKeys.TOKEN.toString());// update the token
 			log.info("user logged in");
+			this.username = username;//update the user name
 			return true;
 		}
 		log.info("failed login attempt");
@@ -67,7 +70,6 @@ public class ServerConnection {
 	 * @return encrypted string
 	 */
 	private String encrypt(String s) {
-		System.out.println(s);
 		StringBuilder s_reverse = new StringBuilder(s).reverse();
 		
 		s = AES.encrypt(s_reverse.toString(), "key");
@@ -76,7 +78,7 @@ public class ServerConnection {
 	}
 
 	/**
-	 * sends { "actionType" : "updateMessages", "token" : token}
+	 * sends { "actionType" : "updateMessages", "token" : token, "username" : username}
 	 * 
 	 * expects { "resultCode" : "ok", "messages" : array_with_messages} where
 	 * array_with_messages is
@@ -89,6 +91,7 @@ public class ServerConnection {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.UPDATE_MESSAGES.toString());
 		message.put(JSONKeys.TOKEN.toString(), token);
+		message.put(JSONKeys.USERNAME.toString(), username);
 
 		JSONObject res = sendData(encrypt(message.toString()));
 
@@ -101,7 +104,7 @@ public class ServerConnection {
 
 	/**
 	 * sends { "actionType" : "sendMessage", "token" : token, "text" : text, "color"
-	 * : color}
+	 * : color,"username" : username}
 	 * 
 	 * expects { "resultCode" : "ok", "messages" : array_with_messages}
 	 * 
@@ -116,6 +119,7 @@ public class ServerConnection {
 		message.put(JSONKeys.TOKEN.toString(), token);
 		message.put(JSONKeys.TEXT.toString(), text);
 		message.put(JSONKeys.COLOR.toString(), color.toString());
+		message.put(JSONKeys.USERNAME.toString(), username);
 
 		JSONObject res = sendData(encrypt(message.toString()));
 
@@ -138,12 +142,12 @@ public class ServerConnection {
 			// send the data
 			PrintWriter out = new PrintWriter(skt.getOutputStream(), true);
 			out.println(data);
-			
-			//receive the reply.
+
+			// receive the reply.
 			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 			while (!in.ready()) {
 			}
-			
+
 			output = new JSONObject(in.readLine()); // Read one line and output it
 			out.close();
 			in.close();
