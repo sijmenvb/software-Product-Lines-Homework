@@ -66,7 +66,6 @@ public class Authentication extends VBox {
 
 	// verify the credentials entered by the user
 	public void verifyCredentials(String inputUsername, String inputPassword) {
-
 		if (serverConnectionRef.Authenticate(inputUsername, inputPassword)) {
 			primaryStage.setScene(nextScene);
 			return;

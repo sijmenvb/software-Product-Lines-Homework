@@ -146,7 +146,7 @@ public class ChatWindow extends VBox {
 	 */
 	private void send(String text, Color color) {
 		log.debug("The following message:\n" + text + " was sent in the color:\n" + color.toString());
-		serverConnectionRef.sendMessage(text, color);
+		serverConnectionRef.sendMessage(text + "\n", color);
 	}
 
 	
