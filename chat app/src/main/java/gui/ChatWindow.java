@@ -1,5 +1,7 @@
 package gui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
@@ -9,6 +11,7 @@ import org.json.JSONObject;
 import backend.AES;
 import backend.JSONKeys;
 import backend.ServerConnection;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -28,7 +31,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 //extends VBox so it is a javaFX element and can be used as such.
-public class ChatWindow extends VBox {
+public class ChatWindow extends VBox implements PropertyChangeListener {
 	private final int SPACING = 5;// how much space is between the different elements.
 	private ServerConnection serverConnectionRef;
 
@@ -39,16 +42,14 @@ public class ChatWindow extends VBox {
 	private TextFlow textFlow;// special box to combine and display formatted (e.g. colored) text.
 	private ColorPicker colorSelector;
 
-	private JSONArray currentMessages = new JSONArray();
-	
-	static Logger log = Logger.getLogger(ChatWindow.class.getName()); 
+	static Logger log = Logger.getLogger(ChatWindow.class.getName());
 
 	/**
 	 * a window providing a view of messages and an input field + send button.
 	 * 
 	 */
 	public ChatWindow(ServerConnection serverConnection) {
-		
+
 		log.debug("ChatWindow created");
 
 		serverConnectionRef = serverConnection;
@@ -91,28 +92,29 @@ public class ChatWindow extends VBox {
 
 		this.getChildren().addAll(chatPane, textInputContainer, bottomSpacing);// add all the elements of the UI to this
 																				// VBox.
-		
+
 	}
 
 	public void updateMessages(JSONArray messages) {
-		// check if the messages actually changed
-		if (currentMessages != messages) {
-			log.debug("Messages have been updated");
-			textFlow.getChildren().clear();// remove all the text
+		//textFlow.getChildren().clear();// remove all the text
+		Platform.runLater(new Runnable() {
+		    public void run() {
+		    	textFlow.getChildren().clear();
+		    }
+		});
 
-			// TODO: add user name to text.
+		// TODO: add user name to text.
 
-			// add all the text to the dialogue.
-			for (Object object : messages) {
-				if (object instanceof JSONObject) {
-					JSONObject textObject = (JSONObject) object;// cast to jsonObject
-					addText(textObject.getString(JSONKeys.TEXT.toString()),
-							Color.web(textObject.getString(JSONKeys.COLOR.toString())));
-				}
+		// add all the text to the dialogue.
+		for (Object object : messages) {
+			if (object instanceof JSONObject) {
+				JSONObject textObject = (JSONObject) object;// cast to jsonObject
+				addText(textObject.getString(JSONKeys.TEXT.toString()),
+						Color.web(textObject.getString(JSONKeys.COLOR.toString())));
 			}
-			currentMessages = messages;// update current.
 		}
 	}
+	
 
 	/**
 	 * adds text to the chat dialogue. does NOT add nextLines implicitly.
@@ -130,7 +132,7 @@ public class ChatWindow extends VBox {
 	 * @param color    the color of the text as a javaFX Paint
 	 */
 	private void addText(String contents, Paint color) {
-		Text text = new Text(contents.toString());
+		final Text text = new Text(contents.toString());
 
 		text.setFill(color);// set the color of the text.
 
@@ -139,7 +141,16 @@ public class ChatWindow extends VBox {
 
 		text.setFont(Font.font(fontFamily, weight, posture, fontSize));
 
-		textFlow.getChildren().add(text);// add this text to the chat dialogue.
+		//textFlow.getChildren().add(text);
+		
+		Platform.runLater(new Runnable() {
+		    public void run() {
+		    	textFlow.getChildren().add(text);
+		    }
+		});
+		
+		
+		//textFlow.getChildren().add(text);// add this text to the chat dialogue.
 	}
 
 	/**
@@ -153,12 +164,12 @@ public class ChatWindow extends VBox {
 		serverConnectionRef.sendMessage(text + "\n", color);
 	}
 
-	
 	/**
-	 * function that decrypts the input applying first AES decryption and then reversing the string
+	 * function that decrypts the input applying first AES decryption and then
+	 * reversing the string
 	 * 
-	 * @param s	encrypted string
-	 * @return	decrypted string
+	 * @param s encrypted string
+	 * @return decrypted string
 	 */
 	private String decrypt(String s) {
 		System.out.println(s);
@@ -167,4 +178,11 @@ public class ChatWindow extends VBox {
 		System.out.println(s);
 		return s;
 	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		System.out.println("listening on property");
+		updateMessages((JSONArray) evt.getNewValue());		
+	}
+
 }

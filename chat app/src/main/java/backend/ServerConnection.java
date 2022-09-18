@@ -18,14 +18,20 @@ import javafx.stage.Stage;
 public class ServerConnection {
 	static final int portNumber = 42069;
 	private ChatWindow chatWindow;
+	private ChatBackEnd chatBackEnd;
 	private Authentication authentication;
 	private String token = "";
-	
-	static Logger log = Logger.getLogger(ChatWindow.class.getName()); 
+	private
+
+	static Logger log = Logger.getLogger(ChatWindow.class.getName());
 
 	private String username = "";
+	private String password = "";
+
 	public ServerConnection(Stage primaryStage) {
 		this.chatWindow = new ChatWindow(this);
+		this.chatBackEnd = new ChatBackEnd(this);
+		this.chatBackEnd.addPropertyChangeListener(chatWindow);
 		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
 	}
 
@@ -46,15 +52,47 @@ public class ServerConnection {
 
 		JSONObject res = sendData(encrypt(message.toString()));
 
-		System.out.println(res);
 		// if authentication was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			token = res.getString(JSONKeys.TOKEN.toString());// update the token
 			log.info("user logged in");
-			this.username = username;//update the user name
+			this.username = username;// update the user name
+			this.password = hash(password);// update the password
+
+			if (!this.chatBackEnd.isAlive()) {// make sure the thread is not already started
+				this.chatBackEnd.setDaemon(true);// close thread when program closes.
+				this.chatBackEnd.start();// start listening in on the server for messages
+			}
 			return true;
 		}
 		log.info("failed login attempt");
+		return false;
+	}
+
+	/**
+	 * sends { "actionType" : "authentication", "username" : username, "password" :
+	 * password}
+	 * 
+	 * expects { "resultCode" : "ok", "token" : new token}
+	 * 
+	 * returns true if authenticated, false otherwise.
+	 */
+	public boolean Reauthenticate() {
+		JSONObject message = new JSONObject();
+		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.AUTHENTICATION.toString());
+		message.put(JSONKeys.USERNAME.toString(), this.username);
+		message.put(JSONKeys.PASSWORD.toString(), hash(this.password));
+
+		JSONObject res = sendData(encrypt(message.toString()));
+
+		// if authentication was successful
+		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
+			token = res.getString(JSONKeys.TOKEN.toString());// update the token
+			log.info("user reauthenticated");
+
+			return true;
+		}
+		log.info("reauthentication failed");
 		return false;
 	}
 
@@ -64,21 +102,24 @@ public class ServerConnection {
 	}
 
 	/**
-	 * function which encrypts a string by reversing it and then applying AES encryption
+	 * function which encrypts a string by reversing it and then applying AES
+	 * encryption
 	 * 
 	 * @param s plaintext string to encrypt
 	 * @return encrypted string
 	 */
 	private String encrypt(String s) {
 		StringBuilder s_reverse = new StringBuilder(s).reverse();
-		
+
 		s = AES.encrypt(s_reverse.toString(), "key");
-		
-;		return s;
+
+		;
+		return s;
 	}
 
 	/**
-	 * sends { "actionType" : "updateMessages", "token" : token, "username" : username}
+	 * sends { "actionType" : "updateMessages", "token" : token, "username" :
+	 * username}
 	 * 
 	 * expects { "resultCode" : "ok", "messages" : array_with_messages} where
 	 * array_with_messages is
@@ -97,7 +138,12 @@ public class ServerConnection {
 
 		// if message sending was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
-			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
+			log.debug("Messages have been updated");
+			chatBackEnd.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
+		}
+		// try to reauthenticate when server returns NotAuthenticated ResultCode
+		else if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.NotAuthenticated.toString())) {
+			Reauthenticate();
 		}
 		log.info("messages updated");
 	}
