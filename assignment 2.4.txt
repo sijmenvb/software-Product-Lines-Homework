@@ -7,7 +7,7 @@ We have three optional arguments:
 
 disablecolor removes the color selector.
 
-debug increases the level of debug information.
+debug makes the log also include the logs at level debug.
 
 nolog disables all logging.
 
