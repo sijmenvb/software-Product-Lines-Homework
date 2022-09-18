@@ -26,17 +26,35 @@ import javafx.stage.Stage;
 public class ServerConnection {
 	static final int portNumber = 42069;
 	private ChatWindow chatWindow;
+	private ChatBackEnd chatBackEnd;
 	private Authentication authentication;
 	private String token = "";
-	private final String jsonEncryptionKey = "p:=l,]kHGv'eByu";
 
 	static Logger log = Logger.getLogger(ServerConnection.class.getName());
 
 	private String username = "";
+	private String password = "";
+	private final String jsonEncryptionKey = "p:=l,]kHGv'eByu";
 
 	public ServerConnection(Stage primaryStage) {
 		this.chatWindow = new ChatWindow(this);
+		this.chatBackEnd = new ChatBackEnd(this);
+		this.chatBackEnd.addPropertyChangeListener(chatWindow);
 		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
+	}
+
+	public boolean firstAuthentication(String username, String password) {
+		this.username = username;// update the user name
+		this.password = hash(password);// update the password
+
+		if (Authenticate(username, this.password)) {
+			if (!this.chatBackEnd.isAlive()) {// make sure the thread is not already started
+				this.chatBackEnd.setDaemon(true);// close thread when program closes.
+				this.chatBackEnd.start();// start listening in on the server for messages
+			}
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -48,26 +66,25 @@ public class ServerConnection {
 	 * will save the new token for further communication. returns true if
 	 * authenticated, false otherwise.
 	 */
-	public boolean Authenticate(String username, String password) {
+	public boolean Authenticate(String username, String hashedPassword) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.AUTHENTICATION.toString());
 		message.put(JSONKeys.USERNAME.toString(), username);
-		message.put(JSONKeys.PASSWORD.toString(), hash(password));
+		message.put(JSONKeys.PASSWORD.toString(), hashedPassword);
 
 		log.debug(String.format("User '%s' is trying to log in. Response from the server received.", username));
 		JSONObject res = sendData(encrypt(message.toString(), Algorithms.AES));
 
 		try {
-			if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
+			if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {// if authentication
+																									// was successful
 				token = res.getString(JSONKeys.TOKEN.toString());// update the token
-				this.username = username;// update the user name
 				log.info(String.format("User '%s' logged in.", username));
 				return true;
 			}
 		} catch (JSONException e) {
 			log.error(String.format("JSONException occured. %s", ExceptionUtils.getStackTrace(e)));
 		}
-		// if authentication was successful
 
 		log.error("Failed login attempt.");
 		return false;
@@ -100,8 +117,12 @@ public class ServerConnection {
 
 		// if message sending was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
-			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
-			log.info("Messages updated.");
+			log.debug("Messages have been updated");
+			chatBackEnd.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
+		}
+		// try to reauthenticate when server returns NotAuthenticated ResultCode
+		else if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.NotAuthenticated.toString())) {
+			Authenticate(this.username, this.password);
 		} else {
 			log.error(String.format("Something went wrong with messages update. Response code: %s.",
 					res.getString(JSONKeys.RESULT_CODE.toString())));
@@ -207,7 +228,7 @@ public class ServerConnection {
 		if (encryptionType.equals(Algorithms.AES.toString())) {
 			log.debug("Encryption: AES.");
 			encryptionClass = new AESEncryption(jsonEncryptionKey);
-		} else {  // encryption is string reverse
+		} else { // encryption is string reverse
 			log.debug("Encryption: Reverse string.");
 			encryptionClass = new ReverseStringEncryption();
 		}
@@ -224,7 +245,7 @@ public class ServerConnection {
 		if (encryptionAlg.equals(Algorithms.AES)) {
 			log.debug("Encryption: AES.");
 			encryptionClass = new AESEncryption(jsonEncryptionKey);
-		} else {  // encryption is string reverse
+		} else { // encryption is string reverse
 			log.debug("Encryption: Reverse string.");
 			encryptionClass = new ReverseStringEncryption();
 		}
