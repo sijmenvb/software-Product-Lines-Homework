@@ -53,7 +53,7 @@ public class ChatWindow extends VBox {
 	 * 
 	 */
 	public ChatWindow(ServerConnection serverConnection, Configuration conf) {
-
+		
 		log.debug("ChatWindow created");
 
 		serverConnectionRef = serverConnection;
