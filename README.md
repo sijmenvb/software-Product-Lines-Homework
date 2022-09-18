@@ -42,3 +42,8 @@ The benefit of using this pattern is in the possibility to add more encryption a
 
 Strategy pattern allows us to expand the list of possible encryption methods as much as we want.
 
+## Observer pattern for the chatapp backend
+
+We decided upon using the observer pattern to increase the seperation between the frondend and the backend. The ChatBackEnd class is an subject class which keeps listening in on communication from the server on its own thread. The frontend of the chatapp registers as an observer and is notified by the ChatBackEnd whenever a message is received.
+
+This process works as follows: The ChatBackEnd thread loops indefinately and requests the messages from the server every time period through the ServerConnection. The ServerConnection retrieves these messages and delivers them. If there has been an update the observer is notified. The ChatWindow will then recieve these messages through a PropertyChangeEvent and update its frontend accordingly.
