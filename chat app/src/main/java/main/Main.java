@@ -1,5 +1,8 @@
 package main;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+
 import backend.Configuration;
 import backend.ServerConnection;
 import gui.ChatWindow;
@@ -22,12 +25,15 @@ public class Main extends Application {
 
 	public static void main(String[] args) {
 		conf = new Configuration(args);
+		if (conf.DEBUG) {
+			LogManager.getRootLogger().setLevel(Level.DEBUG);// set global debugging level
+		}
 		launch(args);
 	}
 
 	@Override
 	public void start(final Stage primaryStage) {
-		ServerConnection serverConnection = new ServerConnection(primaryStage);
+		ServerConnection serverConnection = new ServerConnection(primaryStage, conf);
 
 		primaryStage.setTitle("Hello World!");
 		Authentication root = serverConnection.getAuthentication();

@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import backend.AES;
+import backend.Configuration;
 import backend.JSONKeys;
 import backend.ServerConnection;
 import javafx.event.ActionEvent;
@@ -40,16 +41,21 @@ public class ChatWindow extends VBox {
 	private ColorPicker colorSelector;
 
 	private JSONArray currentMessages = new JSONArray();
-	
-	static Logger log = Logger.getLogger(ChatWindow.class.getName()); 
+
+	private static Configuration conf;
+
+	static Logger log = Logger.getLogger(ChatWindow.class.getName());
 
 	/**
 	 * a window providing a view of messages and an input field + send button.
 	 * 
+	 * @param conf
+	 * 
 	 */
-	public ChatWindow(ServerConnection serverConnection) {
-		
-		log.debug("ChatWindow created");
+	public ChatWindow(ServerConnection serverConnection, Configuration conf) {
+		if (conf.LOGGING) {
+			log.debug("ChatWindow created");
+		}
 
 		serverConnectionRef = serverConnection;
 
@@ -69,7 +75,11 @@ public class ChatWindow extends VBox {
 		Button sendButton = new Button("send");
 		colorSelector = new ColorPicker(Color.BLACK);
 		Button refreshButton = new Button("Refresh");
-		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, colorSelector, refreshButton);
+		HBox textInputContainer = new HBox(SPACING, textInput, sendButton);
+		if (conf.COLOR) {
+			textInputContainer.getChildren().add(colorSelector);
+		}
+		textInputContainer.getChildren().add(refreshButton);
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
@@ -91,13 +101,16 @@ public class ChatWindow extends VBox {
 
 		this.getChildren().addAll(chatPane, textInputContainer, bottomSpacing);// add all the elements of the UI to this
 																				// VBox.
-		
+
 	}
 
 	public void updateMessages(JSONArray messages) {
 		// check if the messages actually changed
 		if (currentMessages != messages) {
-			log.debug("Messages have been updated");
+			if (conf.LOGGING) {
+				log.debug("Messages have been updated");
+			}
+
 			textFlow.getChildren().clear();// remove all the text
 
 			// TODO: add user name to text.
@@ -149,16 +162,18 @@ public class ChatWindow extends VBox {
 	 * @param color the selected color.
 	 */
 	private void send(String text, Color color) {
-		log.debug("The following message:\n" + text + " was sent in the color:\n" + color.toString());
+		if (conf.LOGGING) {
+			log.debug("The following message:\n" + text + " was sent in the color:\n" + color.toString());
+		}
 		serverConnectionRef.sendMessage(text + "\n", color);
 	}
 
-	
 	/**
-	 * function that decrypts the input applying first AES decryption and then reversing the string
+	 * function that decrypts the input applying first AES decryption and then
+	 * reversing the string
 	 * 
-	 * @param s	encrypted string
-	 * @return	decrypted string
+	 * @param s encrypted string
+	 * @return decrypted string
 	 */
 	private String decrypt(String s) {
 		System.out.println(s);
