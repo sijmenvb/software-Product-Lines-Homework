@@ -4,8 +4,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import backend.Communication;
 import DAL.Users;
-import backend.AES;
-import models.User; 
 
 
 // Server code taken from https://www.ashishmyles.com/tutorials/tcpchat/index.html 
