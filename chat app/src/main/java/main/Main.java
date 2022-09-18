@@ -27,7 +27,7 @@ public class Main extends Application {
 
 	@Override
 	public void start(final Stage primaryStage) {
-		ServerConnection serverConnection = new ServerConnection(primaryStage);
+		ServerConnection serverConnection = new ServerConnection(primaryStage,conf);
 
 		primaryStage.setTitle("Hello World!");
 		Authentication root = serverConnection.getAuthentication();
