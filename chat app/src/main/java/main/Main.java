@@ -1,5 +1,6 @@
 package main;
 
+import backend.Configuration;
 import backend.ServerConnection;
 import gui.ChatWindow;
 import gui.Authentication;
@@ -15,10 +16,11 @@ public class Main extends Application {
 
 	private int frameTimeIndex = 0;
 	private boolean arrayFilled = false;
+	private static Configuration conf;
 
 	public static void main(String[] args) {
+		conf = new Configuration(args);
 		launch(args);
-		// AuthenticationScreen();
 	}
 
 	@Override
