@@ -11,7 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import encryption.Interfaces.Encryption;
 
-public class AESEncryption implements Encryption{
+public class AESEncryption implements Encryption {
 	private static SecretKeySpec secretKey;
 	private static byte[] key;
 

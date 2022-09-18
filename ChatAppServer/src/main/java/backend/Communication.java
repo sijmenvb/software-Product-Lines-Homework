@@ -338,10 +338,13 @@ public class Communication {
 		Encryption encryptionClass;
 
 		if (encryptionType.equals(Algorithms.AES.toString())) {
+			log.debug("Encryption: AES.");
 			encryptionClass = new AESEncryption(jsonEncryptionKey);
 		} else {
+			log.debug("Encryption: Reverse string.");
 			encryptionClass = new ReverseStringEncryption();
 		}
+
 		String originalMessage = encryptionClass.decrypt(incomingJson.getString(JSONKeys.ENCRYPTED_MESSAGE.toString()));
 		return originalMessage;
 	}
@@ -359,10 +362,13 @@ public class Communication {
 		Encryption encryptionClass;
 
 		if (encryptionAlg.equals(Algorithms.AES)) {
+			log.debug("Encryption: AES.");
 			encryptionClass = new AESEncryption(jsonEncryptionKey);
 		} else {
+			log.debug("Encryption: Reverse string.");
 			encryptionClass = new ReverseStringEncryption();
 		}
+
 		jsonForConnection.put(JSONKeys.ENCRYPTED_MESSAGE.toString(), encryptionClass.encrypt(message));
 		return jsonForConnection.toString();
 	}

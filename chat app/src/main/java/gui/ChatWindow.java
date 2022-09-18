@@ -39,16 +39,15 @@ public class ChatWindow extends VBox {
 	private ColorPicker colorSelector;
 
 	private JSONArray currentMessages = new JSONArray();
-	
-	static Logger log = Logger.getLogger(ChatWindow.class.getName()); 
+
+	static Logger log = Logger.getLogger(ChatWindow.class.getName());
 
 	/**
 	 * a window providing a view of messages and an input field + send button.
 	 * 
 	 */
 	public ChatWindow(ServerConnection serverConnection) {
-		
-		log.debug("ChatWindow created");
+		log.debug("ChatWindow created.");
 
 		serverConnectionRef = serverConnection;
 
@@ -67,19 +66,18 @@ public class ChatWindow extends VBox {
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
 		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
-		encryptionComboBox.getItems().addAll(
-            Algorithms.AES.toString(),
-            Algorithms.REVERSE.toString()
-        );
+		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
 		encryptionComboBox.setValue(Algorithms.AES.toString());
 		colorSelector = new ColorPicker(Color.BLACK);
 		Button refreshButton = new Button("Refresh");
-		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, encryptionComboBox, colorSelector, refreshButton);
+		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, encryptionComboBox, colorSelector,
+				refreshButton);
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
+				log.debug("Send button pressed.");
 				send(textInput.getText(), colorSelector.getValue(), encryptionComboBox.getValue());
 				textInput.clear();
 			}
@@ -87,6 +85,7 @@ public class ChatWindow extends VBox {
 
 		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
+				log.debug("Refresh button pressed.");
 				serverConnectionRef.updateMessages();
 			}
 		});
@@ -96,13 +95,12 @@ public class ChatWindow extends VBox {
 
 		this.getChildren().addAll(chatPane, textInputContainer, bottomSpacing);// add all the elements of the UI to this
 																				// VBox.
-		
+
 	}
 
 	public void updateMessages(JSONArray messages) {
 		// check if the messages actually changed
 		if (currentMessages != messages) {
-			log.debug("Messages have been updated");
 			textFlow.getChildren().clear();// remove all the text
 
 			// TODO: add user name to text.
@@ -116,6 +114,7 @@ public class ChatWindow extends VBox {
 				}
 			}
 			currentMessages = messages;// update current.
+			log.debug("Messages have been updated.");
 		}
 	}
 
@@ -150,12 +149,12 @@ public class ChatWindow extends VBox {
 	/**
 	 * function that gets run when the button is clicked.
 	 * 
-	 * @param text  the text from the input field
-	 * @param color the selected color.
+	 * @param text       the text from the input field
+	 * @param color      the selected color.
 	 * @param encryption algorithm used.
 	 */
 	private void send(String text, Color color, String encryption) {
-		log.debug("The following message:\n" + text + " was sent in the color:\n" + color.toString());
+		log.info(String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
 		serverConnectionRef.sendMessage(text + "\n", color, Algorithms.fromString(encryption));
 	}
 }
