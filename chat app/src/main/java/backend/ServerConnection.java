@@ -20,12 +20,14 @@ public class ServerConnection {
 	private ChatWindow chatWindow;
 	private Authentication authentication;
 	private String token = "";
+	private static Configuration conf;
 	
 	static Logger log = Logger.getLogger(ChatWindow.class.getName()); 
 
 	private String username = "";
-	public ServerConnection(Stage primaryStage) {
-		this.chatWindow = new ChatWindow(this);
+	public ServerConnection(Stage primaryStage, Configuration conf) {
+		this.conf =conf;
+		this.chatWindow = new ChatWindow(this,conf);
 		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
 	}
 
