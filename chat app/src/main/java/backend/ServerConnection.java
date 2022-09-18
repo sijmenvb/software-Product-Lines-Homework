@@ -21,13 +21,14 @@ public class ServerConnection {
 	private Authentication authentication;
 	private String token = "";
 	private static Configuration conf;
-	
-	static Logger log = Logger.getLogger(ChatWindow.class.getName()); 
+
+	static Logger log = Logger.getLogger(ChatWindow.class.getName());
 
 	private String username = "";
+
 	public ServerConnection(Stage primaryStage, Configuration conf) {
-		this.conf =conf;
-		this.chatWindow = new ChatWindow(this,conf);
+		this.conf = conf;
+		this.chatWindow = new ChatWindow(this, conf);
 		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
 	}
 
@@ -52,11 +53,17 @@ public class ServerConnection {
 		// if authentication was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			token = res.getString(JSONKeys.TOKEN.toString());// update the token
-			log.info("user logged in");
-			this.username = username;//update the user name
+			if (conf.LOGGING) {
+				log.info("user logged in");
+			}
+
+			this.username = username;// update the user name
 			return true;
 		}
-		log.info("failed login attempt");
+		if (conf.LOGGING) {
+			log.info("failed login attempt");
+		}
+
 		return false;
 	}
 
@@ -66,21 +73,24 @@ public class ServerConnection {
 	}
 
 	/**
-	 * function which encrypts a string by reversing it and then applying AES encryption
+	 * function which encrypts a string by reversing it and then applying AES
+	 * encryption
 	 * 
 	 * @param s plaintext string to encrypt
 	 * @return encrypted string
 	 */
 	private String encrypt(String s) {
 		StringBuilder s_reverse = new StringBuilder(s).reverse();
-		
+
 		s = AES.encrypt(s_reverse.toString(), "key");
-		
-;		return s;
+
+		;
+		return s;
 	}
 
 	/**
-	 * sends { "actionType" : "updateMessages", "token" : token, "username" : username}
+	 * sends { "actionType" : "updateMessages", "token" : token, "username" :
+	 * username}
 	 * 
 	 * expects { "resultCode" : "ok", "messages" : array_with_messages} where
 	 * array_with_messages is
@@ -101,7 +111,10 @@ public class ServerConnection {
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
-		log.info("messages updated");
+		if (conf.LOGGING) {
+			log.info("messages updated");
+		}
+
 	}
 
 	/**
@@ -129,7 +142,9 @@ public class ServerConnection {
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
-		log.info("message with text:\n" + text + "\nsend in color:'\n" + color.toString());
+		if (conf.LOGGING) {
+			log.info("message with text:\n" + text + "\nsend in color:'\n" + color.toString());
+		}
 	}
 
 	/**
@@ -157,15 +172,22 @@ public class ServerConnection {
 		} catch (JSONException e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
-			log.debug("JSONParseError occured when trying to send data");
+			if (conf.LOGGING) {
+				log.debug("JSONParseError occured when trying to send data");
+			}
 
 		} catch (Exception e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
-			log.info("an error occured when trying to send data");
+			if (conf.LOGGING) {
+				log.info("an error occured when trying to send data");
+			}
+
+		}
+		if (conf.LOGGING) {
+			log.info("data was successfully sent");
 		}
 
-		log.info("data was successfully sent");
 		return output;
 	}
 

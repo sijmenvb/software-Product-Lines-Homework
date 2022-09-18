@@ -25,15 +25,15 @@ public class Main extends Application {
 
 	public static void main(String[] args) {
 		conf = new Configuration(args);
-		if(conf.DEBUG) {
-			LogManager.getRootLogger().setLevel(Level.DEBUG);//set global debugging level 
-		}				
+		if (conf.DEBUG) {
+			LogManager.getRootLogger().setLevel(Level.DEBUG);// set global debugging level
+		}
 		launch(args);
 	}
 
 	@Override
 	public void start(final Stage primaryStage) {
-		ServerConnection serverConnection = new ServerConnection(primaryStage,conf);
+		ServerConnection serverConnection = new ServerConnection(primaryStage, conf);
 
 		primaryStage.setTitle("Hello World!");
 		Authentication root = serverConnection.getAuthentication();
