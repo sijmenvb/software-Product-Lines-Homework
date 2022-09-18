@@ -13,6 +13,7 @@ local.properties
 .classpath
 log4j/
 target/
+chatapp.db
 
 # External tool builders
 .externalToolBuilders/

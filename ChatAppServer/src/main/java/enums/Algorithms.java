@@ -1,13 +1,13 @@
-package backend;
+package enums;
 
-public enum ResultCodes {
-	Failed("failed"), JSONParseError("jsonParseError"), NotAuthenticated("notAuthenticated"), OK("ok");
+public enum Algorithms {
+	AES("AES"), REVERSE("Reverse");
 
 	// the code below make sit possible to change the name of the ENUM without
 	// having to change the code.
 	private final String label;
 
-	ResultCodes(String s) {
+	Algorithms(String s) {
 		label = s;
 	}
 
