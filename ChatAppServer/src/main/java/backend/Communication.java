@@ -13,14 +13,16 @@ import java.util.LinkedList;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
-import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import backend.AES;
+import enums.JSONKeys;
+import enums.ActionType;
+import enums.Algorithms;
+import enums.ResultCodes;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -29,12 +31,15 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import DAL.Messages;
 import DAL.Users;
-
+import encryption.AESEncryption;
+import encryption.ReverseStringEncryption;
+import encryption.Interfaces.Encryption;
 import models.Message;
 import models.User;
 
 public class Communication {
 	private int portNumber;
+	private final String jsonEncryptionKey = "p:=l,]kHGv'eByu";
 	static Logger log = Logger.getLogger(Communication.class.getName());
 
 	// token source:
@@ -78,7 +83,7 @@ public class Communication {
 						if (login(json)) {
 							sendToken(json.getString(JSONKeys.USERNAME.toString()), socket);
 						} else {
-							sendFailed(socket);
+							sendResultCode(socket, ResultCodes.Failed);
 						}
 						break;
 					case SEND_MESSAGE:
@@ -89,10 +94,10 @@ public class Communication {
 								sendAllMessages(socket);
 							} else {
 								System.out.println("Failed!");
-								sendFailed(socket);
+								sendResultCode(socket, ResultCodes.Failed);
 							}
 						} else {
-							sendNotAuthenticated(socket);// if token not valid
+							sendResultCode(socket, ResultCodes.NotAuthenticated); // if token not valid
 						}
 						break;
 					case UPDATE_MESSAGES:
@@ -100,16 +105,16 @@ public class Communication {
 								json.getString(JSONKeys.USERNAME.toString()))) {
 							sendAllMessages(socket);
 						} else {
-							sendNotAuthenticated(socket);// if token not valid
+							sendResultCode(socket, ResultCodes.NotAuthenticated); // if token not valid
 						}
 
 						break;
 					default:
-						sendFailed(socket);
+						sendResultCode(socket, ResultCodes.Failed);
 						break;
 					}
 				} catch (JSONException e) {
-					sendJSONParseError(socket);
+					sendResultCode(socket, ResultCodes.JSONParseError);
 				}
 				log.debug("Closing all BufferedReader and sockets.");
 				in.close();
@@ -132,8 +137,10 @@ public class Communication {
 	private JSONObject readIncommingMessage(BufferedReader in) {
 		JSONObject output;
 		try {
-			while (!in.ready()) {} // Buffer reader not ready
-			output = new JSONObject(decrypt(in.readLine())); // Read one line and output it
+			while (!in.ready()) {
+			} // Buffer reader not ready
+			String messageIn = in.readLine();
+			output = new JSONObject(decrypt(messageIn)); // Read one line and output it
 			log.debug("Incoming message read and processed.");
 			return output;
 
@@ -230,7 +237,7 @@ public class Communication {
 		try {
 			log.debug("Sending all the messages to the user.");
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			out.print(output.toString());
+			out.print(encrypt(output.toString(), Algorithms.AES));
 
 			out.close();
 			log.debug("All the messages sent to the client.");
@@ -254,8 +261,9 @@ public class Communication {
 			JWTVerifier verifier = JWT.require(algorithm).withIssuer("Simple Solution").build();
 
 			DecodedJWT decodedJWT = verifier.verify(token);
-			//TODO: figure oput how to get this as a propper string and not one with extra quotes.
-			return decodedJWT.getClaims().get(JSONKeys.USERNAME.toString()).toString().equals("\""+username+ "\"");
+			// TODO: figure oput how to get this as a propper string and not one with extra
+			// quotes.
+			return decodedJWT.getClaims().get(JSONKeys.USERNAME.toString()).toString().equals("\"" + username + "\"");
 		} catch (JWTVerificationException ex) {
 			return false;
 		}
@@ -286,7 +294,7 @@ public class Communication {
 			message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
 
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			out.print(message.toString());
+			out.print(encrypt(message.toString(), Algorithms.AES));
 
 			out.close();
 			log.debug(String.format("Token '%s' sent to the client.", token));
@@ -296,95 +304,72 @@ public class Communication {
 	}
 
 	/**
-	 * Sends success message to the client.
+	 * Sends result code message to the client.
 	 * 
 	 * @param server socket server to send the data to
+	 * @param result code
 	 */
-	private void sendSuccess(Socket socket) {
-		try {
-			log.debug("Sending OK response to the client.");
-			JSONObject message = new JSONObject();
-			message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
-
-			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			out.print(message.toString());
-
-			out.close();
-			log.debug("OK response sent to the client.");
-		} catch (Exception e) {
-			log.error(String.format("Sending OK response failed. %s", ExceptionUtils.getStackTrace(e)));
-		}
-	}
-
-	/**
-	 * Sends JSONParseError message to the client.
-	 * 
-	 * @param server socket server to send the data to
-	 */
-	private void sendJSONParseError(Socket socket) {
+	private void sendResultCode(Socket socket, ResultCodes code) {
 		try {
 			log.debug("Sending JSONParseError response to the client.");
 			JSONObject message = new JSONObject();
-			message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
+			message.put(JSONKeys.RESULT_CODE.toString(), code.toString());
 
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			out.print(message.toString());
+			out.print(encrypt(message.toString(), Algorithms.AES));
 			out.close();
-			log.debug("JSONParseError response sent to the client.");
+			log.debug(String.format("%s response sent to the client.", code.toString()));
 		} catch (Exception e) {
-			log.error(String.format("Sending JSONParseError response failed. %s", ExceptionUtils.getStackTrace(e)));
+			log.error(
+					String.format("Sending %s response failed. %s", code.toString(), ExceptionUtils.getStackTrace(e)));
 		}
 	}
 
 	/**
-	 * Sends "failed" message to the client.
+	 * function that decrypts the input applying the decryption algorithm specified
+	 * in json
 	 * 
-	 * @param server socket server to send the data to
+	 * @param encryptedMessage encrypted string
+	 * @return decrypted string
 	 */
-	private void sendFailed(Socket socket) {
-		try {
-			log.debug("Sending Failed response to the client.");
-			JSONObject message = new JSONObject();
-			message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
+	private String decrypt(String encryptedMessage) {
+		JSONObject incomingJson = new JSONObject(encryptedMessage);
+		String encryptionType = incomingJson.getString(JSONKeys.ENCRYPTION.toString());
+		Encryption encryptionClass;
 
-			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			out.print(message.toString());
-			out.close();
-			log.debug("Failed response sent to the client.");
-		} catch (Exception e) {
-			log.error(String.format("Sending Failed response failed. %s", ExceptionUtils.getStackTrace(e)));
+		if (encryptionType.equals(Algorithms.AES.toString())) {
+			log.debug("Encryption: AES.");
+			encryptionClass = new AESEncryption(jsonEncryptionKey);
+		} else {  // encryption is string reverse
+			log.debug("Encryption: Reverse string.");
+			encryptionClass = new ReverseStringEncryption();
 		}
+
+		String originalMessage = encryptionClass.decrypt(incomingJson.getString(JSONKeys.ENCRYPTED_MESSAGE.toString()));
+		return originalMessage;
 	}
 
 	/**
-	 * Sends "notAuthenticated" message to the client.
+	 * function that encrypts the input applying the encryption algorithm specified
+	 * by parameter
 	 * 
-	 * @param server socket server to send the data to
+	 * @param message string to be encrypted
+	 * @return encrypted string
 	 */
-	private void sendNotAuthenticated(Socket socket) {
-		JSONObject message = new JSONObject();
-		message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.NotAuthenticated.toString());
-		try {
-			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			out.print(message.toString());
-			out.close();
-		} catch (Exception e) {
-			System.out.println("Sending Failed response failed.");
+	private String encrypt(String message, Algorithms encryptionAlg) {
+		JSONObject jsonForConnection = new JSONObject();
+		jsonForConnection.put(JSONKeys.ENCRYPTION.toString(), encryptionAlg.toString());
+		Encryption encryptionClass;
+
+		if (encryptionAlg.equals(Algorithms.AES)) {
+			log.debug("Encryption: AES.");
+			encryptionClass = new AESEncryption(jsonEncryptionKey);
+		} else { // encryption is string reverse
+			log.debug("Encryption: Reverse string.");
+			encryptionClass = new ReverseStringEncryption();
 		}
 
+		jsonForConnection.put(JSONKeys.ENCRYPTED_MESSAGE.toString(), encryptionClass.encrypt(message));
+		return jsonForConnection.toString();
 	}
-	
-	
-	/**
-	 * function that decrypts the input applying first AES decryption and then reversing the string
-	 * 
-	 * @param s	encrypted string
-	 * @return	decrypted string
-	 */
-	private String decrypt(String s) {
-		StringBuilder s_reverse = new StringBuilder(AES.decrypt(s, "key"));
-		s = s_reverse.reverse().toString();
-		return s;
-	}
-
 }

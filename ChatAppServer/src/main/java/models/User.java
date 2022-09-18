@@ -4,12 +4,12 @@ public class User {
 	private int id;
 	private String username;
 	private String password;
-	
+
 	public User(String username, String password) {
 		this.setUsername(username);
 		this.setPassword(password);
 	}
-	
+
 	public User(int id, String username, String password) {
 		this.setId(id);
 		this.setUsername(username);
