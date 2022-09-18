@@ -36,13 +36,25 @@ public class ServerConnection {
 	private String password = "";
 	private final String jsonEncryptionKey = "p:=l,]kHGv'eByu";
 
-
-
 	public ServerConnection(Stage primaryStage) {
 		this.chatWindow = new ChatWindow(this);
 		this.chatBackEnd = new ChatBackEnd(this);
 		this.chatBackEnd.addPropertyChangeListener(chatWindow);
 		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
+	}
+
+	public boolean firstAuthentication(String username, String password) {
+		this.username = username;// update the user name
+		this.password = hash(password);// update the password
+
+		if (Authenticate(username, this.password)) {
+			if (!this.chatBackEnd.isAlive()) {// make sure the thread is not already started
+				this.chatBackEnd.setDaemon(true);// close thread when program closes.
+				this.chatBackEnd.start();// start listening in on the server for messages
+			}
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -54,62 +66,27 @@ public class ServerConnection {
 	 * will save the new token for further communication. returns true if
 	 * authenticated, false otherwise.
 	 */
-	public boolean Authenticate(String username, String password) {
+	public boolean Authenticate(String username, String hashedPassword) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.AUTHENTICATION.toString());
 		message.put(JSONKeys.USERNAME.toString(), username);
-		message.put(JSONKeys.PASSWORD.toString(), hash(password));
+		message.put(JSONKeys.PASSWORD.toString(), hashedPassword);
 
 		log.debug(String.format("User '%s' is trying to log in. Response from the server received.", username));
 		JSONObject res = sendData(encrypt(message.toString(), Algorithms.AES));
 
 		try {
-			if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {// if authentication was successful
+			if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {// if authentication
+																									// was successful
 				token = res.getString(JSONKeys.TOKEN.toString());// update the token
 				log.info(String.format("User '%s' logged in.", username));
-				this.username = username;// update the user name
-				this.password = hash(password);// update the password
-
-				if (!this.chatBackEnd.isAlive()) {// make sure the thread is not already started
-					this.chatBackEnd.setDaemon(true);// close thread when program closes.
-					this.chatBackEnd.start();// start listening in on the server for messages
-				}
 				return true;
 			}
-		}
 		} catch (JSONException e) {
 			log.error(String.format("JSONException occured. %s", ExceptionUtils.getStackTrace(e)));
 		}
 
-
 		log.error("Failed login attempt.");
-		return false;
-	}
-
-	/**
-	 * sends { "actionType" : "authentication", "username" : username, "password" :
-	 * password}
-	 * 
-	 * expects { "resultCode" : "ok", "token" : new token}
-	 * 
-	 * returns true if authenticated, false otherwise.
-	 */
-	public boolean Reauthenticate() {
-		JSONObject message = new JSONObject();
-		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.AUTHENTICATION.toString());
-		message.put(JSONKeys.USERNAME.toString(), this.username);
-		message.put(JSONKeys.PASSWORD.toString(), hash(this.password));
-
-		JSONObject res = sendData(encrypt(message.toString()));
-
-		// if authentication was successful
-		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
-			token = res.getString(JSONKeys.TOKEN.toString());// update the token
-			log.info("user reauthenticated");
-
-			return true;
-		}
-		log.info("reauthentication failed");
 		return false;
 	}
 
@@ -145,9 +122,7 @@ public class ServerConnection {
 		}
 		// try to reauthenticate when server returns NotAuthenticated ResultCode
 		else if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.NotAuthenticated.toString())) {
-			Reauthenticate();
-			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
-			log.info("Messages updated.");
+			Authenticate(this.username, this.password);
 		} else {
 			log.error(String.format("Something went wrong with messages update. Response code: %s.",
 					res.getString(JSONKeys.RESULT_CODE.toString())));
@@ -253,7 +228,7 @@ public class ServerConnection {
 		if (encryptionType.equals(Algorithms.AES.toString())) {
 			log.debug("Encryption: AES.");
 			encryptionClass = new AESEncryption(jsonEncryptionKey);
-		} else {  // encryption is string reverse
+		} else { // encryption is string reverse
 			log.debug("Encryption: Reverse string.");
 			encryptionClass = new ReverseStringEncryption();
 		}
@@ -270,7 +245,7 @@ public class ServerConnection {
 		if (encryptionAlg.equals(Algorithms.AES)) {
 			log.debug("Encryption: AES.");
 			encryptionClass = new AESEncryption(jsonEncryptionKey);
-		} else {  // encryption is string reverse
+		} else { // encryption is string reverse
 			log.debug("Encryption: Reverse string.");
 			encryptionClass = new ReverseStringEncryption();
 		}

@@ -174,7 +174,6 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		System.out.println("listening on property");
 		updateMessages((JSONArray) evt.getNewValue());		
 	}
 

@@ -34,7 +34,6 @@ public class ChatBackEnd extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("this is the back-end thread");
 		}
 	}
 

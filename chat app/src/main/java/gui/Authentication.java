@@ -72,7 +72,7 @@ public class Authentication extends VBox {
 
 	// verify the credentials entered by the user
 	public void verifyCredentials(String inputUsername, String inputPassword) {
-		if (serverConnectionRef.Authenticate(inputUsername, inputPassword)) {
+		if (serverConnectionRef.firstAuthentication(inputUsername, inputPassword)) {
 			primaryStage.setScene(nextScene);
 			// populate the chatBox
 			serverConnectionRef.updateMessages();
