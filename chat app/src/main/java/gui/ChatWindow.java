@@ -1,18 +1,17 @@
 package gui;
 
-import java.util.Iterator;
-
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import backend.AES;
-import backend.JSONKeys;
 import backend.ServerConnection;
+import enums.Algorithms;
+import enums.JSONKeys;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
@@ -67,15 +66,21 @@ public class ChatWindow extends VBox {
 		// create message input, send button and color selector and refresh button.
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
+		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
+		encryptionComboBox.getItems().addAll(
+            Algorithms.AES.toString(),
+            Algorithms.REVERSE.toString()
+        );
+		encryptionComboBox.setValue(Algorithms.AES.toString());
 		colorSelector = new ColorPicker(Color.BLACK);
 		Button refreshButton = new Button("Refresh");
-		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, colorSelector, refreshButton);
+		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, encryptionComboBox, colorSelector, refreshButton);
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				send(textInput.getText(), colorSelector.getValue());
+				send(textInput.getText(), colorSelector.getValue(), encryptionComboBox.getValue());
 				textInput.clear();
 			}
 		});
@@ -147,24 +152,10 @@ public class ChatWindow extends VBox {
 	 * 
 	 * @param text  the text from the input field
 	 * @param color the selected color.
+	 * @param encryption algorithm used.
 	 */
-	private void send(String text, Color color) {
+	private void send(String text, Color color, String encryption) {
 		log.debug("The following message:\n" + text + " was sent in the color:\n" + color.toString());
-		serverConnectionRef.sendMessage(text + "\n", color);
-	}
-
-	
-	/**
-	 * function that decrypts the input applying first AES decryption and then reversing the string
-	 * 
-	 * @param s	encrypted string
-	 * @return	decrypted string
-	 */
-	private String decrypt(String s) {
-		System.out.println(s);
-		StringBuilder s_reverse = new StringBuilder(AES.decrypt(s, "key"));
-		s = s_reverse.reverse().toString();
-		System.out.println(s);
-		return s;
+		serverConnectionRef.sendMessage(text + "\n", color, Algorithms.fromString(encryption));
 	}
 }

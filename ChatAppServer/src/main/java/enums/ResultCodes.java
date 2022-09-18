@@ -1,13 +1,13 @@
-package backend;
+package enums;
 
-public enum ActionType {
-	AUTHENTICATION("authentication"), SEND_MESSAGE("sendMessage"), UPDATE_MESSAGES("updateMessages");
+public enum ResultCodes {
+	Failed("failed"), JSONParseError("jsonParseError"), NotAuthenticated("notAuthenticated"), OK("ok");
 
 	// the code below make sit possible to change the name of the ENUM without
 	// having to change the code.
 	private final String label;
 
-	ActionType(String s) {
+	ResultCodes(String s) {
 		label = s;
 	}
 
