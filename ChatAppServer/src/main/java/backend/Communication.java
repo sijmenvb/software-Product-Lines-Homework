@@ -340,7 +340,7 @@ public class Communication {
 		if (encryptionType.equals(Algorithms.AES.toString())) {
 			log.debug("Encryption: AES.");
 			encryptionClass = new AESEncryption(jsonEncryptionKey);
-		} else {
+		} else {  // encryption is string reverse
 			log.debug("Encryption: Reverse string.");
 			encryptionClass = new ReverseStringEncryption();
 		}
@@ -364,7 +364,7 @@ public class Communication {
 		if (encryptionAlg.equals(Algorithms.AES)) {
 			log.debug("Encryption: AES.");
 			encryptionClass = new AESEncryption(jsonEncryptionKey);
-		} else {
+		} else { // encryption is string reverse
 			log.debug("Encryption: Reverse string.");
 			encryptionClass = new ReverseStringEncryption();
 		}
