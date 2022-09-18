@@ -1,0 +1,19 @@
+we decided to make a config class that stores the variables and processes the arguments input.
+
+We have three optional arguments:
+	-disablecolor
+	-debug
+	-nolog
+
+disablecolor removes the color selector.
+
+debug increases the level of debug information.
+
+nolog disables all logging.
+
+these are all optional.
+
+
+the user can give these as runtime parameters.
+
+logging in, sending and receiving messages are not toggelable since we considered them essential to the functionallity of the program.

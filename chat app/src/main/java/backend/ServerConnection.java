@@ -20,7 +20,7 @@ public class ServerConnection {
 	private ChatWindow chatWindow;
 	private Authentication authentication;
 	private String token = "";
-	private static Configuration conf;
+	private Configuration conf;
 
 	static Logger log = Logger.getLogger(ChatWindow.class.getName());
 
