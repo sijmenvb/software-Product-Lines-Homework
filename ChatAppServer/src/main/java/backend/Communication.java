@@ -132,7 +132,8 @@ public class Communication {
 	private JSONObject readIncommingMessage(BufferedReader in) {
 		JSONObject output;
 		try {
-			while (!in.ready()) {} // Buffer reader not ready
+			while (!in.ready()) {
+			} // Buffer reader not ready
 			output = new JSONObject(decrypt(in.readLine())); // Read one line and output it
 			log.debug("Incoming message read and processed.");
 			return output;
@@ -254,8 +255,9 @@ public class Communication {
 			JWTVerifier verifier = JWT.require(algorithm).withIssuer("Simple Solution").build();
 
 			DecodedJWT decodedJWT = verifier.verify(token);
-			//TODO: figure oput how to get this as a propper string and not one with extra quotes.
-			return decodedJWT.getClaims().get(JSONKeys.USERNAME.toString()).toString().equals("\""+username+ "\"");
+			// TODO: figure oput how to get this as a propper string and not one with extra
+			// quotes.
+			return decodedJWT.getClaims().get(JSONKeys.USERNAME.toString()).toString().equals("\"" + username + "\"");
 		} catch (JWTVerificationException ex) {
 			return false;
 		}
@@ -373,13 +375,13 @@ public class Communication {
 		}
 
 	}
-	
-	
+
 	/**
-	 * function that decrypts the input applying first AES decryption and then reversing the string
+	 * function that decrypts the input applying first AES decryption and then
+	 * reversing the string
 	 * 
-	 * @param s	encrypted string
-	 * @return	decrypted string
+	 * @param s encrypted string
+	 * @return decrypted string
 	 */
 	private String decrypt(String s) {
 		StringBuilder s_reverse = new StringBuilder(AES.decrypt(s, "key"));
