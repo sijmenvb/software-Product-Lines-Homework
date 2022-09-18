@@ -22,6 +22,9 @@ public  class Configuration {
 			case "-nolog":
 				LOGGING = false;
 				break;
+			default:
+				System.err.println(args[i]+ " is not a recognised argument!");
+				break;
 			}
 		}
 	}
