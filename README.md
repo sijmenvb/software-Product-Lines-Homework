@@ -19,7 +19,7 @@ admin
 ## Strategy pattern for encryption
 
 Our code includes two encryption method: AES and string reversing. 
-The encryption method is chosen by the user before message is sent to the server. The default option is AES, but used can select reversing the string as encryption method.
+The encryption method is chosen by the user before message is sent to the server. The default option is AES, but the user can select reversing the string as encryption method.
 
 We created two separate classes for each of the encryption method. Each of them implements the _Encryption_ interface with two functions: _encrypt_ and _decrypt_. 
 These functions do a corresponding work: encrypt of decrypt the message. Each algorithm's implementation differs, but they do the same exact actions. Thus, the strategy pattern was selected for this functionality.
@@ -49,3 +49,5 @@ We decided upon using the observer pattern to increase the seperation between th
 This process works as follows: The ChatBackEnd thread loops indefinately and requests the messages from the server every time period through the ServerConnection. The ServerConnection retrieves these messages and delivers them. If there has been an update the observer is notified. The ChatWindow will then recieve these messages through a PropertyChangeEvent and update its frontend accordingly.
 
 The advantages of using this pattern is that the frontend can spend all its resources on the rendering of the application. There is also an increased level of modularity, the frontend could be swapped out for any observer class or multiple if needed. The ChatBackEnd could for example act as an acces point to the server in a group chat, whenever a new message is recieved all of the participants can be notified.
+
+There is no feature selection from the user perspective for this pattern, since it acts as crucial part of the program.
