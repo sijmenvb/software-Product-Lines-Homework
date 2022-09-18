@@ -28,7 +28,7 @@ public class Main extends Application {
 		if(conf.DEBUG) {
 			LogManager.getRootLogger().setLevel(Level.DEBUG);//set global debugging level 
 		}				
-		launch(args);6
+		launch(args);
 	}
 
 	@Override
