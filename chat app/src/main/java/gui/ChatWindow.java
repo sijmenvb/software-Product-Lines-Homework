@@ -42,7 +42,7 @@ public class ChatWindow extends VBox {
 
 	private JSONArray currentMessages = new JSONArray();
 
-	private static Configuration conf;
+	private Configuration conf;
 
 	static Logger log = Logger.getLogger(ChatWindow.class.getName());
 
@@ -53,6 +53,8 @@ public class ChatWindow extends VBox {
 	 * 
 	 */
 	public ChatWindow(ServerConnection serverConnection, Configuration conf) {
+		this.conf = conf;
+		
 		if (conf.LOGGING) {
 			log.debug("ChatWindow created");
 		}
