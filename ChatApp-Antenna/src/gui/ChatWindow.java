@@ -2,9 +2,9 @@ package gui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Iterator;
-
+//#if Logging
 import org.apache.log4j.Logger;
+//#endif
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -49,14 +49,18 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 	private JSONArray currentMessages = new JSONArray();
 
+	//#if Logging
 	static Logger log = Logger.getLogger(ChatWindow.class.getName());
+	//#endif
 
 	/**
 	 * a window providing a view of messages and an input field + send button.
 	 * 
 	 */
 	public ChatWindow(ServerConnection serverConnection) {
+		//#if Logging
 		log.debug("ChatWindow created.");
+		//#endif
 
 		serverConnectionRef = serverConnection;
 
@@ -93,7 +97,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		// text input.
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
+				//#if Logging
 				log.debug("Send button pressed.");
+				//#endif
 				//#if Color
 				send(textInput.getText(), colorSelector.getValue(), encryptionComboBox.getValue());
 				//#else
@@ -105,7 +111,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
+				//#if Logging
 				log.debug("Refresh button pressed.");
+				//#endif
 				serverConnectionRef.updateMessages();
 			}
 		});
@@ -183,7 +191,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	 * @param encryption algorithm used.
 	 */
 	private void send(String text, Color color, String encryption) {
+		//#if Logging
 		log.info(String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
+		//#endif
 		serverConnectionRef.sendMessage(text + "\n", color, Algorithms.fromString(encryption));
 	}
 
