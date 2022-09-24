@@ -1,16 +1,8 @@
 package backend;
 
-import java.util.List;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
-
 import org.json.JSONArray;
-import org.json.JSONObject;
-
-import gui.ChatWindow;
-import javafx.application.Platform;
-import javafx.scene.paint.Color;
 
 public class ChatBackEnd extends Thread {
 
