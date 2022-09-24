@@ -16,7 +16,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;	
 //#if Color
-//@import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ColorPicker;
 //#endif
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
@@ -44,7 +44,7 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 	private TextFlow textFlow;// special box to combine and display formatted (e.g. colored) text.
 	//#if Color
-//@	private ColorPicker colorSelector;
+	private ColorPicker colorSelector;
 	//#endif
 
 	private JSONArray currentMessages = new JSONArray();
@@ -78,15 +78,15 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
 		encryptionComboBox.setValue(Algorithms.AES.toString());
 		//#if Color
-//@		colorSelector = new ColorPicker(Color.BLACK);
+		colorSelector = new ColorPicker(Color.BLACK);
 		//#endif
 		Button refreshButton = new Button("Refresh");
 
 		//#if Color
-//@		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, encryptionComboBox, colorSelector,
-//@				refreshButton);
+		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, encryptionComboBox, colorSelector,
+				refreshButton);
 		//#else
-		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, encryptionComboBox, refreshButton);
+//@		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, encryptionComboBox, refreshButton);
 		//#endif
 
 		// make send button run the send function with the provided text and clear the
@@ -95,9 +95,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 			public void handle(ActionEvent arg0) {
 				log.debug("Send button pressed.");
 				//#if Color
-//@				send(textInput.getText(), colorSelector.getValue(), encryptionComboBox.getValue());
+				send(textInput.getText(), colorSelector.getValue(), encryptionComboBox.getValue());
 				//#else
-				send(textInput.getText(), Color.BLACK, encryptionComboBox.getValue());
+//@				send(textInput.getText(), Color.BLACK, encryptionComboBox.getValue());
 				//#endif
 				textInput.clear();
 			}

@@ -11,8 +11,10 @@
 	</properties>
 	<struct>
 		<and abstract="true" mandatory="true" name="ChatAppAntenna">
-			<feature name="Base"/>
+			<feature name="Authentication"/>
 			<feature name="Color"/>
+			<feature name="Encryption"/>
+			<feature name="Logging"/>
 		</and>
 	</struct>
 </featureModel>
