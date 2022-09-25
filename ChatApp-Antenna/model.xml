@@ -15,6 +15,7 @@
 			<feature name="Color"/>
 			<feature name="Encryption"/>
 			<feature name="Logging"/>
+			<feature name="CLI"/>
 		</and>
 	</struct>
 </featureModel>
