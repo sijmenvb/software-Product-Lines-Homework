@@ -42,7 +42,9 @@ public class ServerConnection
 	static final int portNumber = 42069;
 	// #if !CLI
 	private ChatWindow chatWindow;
-	private Authentication authentication;
+	// #if Authentication
+//@	private Authentication authentication;
+	// #endif
 	// #endif
 	private ChatBackEnd chatBackEnd;
 	private String token = "";
@@ -92,7 +94,9 @@ public class ServerConnection
 		this.chatWindow = new ChatWindow(this);
 		this.chatBackEnd = new ChatBackEnd(this);
 		this.chatBackEnd.addPropertyChangeListener(chatWindow);
-		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
+		// #if Authentication
+//@		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
+		// #endif
 	}
 	// #endif
 
@@ -302,9 +306,11 @@ public class ServerConnection
 			return chatWindow;
 	}
 
-	public Authentication getAuthentication() {
-		return authentication;
-	}
+	// #if Authentication
+//@	public Authentication getAuthentication() {
+//@		return authentication;
+//@	}
+	// #endif
 	// #endif
 
 	/**
