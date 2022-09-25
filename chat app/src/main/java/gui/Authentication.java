@@ -1,6 +1,9 @@
 package gui;
 
 import javafx.scene.control.PasswordField;
+
+import org.apache.log4j.Logger;
+
 import backend.ServerConnection;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,8 +29,11 @@ public class Authentication extends VBox {
 	private Stage primaryStage;
 	private Scene nextScene;
 
+	static Logger log = Logger.getLogger(Authentication.class.getName());
+
 	// calling constructor
 	public Authentication(Stage primaryStage, Scene nextScene, ServerConnection serverConnection) {
+		log.debug("Authentication window created.");
 		serverConnectionRef = serverConnection;
 		// set the next page
 		this.primaryStage = primaryStage;
@@ -66,14 +72,16 @@ public class Authentication extends VBox {
 
 	// verify the credentials entered by the user
 	public void verifyCredentials(String inputUsername, String inputPassword) {
-		if (serverConnectionRef.Authenticate(inputUsername, inputPassword)) {
+		if (serverConnectionRef.firstAuthentication(inputUsername, inputPassword)) {
 			primaryStage.setScene(nextScene);
 			// populate the chatBox
 			serverConnectionRef.updateMessages();
+			log.debug("Credentials of the user successfully verified.");
 			return;
 		}
 		feedbackLabel.setText(String.format("(%d) username/password invalid", loginAttempts));
 		loginAttempts++;
+		log.debug("Failed credentials verification attempt.");
 
 	}
 

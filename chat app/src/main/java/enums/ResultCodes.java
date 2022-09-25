@@ -1,4 +1,4 @@
-package backend;
+package enums;
 
 public enum ResultCodes {
 	Failed("failed"), JSONParseError("jsonParseError"), NotAuthenticated("notAuthenticated"), OK("ok");

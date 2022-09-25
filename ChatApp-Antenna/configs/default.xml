@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+	<feature automatic="selected" name="ChatAppAntenna"/>
+	<feature name="Authentication"/>
+	<feature manual="selected" name="Color"/>
+	<feature name="Encryption"/>
+	<feature name="Logging"/>
+	<feature manual="selected" name="CLI"/>
+</configuration>
