@@ -79,20 +79,25 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		// create message input, send button and color selector and refresh button.
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
-		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
-		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
-		encryptionComboBox.setValue(Algorithms.AES.toString());
+		//#if Encryption
+//@		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
+//@		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
+//@		encryptionComboBox.setValue(Algorithms.AES.toString());
+		//#endif
 		//#if Color
 		colorSelector = new ColorPicker(Color.BLACK);
 		//#endif
 		Button refreshButton = new Button("Refresh");
 
-		//#if Color
-		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, encryptionComboBox, colorSelector,
-				refreshButton);
-		//#else
-//@		HBox textInputContainer = new HBox(SPACING, textInput, sendButton, encryptionComboBox, refreshButton);
-		//#endif
+		HBox textInputContainer = new HBox(SPACING, textInput, sendButton
+				//#if Color
+				, colorSelector
+				//#endif
+				//#if Encryption
+//@				, encryptionComboBox
+				//#endif
+				, refreshButton);
+
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
@@ -101,11 +106,19 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 				//#if Logging
 //@				log.debug("Send button pressed.");
 				//#endif
-				//#if Color
-				send(textInput.getText(), colorSelector.getValue(), encryptionComboBox.getValue());
-				//#else
-//@				send(textInput.getText(), Color.BLACK, encryptionComboBox.getValue());
-				//#endif
+				
+				send(textInput.getText()
+						//#if Color
+						, colorSelector.getValue()
+						//#else
+//@						, Color.BLACK
+						//#endif
+						//#if Encryption
+//@						, encryptionComboBox.getValue()
+						//#else
+						, Algorithms.None.toString()
+						//#endif
+						);
 				textInput.clear();
 			}
 		});
