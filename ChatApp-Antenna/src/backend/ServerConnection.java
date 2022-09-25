@@ -62,11 +62,15 @@ public class ServerConnection
 //@		this.chatBackEnd = new ChatBackEnd(this);
 //@		this.chatBackEnd.addPropertyChangeListener(this);
 //@		Scanner consoleInput = new Scanner(System.in);
+		// #if Authentication
 //@		System.out.println("username:");
 //@		String username = consoleInput.nextLine();
 //@		System.out.println("password:");
 //@		String password = consoleInput.nextLine();
 //@		firstAuthentication(username, password);
+		// #else
+//@		firstAuthentication("admin", "admin");
+		// #endif
 //@		updateMessages();
 //@
 //@		
