@@ -5,4 +5,5 @@
 	<feature manual="selected" name="Color"/>
 	<feature name="Encryption"/>
 	<feature name="Logging"/>
+	<feature name="CLI"/>
 </configuration>

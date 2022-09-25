@@ -1,13 +1,19 @@
 package main;
 
 import backend.ServerConnection;
+//#if !CLI
 import gui.Authentication;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+//#endif
 
-public class Main extends Application {
+public class Main
+//#if !CLI
+		extends Application
+//#endif
+{
 
 	private final long[] frameTimes = new long[100];
 
@@ -15,7 +21,12 @@ public class Main extends Application {
 	private boolean arrayFilled = false;
 
 	public static void main(String[] args) {
+		// #if CLI
+//@		ServerConnection serverConnection = new ServerConnection();
+//@	}
+	// #else
 		launch(args);
+		
 		// AuthenticationScreen();
 	}
 
@@ -51,5 +62,5 @@ public class Main extends Application {
 
 		frameRateMeter.start();
 	}
-
+	// #endif
 }
