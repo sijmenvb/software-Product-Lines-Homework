@@ -3,6 +3,7 @@ package main;
 import backend.ServerConnection;
 //#if !CLI
 import gui.Authentication;
+import gui.ChatWindow;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -35,7 +36,12 @@ public class Main
 		ServerConnection serverConnection = new ServerConnection(primaryStage);
 
 		primaryStage.setTitle("Hello World!");
-		Authentication root = serverConnection.getAuthentication();
+		// #if Authentication
+//@		Authentication root = serverConnection.getAuthentication();
+		// #else
+		serverConnection.firstAuthentication("admin", "admin");
+		ChatWindow root = serverConnection.getChatWindow();
+		// #endif
 		primaryStage.setScene(new Scene(root, 1280, 720));
 		primaryStage.show();
 

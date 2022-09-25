@@ -1,7 +1,7 @@
 package enums;
 
 public enum Algorithms {
-	AES("AES"), REVERSE("Reverse string");
+	AES("AES"), REVERSE("Reverse string"), None("No encryption");
 
 	// the code below make sit possible to change the name of the ENUM without
 	// having to change the code.
