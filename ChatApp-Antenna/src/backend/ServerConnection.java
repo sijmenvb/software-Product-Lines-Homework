@@ -27,22 +27,22 @@ import enums.ResultCodes;
 import javafx.scene.paint.Color;
 
 //#if !CLI
-//@import gui.Authentication;
-//@import gui.ChatWindow;
-//@import javafx.scene.Scene;
-//@import javafx.scene.paint.Color;
-//@import javafx.stage.Stage;
+import gui.Authentication;
+import gui.ChatWindow;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 //#endif
 
 public class ServerConnection
 //#if CLI
-		implements PropertyChangeListener
+//@		implements PropertyChangeListener
 //#endif
 {
 	static final int portNumber = 42069;
 	// #if !CLI
-//@	private ChatWindow chatWindow;
-//@	private Authentication authentication;
+	private ChatWindow chatWindow;
+	private Authentication authentication;
 	// #endif
 	private ChatBackEnd chatBackEnd;
 	private String token = "";
@@ -56,43 +56,44 @@ public class ServerConnection
 	private final String jsonEncryptionKey = "p:=l,]kHGv'eByu";
 
 	// #if CLI
-	public ServerConnection() {
-		this.chatBackEnd = new ChatBackEnd(this);
-		Scanner consoleInput = new Scanner(System.in);
-		System.out.println("username:");
-		String username = consoleInput.nextLine();
-		System.out.println("password:");
-		String password = consoleInput.nextLine();
-		firstAuthentication(username, password);
-		updateMessages();
-
-		System.out.println("type anything to quit");
-		consoleInput.nextLine();
-	}
-	
-	//TODO: make the update actually work!
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		System.out.println("event name:"+evt.getPropertyName());
-		refreshUI((JSONArray) evt.getNewValue());
-	}
-
-	private void refreshUI(JSONArray messages) {
-		System.out.println("\n\n\n\n\n\n");//clear the console
-		for (Object object : messages) {
-			if (object instanceof JSONObject) {
-				JSONObject textObject = (JSONObject) object;// cast to jsonObject
-				System.out.print(textObject.getString(JSONKeys.TEXT.toString()));
-			}
-		}
-	}
-	// #else
-//@	public ServerConnection(Stage primaryStage) {
-//@		this.chatWindow = new ChatWindow(this);
+//@	public ServerConnection() {
 //@		this.chatBackEnd = new ChatBackEnd(this);
-//@		this.chatBackEnd.addPropertyChangeListener(chatWindow);
-//@		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
+//@		this.chatBackEnd.addPropertyChangeListener(this);
+//@		Scanner consoleInput = new Scanner(System.in);
+//@		System.out.println("username:");
+//@		String username = consoleInput.nextLine();
+//@		System.out.println("password:");
+//@		String password = consoleInput.nextLine();
+//@		firstAuthentication(username, password);
+//@		updateMessages();
+//@
+//@		
+//@		consoleInput.nextLine();
 //@	}
+//@	
+//@	//TODO: make the update actually work!
+//@	@Override
+//@	public void propertyChange(PropertyChangeEvent evt) {
+//@		System.out.println("event name:"+evt.getPropertyName());
+//@		refreshUI((JSONArray) evt.getNewValue());
+//@	}
+//@
+//@	private void refreshUI(JSONArray messages) {
+//@		System.out.println("\n\n\n\n\n\n");//clear the console
+//@		for (Object object : messages) {
+//@			if (object instanceof JSONObject) {
+//@				JSONObject textObject = (JSONObject) object;// cast to jsonObject
+//@				System.out.print(textObject.getString(JSONKeys.TEXT.toString()));
+//@			}
+//@		}
+//@	}
+	// #else
+	public ServerConnection(Stage primaryStage) {
+		this.chatWindow = new ChatWindow(this);
+		this.chatBackEnd = new ChatBackEnd(this);
+		this.chatBackEnd.addPropertyChangeListener(chatWindow);
+		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
+	}
 	// #endif
 
 	public boolean firstAuthentication(String username, String password) {
@@ -183,7 +184,7 @@ public class ServerConnection
 //@			log.debug("Messages have been updated");
 			// #endif
 			
-			refreshUI(res.getJSONArray(JSONKeys.MESSAGES.toString()));
+			//refreshUI(res.getJSONArray(JSONKeys.MESSAGES.toString()));
 			chatBackEnd.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
 		// try to reauthenticate when server returns NotAuthenticated ResultCode
@@ -209,32 +210,32 @@ public class ServerConnection
 	 * 
 	 */
 	// #if !CLI
-//@	public void sendMessage(String text, Color color, Algorithms encryptionAlg) {
-//@		JSONObject message = new JSONObject();
-//@		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.SEND_MESSAGE.toString());
-//@		message.put(JSONKeys.TOKEN.toString(), token);
-//@		message.put(JSONKeys.TEXT.toString(), text);
-//@		message.put(JSONKeys.COLOR.toString(), color.toString());
-//@		message.put(JSONKeys.USERNAME.toString(), username);
-//@
+	public void sendMessage(String text, Color color, Algorithms encryptionAlg) {
+		JSONObject message = new JSONObject();
+		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.SEND_MESSAGE.toString());
+		message.put(JSONKeys.TOKEN.toString(), token);
+		message.put(JSONKeys.TEXT.toString(), text);
+		message.put(JSONKeys.COLOR.toString(), color.toString());
+		message.put(JSONKeys.USERNAME.toString(), username);
+
 	// #if Logging
 //@		log.debug("Message is tried to be sent.");
 	// #endif
-//@		JSONObject res = sendData(encrypt(message.toString(), encryptionAlg));
-//@
-//@		// if message sending was successful
-//@		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
-//@			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
+		JSONObject res = sendData(encrypt(message.toString(), encryptionAlg));
+
+		// if message sending was successful
+		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
+			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 	// #if Logging
 //@			log.info(String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
 	// #endif
-//@		} else {
+		} else {
 	// #if Logging
 //@			log.error(String.format("Something went wrong with message sending. Response code: %s",
 //@					res.getString(JSONKeys.RESULT_CODE.toString())));
 	// #endif
-//@		}
-//@	}
+		}
+	}
 	// #endif
 	/**
 	 * sends the data to the server and returns the result as a JSONObject.
@@ -297,13 +298,13 @@ public class ServerConnection
 	}
 
 	// #if !CLI
-//@	public ChatWindow getChatWindow() {
-//@			return chatWindow;
-//@	}
-//@
-//@	public Authentication getAuthentication() {
-//@		return authentication;
-//@	}
+	public ChatWindow getChatWindow() {
+			return chatWindow;
+	}
+
+	public Authentication getAuthentication() {
+		return authentication;
+	}
 	// #endif
 
 	/**
