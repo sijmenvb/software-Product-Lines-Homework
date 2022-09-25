@@ -18,4 +18,22 @@
 			<feature name="CLI"/>
 		</and>
 	</struct>
+	<constraints>
+		<rule>
+			<imp>
+				<var>CLI</var>
+				<not>
+					<var>Color</var>
+				</not>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>CLI</var>
+				<not>
+					<var>Encryption</var>
+				</not>
+			</imp>
+		</rule>
+	</constraints>
 </featureModel>
