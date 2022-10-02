@@ -20,6 +20,10 @@ public class Main
 
 	private int frameTimeIndex = 0;
 	private boolean arrayFilled = false;
+	// #if !Authentication
+	private static String anonymousUser = "anonymous";
+	private static String anonymousPass = "tbAWkyi04Dt5U1XhTiFs";
+	// #endif
 
 	public static void main(String[] args) {
 		// #if CLI
@@ -39,7 +43,7 @@ public class Main
 		// #if Authentication
 //@		Authentication root = serverConnection.getAuthentication();
 		// #else
-		serverConnection.firstAuthentication("admin", "admin");
+		serverConnection.firstAuthentication(anonymousUser, anonymousPass);
 		ChatWindow root = serverConnection.getChatWindow();
 		// #endif
 		primaryStage.setScene(new Scene(root, 1280, 720));

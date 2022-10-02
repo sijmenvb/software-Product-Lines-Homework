@@ -9,6 +9,8 @@ import DAL.Users;
 public class Main {
 	static int portNumber = 42069;
 	static Logger log = Logger.getLogger(Main.class.getName());
+	static String anonymousUser = "anonymous";
+	static String anonymousPass = "tbAWkyi04Dt5U1XhTiFs";
 	static String user = "admin";
 	static String pass = "admin";
 
@@ -23,6 +25,7 @@ public class Main {
 	public static void main(String args[]) {
 		try {
 			Users.insert(user, pass);
+			Users.insert(anonymousUser, anonymousPass);
 		} catch (Exception e) {
 			log.error(String.format("Error occured while adding user. %s", ExceptionUtils.getStackTrace(e)));
 		}

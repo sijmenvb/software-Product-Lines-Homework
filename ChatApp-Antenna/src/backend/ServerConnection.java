@@ -53,10 +53,16 @@ public class ServerConnection
 //@	static Logger log = Logger.getLogger(ServerConnection.class.getName());
 	// #endif
 
-	private String username = "";
-	private String password = "";
-	private final String jsonEncryptionKey = "p:=l,]kHGv'eByu";
+	// #if Authentication
+//@	private String username = "";
+//@	private String password = "";
+	// #else
+	private String username = "anonymous";
+	private String password = "tbAWkyi04Dt5U1XhTiFs";
+	// #endif
 
+	private final String jsonEncryptionKey = "p:=l,]kHGv'eByu";
+	
 	// #if CLI
 //@	public ServerConnection() {
 //@		this.chatBackEnd = new ChatBackEnd(this);
@@ -67,10 +73,8 @@ public class ServerConnection
 //@		String username = consoleInput.nextLine();
 //@		System.out.println("password:");
 //@		String password = consoleInput.nextLine();
-//@		firstAuthentication(username, password);
-		// #else
-//@		firstAuthentication("admin", "admin");
 		// #endif
+//@		firstAuthentication(username, password);	
 //@		updateMessages();
 //@
 //@		
