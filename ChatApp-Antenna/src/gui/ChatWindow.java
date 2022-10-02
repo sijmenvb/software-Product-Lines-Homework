@@ -1,11 +1,7 @@
-//#if !CLI
 package gui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-//#if Logging
-//@import org.apache.log4j.Logger;
-//#endif
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,9 +11,9 @@ import enums.Algorithms;
 import enums.JSONKeys;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;	
+import javafx.scene.control.Button;
 //#if Color
-import javafx.scene.control.ColorPicker;
+//@import javafx.scene.control.ColorPicker;
 //#endif
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
@@ -33,11 +29,13 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import main.LoggingInterface;
 
 //extends VBox so it is a javaFX element and can be used as such.
 public class ChatWindow extends VBox implements PropertyChangeListener {
 	private final int SPACING = 5;// how much space is between the different elements.
 	private ServerConnection serverConnectionRef;
+	private LoggingInterface logger;
 
 	// font settings
 	private String fontFamily = "Helvetica";
@@ -45,23 +43,17 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 	private TextFlow textFlow;// special box to combine and display formatted (e.g. colored) text.
 	//#if Color
-	private ColorPicker colorSelector;
+//@	private ColorPicker colorSelector;
 	//#endif
 
-	private JSONArray currentMessages = new JSONArray();
-
-	//#if Logging
-//@	static Logger log = Logger.getLogger(ChatWindow.class.getName());
-	//#endif
 
 	/**
 	 * a window providing a view of messages and an input field + send button.
 	 * 
 	 */
-	public ChatWindow(ServerConnection serverConnection) {
-		//#if Logging
-//@		log.debug("ChatWindow created.");
-		//#endif
+	public ChatWindow(ServerConnection serverConnection, LoggingInterface logger) {
+		this.logger = logger;
+		this.logger.debug(this.getClass().getName(), "ChatWindow created.");
 
 		serverConnectionRef = serverConnection;
 
@@ -85,13 +77,13 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 //@		encryptionComboBox.setValue(Algorithms.AES.toString());
 		//#endif
 		//#if Color
-		colorSelector = new ColorPicker(Color.BLACK);
+//@		colorSelector = new ColorPicker(Color.BLACK);
 		//#endif
 		Button refreshButton = new Button("Refresh");
 
 		HBox textInputContainer = new HBox(SPACING, textInput, sendButton
 				//#if Color
-				, colorSelector
+//@				, colorSelector
 				//#endif
 				//#if Encryption
 //@				, encryptionComboBox
@@ -103,15 +95,13 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		// text input.
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				//#if Logging
-//@				log.debug("Send button pressed.");
-				//#endif
+				logger.debug(this.getClass().getName(), "Send button pressed.");
 				
 				send(textInput.getText()
 						//#if Color
-						, colorSelector.getValue()
+//@						, colorSelector.getValue()
 						//#else
-//@						, Color.BLACK
+						, Color.BLACK
 						//#endif
 						//#if Encryption
 //@						, encryptionComboBox.getValue()
@@ -125,9 +115,7 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				//#if Logging
-//@				log.debug("Refresh button pressed.");
-				//#endif
+				logger.debug(this.getClass().getName(), "Refresh button pressed.");
 				serverConnectionRef.updateMessages();
 			}
 		});
@@ -205,9 +193,7 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	 * @param encryption algorithm used.
 	 */
 	private void send(String text, Color color, String encryption) {
-		//#if Logging
-//@		log.info(String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
-		//#endif
+		logger.info(this.getClass().getName(), String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
 		serverConnectionRef.sendMessage(text + "\n", color, Algorithms.fromString(encryption));
 	}
 
@@ -217,4 +203,3 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	}
 
 }
-//#endif
