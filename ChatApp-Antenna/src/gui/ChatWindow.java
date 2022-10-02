@@ -1,10 +1,8 @@
-//#if !CLI
 package gui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 //#if Logging
@@ -20,9 +18,6 @@ import enums.JSONKeys;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;	
-//#if Color
-import javafx.scene.control.ColorPicker;
-//#endif
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -230,4 +225,3 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	}
 
 }
-//#endif
