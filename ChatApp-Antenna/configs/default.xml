@@ -2,8 +2,8 @@
 <configuration>
 	<feature automatic="selected" name="ChatAppAntenna"/>
 	<feature name="Authentication"/>
-	<feature automatic="unselected" name="Color"/>
-	<feature automatic="unselected" name="Encryption"/>
-	<feature manual="selected" name="Logging"/>
-	<feature manual="selected" name="CLI"/>
+	<feature name="Color"/>
+	<feature name="Encryption"/>
+	<feature name="Logging"/>
+	<feature name="CLI"/>
 </configuration>

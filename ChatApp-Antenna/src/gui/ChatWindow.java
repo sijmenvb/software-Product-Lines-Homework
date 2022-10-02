@@ -2,6 +2,9 @@ package gui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.util.LinkedList;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,9 +15,7 @@ import enums.JSONKeys;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
-//#if Color
-//@import javafx.scene.control.ColorPicker;
-//#endif
+
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -29,6 +30,10 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import main.ButtonInterface;
+import main.LoggingInterface;
+import main.PluginLoader;
+import main.UIInterface;
 import main.LoggingInterface;
 
 //extends VBox so it is a javaFX element and can be used as such.
@@ -37,14 +42,13 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	private ServerConnection serverConnectionRef;
 	private LoggingInterface logger;
 
+	private LinkedList<ButtonInterface> buttonInterfaceList;
+
 	// font settings
 	private String fontFamily = "Helvetica";
 	private double fontSize = 20;
 
 	private TextFlow textFlow;// special box to combine and display formatted (e.g. colored) text.
-	//#if Color
-//@	private ColorPicker colorSelector;
-	//#endif
 
 
 	/**
@@ -71,44 +75,40 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		// create message input, send button and color selector and refresh button.
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
-		//#if Encryption
+		// #if Encryption
 //@		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
 //@		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
 //@		encryptionComboBox.setValue(Algorithms.AES.toString());
-		//#endif
-		//#if Color
-//@		colorSelector = new ColorPicker(Color.BLACK);
-		//#endif
+		// #endif
+
+		File pluginFolder = new File("Plugins");
+		pluginFolder.mkdir();
+
+		buttonInterfaceList = PluginLoader.loadClasses(pluginFolder, ButtonInterface.class);
+
 		Button refreshButton = new Button("Refresh");
 
 		HBox textInputContainer = new HBox(SPACING, textInput, sendButton
-				//#if Color
-//@				, colorSelector
-				//#endif
-				//#if Encryption
+		// #if Encryption
 //@				, encryptionComboBox
-				//#endif
+				// #endif
 				, refreshButton);
-
+		for (ButtonInterface buttonInterface : buttonInterfaceList) {
+			textInputContainer.getChildren().add(buttonInterface.getNode());
+		}
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
 				logger.debug(this.getClass().getName(), "Send button pressed.");
-				
-				send(textInput.getText()
-						//#if Color
-//@						, colorSelector.getValue()
-						//#else
-						, Color.BLACK
-						//#endif
-						//#if Encryption
-//@						, encryptionComboBox.getValue()
-						//#else
+				send(textInput.getText(), retrieveColorFromButtonInterfaceList(Color.BLACK)
+				// #if Encryption
+//@				, encryptionComboBox.getValue()
+				// #else
 						, Algorithms.None.toString()
-						//#endif
-						);
+				// #endif
+				);
 				textInput.clear();
 			}
 		});
@@ -130,9 +130,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 	public void updateMessages(JSONArray messages) {
 		Platform.runLater(new Runnable() {
-		    public void run() {
-		    	textFlow.getChildren().clear();
-		    }
+			public void run() {
+				textFlow.getChildren().clear();
+			}
 		});
 
 		// TODO: add user name to text.
@@ -146,7 +146,6 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 			}
 		}
 	}
-	
 
 	/**
 	 * adds text to the chat dialogue. does NOT add nextLines implicitly.
@@ -173,16 +172,15 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 		text.setFont(Font.font(fontFamily, weight, posture, fontSize));
 
-		//textFlow.getChildren().add(text);
-		
+		// textFlow.getChildren().add(text);
+
 		Platform.runLater(new Runnable() {
-		    public void run() {
-		    	textFlow.getChildren().add(text);
-		    }
+			public void run() {
+				textFlow.getChildren().add(text);
+			}
 		});
-		
-		
-		//textFlow.getChildren().add(text);// add this text to the chat dialogue.
+
+		// textFlow.getChildren().add(text);// add this text to the chat dialogue.
 	}
 
 	/**
@@ -193,13 +191,24 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	 * @param encryption algorithm used.
 	 */
 	private void send(String text, Color color, String encryption) {
-		logger.info(this.getClass().getName(), String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
+		logger.info(this.getClass().getName(),
+				String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
 		serverConnectionRef.sendMessage(text + "\n", color, Algorithms.fromString(encryption));
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		updateMessages((JSONArray) evt.getNewValue());		
+		updateMessages((JSONArray) evt.getNewValue());
+	}
+
+	private Color retrieveColorFromButtonInterfaceList(Color defaultColor) {
+		for (ButtonInterface buttonInterface : buttonInterfaceList) {
+			Color color = buttonInterface.getColor();
+			if (color != null) {
+				return color;
+			}
+		}
+		return defaultColor;
 	}
 
 }
