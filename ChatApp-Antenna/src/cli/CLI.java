@@ -17,6 +17,7 @@ public class CLI implements UIInterface, PropertyChangeListener {
 	@Override
 	public void start() {
 		ServerConnection serverConnection = new ServerConnection(this);
+		serverConnection.init();
 
 		Scanner consoleInput = new Scanner(System.in);
 		// #if Authentication

@@ -33,6 +33,7 @@ public class GUI implements UIInterface {
 		
 		this.chatWindow = new ChatWindow(serverConnection);
 		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), serverConnection);
+		serverConnection.init();//makes sure the chatWindow is available
 		
 
 		primaryStage.setTitle("Hello World!");
