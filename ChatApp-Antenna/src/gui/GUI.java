@@ -68,11 +68,6 @@ public class GUI implements UIInterface {
 
 		frameRateMeter.start();
 	}
-
-	@Override
-	public Stage getJavaFXPrimaryStage() {
-		return JavaFXPrimaryStage;
-	}
 	
 	@Override
 	public PropertyChangeListener getPropertyChangeListener() {

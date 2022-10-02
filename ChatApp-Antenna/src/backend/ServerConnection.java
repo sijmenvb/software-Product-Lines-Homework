@@ -36,11 +36,6 @@ public class ServerConnection
 {
 	static final int portNumber = 42069;
 	private UIInterface ui;
-	// #if !CLI
-	
-	// #if Authentication
-	// #endif
-	// #endif
 	private ChatBackEnd chatBackEnd;
 	private String token = "";
 
@@ -57,9 +52,6 @@ public class ServerConnection
 		this.ui = ui;
 		this.chatBackEnd = new ChatBackEnd(this);
 		this.chatBackEnd.addPropertyChangeListener(ui.getPropertyChangeListener());
-		if (ui.usesJavafx()) {
-			Stage primaryStage = ui.getJavaFXPrimaryStage();
-		}
 	}
 
 	public boolean firstAuthentication(String username, String password) {
