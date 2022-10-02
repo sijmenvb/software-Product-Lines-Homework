@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import backend.ServerConnection;
+import buttons.ColorButton;
 import javafx.application.Platform;
 import enums.Algorithms;
 import enums.JSONKeys;
@@ -33,20 +34,20 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import main.ButtonInterface;
 
 //extends VBox so it is a javaFX element and can be used as such.
 public class ChatWindow extends VBox implements PropertyChangeListener {
 	private final int SPACING = 5;// how much space is between the different elements.
 	private ServerConnection serverConnectionRef;
+	
+	private ButtonInterface ci;
 
 	// font settings
 	private String fontFamily = "Helvetica";
 	private double fontSize = 20;
 
 	private TextFlow textFlow;// special box to combine and display formatted (e.g. colored) text.
-	//#if Color
-	private ColorPicker colorSelector;
-	//#endif
 
 	//#if Logging
 //@	static Logger log = Logger.getLogger(ChatWindow.class.getName());
@@ -82,20 +83,16 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
 		encryptionComboBox.setValue(Algorithms.AES.toString());
 		//#endif
-		//#if Color
-		colorSelector = new ColorPicker(Color.BLACK);
-		//#endif
+		ci = new ColorButton();
+
 		Button refreshButton = new Button("Refresh");
 
 		HBox textInputContainer = new HBox(SPACING, textInput, sendButton
-				//#if Color
-				, colorSelector
-				//#endif
 				//#if Encryption
 				, encryptionComboBox
 				//#endif
 				, refreshButton);
-
+		textInputContainer.getChildren().add(ci.getNode());
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
@@ -106,11 +103,7 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 				//#endif
 				
 				send(textInput.getText()
-						//#if Color
-						, colorSelector.getValue()
-						//#else
-//@						, Color.BLACK
-						//#endif
+						, ci.getColor()
 						//#if Encryption
 						, encryptionComboBox.getValue()
 						//#else
