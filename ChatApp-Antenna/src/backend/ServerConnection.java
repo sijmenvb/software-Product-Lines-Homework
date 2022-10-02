@@ -26,17 +26,13 @@ import enums.JSONKeys;
 import enums.ResultCodes;
 import javafx.scene.paint.Color;
 
-//#if !CLI
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-//#endif
+
 import main.UIInterface;
 
 public class ServerConnection
-//#if CLI
-//@		implements PropertyChangeListener
-//#endif
 {
 	static final int portNumber = 42069;
 	private UIInterface ui;
@@ -179,7 +175,6 @@ public class ServerConnection
 	 * sendMessage()
 	 * 
 	 */
-	// #if !CLI
 	public void sendMessage(String text, Color color, Algorithms encryptionAlg) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.SEND_MESSAGE.toString());
@@ -206,8 +201,6 @@ public class ServerConnection
 			// #endif
 		}
 	}
-
-	// #endif
 	/**
 	 * sends the data to the server and returns the result as a JSONObject.
 	 * 

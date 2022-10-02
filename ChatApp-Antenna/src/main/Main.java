@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.LinkedList;
 
 import backend.ServerConnection;
-import cli.CLI;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -12,7 +11,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 	public static void main(String[] args) {
-		/*
+		
 		File pluginFolder = new File("Plugins");
 		pluginFolder.mkdir();
 
@@ -23,10 +22,7 @@ public class Main extends Application {
 		}
 
 		UIInterface ui = uiList.getFirst();
-		/*/
-		UIInterface ui = new CLI();
-
-		//*/
+		
 		if (ui.usesJavafx()) {
 			launch(args);
 		} else {
@@ -36,7 +32,7 @@ public class Main extends Application {
 
 	@Override
 	public void start(final Stage primaryStage) {
-		//*
+		//unfortunately we have to load the ui again since we can not pass it in a static context.
 		File pluginFolder = new File("Plugins");
 		pluginFolder.mkdir();
 
@@ -47,10 +43,7 @@ public class Main extends Application {
 		}
 
 		UIInterface ui = uiList.getFirst();
-		/*/
-		UIInterface ui = new GUI();
 
-		// */
 		ui.javaFXStart(primaryStage);
 	}
 }

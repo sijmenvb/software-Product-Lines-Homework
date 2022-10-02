@@ -34,6 +34,7 @@ public class CLI implements UIInterface,PropertyChangeListener {
 	
 			
 			consoleInput.nextLine();
+			consoleInput.close();
 		}
 		
 		//TODO: make the update actually work!
@@ -72,8 +73,7 @@ public class CLI implements UIInterface,PropertyChangeListener {
 
 	@Override
 	public void updateMessages(JSONArray messages) {
-		// TODO Auto-generated method stub
-		
+		refreshUI(messages);
 	}
 
 	@Override
