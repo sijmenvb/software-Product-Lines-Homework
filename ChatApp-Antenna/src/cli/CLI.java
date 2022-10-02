@@ -12,18 +12,18 @@ import backend.ServerConnection;
 import enums.JSONKeys;
 import gui.AuthenticationInterface;
 import javafx.stage.Stage;
+import main.LoggingInterface;
 import main.UIInterface;
 
 public class CLI implements UIInterface, PropertyChangeListener {
 
 	@Override
-	public void start(AuthenticationInterface auth) {
-		ServerConnection serverConnection = new ServerConnection(this);
+	public void start(AuthenticationInterface auth, LoggingInterface logger) {
+		ServerConnection serverConnection = new ServerConnection(this, logger);
 		serverConnection.init();
 		
 		auth.setServerConnection(serverConnection);
 		auth.start();
-
 	}
 
 	// TODO: make the update actually work!
@@ -44,7 +44,7 @@ public class CLI implements UIInterface, PropertyChangeListener {
 	}
 
 	@Override
-	public void javaFXStart(Stage primaryStage, AuthenticationInterface auth) {
+	public void javaFXStart(Stage primaryStage, AuthenticationInterface auth, LoggingInterface logger) {
 		throw new UnsupportedOperationException("this interface does not use JavaFX");
 	}
 

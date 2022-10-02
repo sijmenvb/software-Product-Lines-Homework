@@ -9,13 +9,15 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import encryption.Interfaces.Encryption;
+import enums.Algorithms;
+import main.EncryptionInterface;
 
-public class AESEncryption implements Encryption {
+public class AESEncryption implements EncryptionInterface {
 	private static SecretKeySpec secretKey;
 	private static byte[] key;
-
-	public AESEncryption(String encryptionKey) {
+	private final String encryptionKey = "p:=l,]kHGv'eByu";
+	
+	public AESEncryption() {
 		MessageDigest sha = null;
 		try {
 			key = encryptionKey.getBytes("UTF-8");
@@ -50,5 +52,10 @@ public class AESEncryption implements Encryption {
 			System.out.println("Error while decrypting: " + e.toString());
 		}
 		return null;
+	}
+
+	@Override
+	public Algorithms getEncryptionType() {
+		return Algorithms.AES;
 	}
 }

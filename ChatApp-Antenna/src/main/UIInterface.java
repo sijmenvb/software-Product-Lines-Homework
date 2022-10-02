@@ -10,9 +10,9 @@ import javafx.stage.Stage;
 public interface UIInterface {
 	public boolean usesJavafx();
 	
-	public void javaFXStart(final Stage primaryStage, AuthenticationInterface auth);//will also set JavaFXPrimaryStage
+	public void javaFXStart(final Stage primaryStage, AuthenticationInterface auth, LoggingInterface logger);//will also set JavaFXPrimaryStage
 	
-	public void start(AuthenticationInterface auth);
+	public void start(AuthenticationInterface auth, LoggingInterface logging);
 	
 	public PropertyChangeListener getPropertyChangeListener();
 	

@@ -1,8 +1,9 @@
 package encryption;
 
-import encryption.Interfaces.Encryption;
+import enums.Algorithms;
+import main.EncryptionInterface;
 
-public class ReverseStringEncryption implements Encryption {
+public class ReverseStringEncryption implements EncryptionInterface {
 
 	@Override
 	public String encrypt(String message) {
@@ -14,5 +15,10 @@ public class ReverseStringEncryption implements Encryption {
 	public String decrypt(String message) {
 		StringBuilder s_reverse = new StringBuilder(message).reverse();
 		return s_reverse.toString();
+	}
+
+	@Override
+	public Algorithms getEncryptionType() {
+		return Algorithms.REVERSE;
 	}
 }

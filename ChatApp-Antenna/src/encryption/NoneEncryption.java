@@ -1,7 +1,8 @@
 package encryption;
-import encryption.Interfaces.Encryption;
+import enums.Algorithms;
+import main.EncryptionInterface;
 
-public class NoneEncryption implements Encryption {
+public class NoneEncryption implements EncryptionInterface {
 
 	@Override
 	public String encrypt(String message) {
@@ -11,6 +12,11 @@ public class NoneEncryption implements Encryption {
 	@Override
 	public String decrypt(String message) {
 		return message;
+	}
+
+	@Override
+	public Algorithms getEncryptionType() {
+		return Algorithms.None;
 	}
 
 }

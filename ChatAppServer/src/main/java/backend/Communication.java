@@ -32,6 +32,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import DAL.Messages;
 import DAL.Users;
 import encryption.AESEncryption;
+import encryption.NoneEncryption;
 import encryption.ReverseStringEncryption;
 import encryption.Interfaces.Encryption;
 import models.Message;
@@ -41,6 +42,7 @@ public class Communication {
 	private int portNumber;
 	private final String jsonEncryptionKey = "p:=l,]kHGv'eByu";
 	static Logger log = Logger.getLogger(Communication.class.getName());
+	private Algorithms lastUsedEncryption = Algorithms.AES;
 
 	// token source:
 	// https://simplesolution.dev/java-json-web-token-using-java-jwt-library/
@@ -237,7 +239,7 @@ public class Communication {
 		try {
 			log.debug("Sending all the messages to the user.");
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			out.print(encrypt(output.toString(), Algorithms.AES));
+			out.print(encrypt(output.toString()));
 
 			out.close();
 			log.debug("All the messages sent to the client.");
@@ -294,7 +296,7 @@ public class Communication {
 			message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
 
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			out.print(encrypt(message.toString(), Algorithms.AES));
+			out.print(encrypt(message.toString()));
 
 			out.close();
 			log.debug(String.format("Token '%s' sent to the client.", token));
@@ -316,7 +318,7 @@ public class Communication {
 			message.put(JSONKeys.RESULT_CODE.toString(), code.toString());
 
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			out.print(encrypt(message.toString(), Algorithms.AES));
+			out.print(encrypt(message.toString()));
 			out.close();
 			log.debug(String.format("%s response sent to the client.", code.toString()));
 		} catch (Exception e) {
@@ -338,13 +340,20 @@ public class Communication {
 		Encryption encryptionClass;
 
 		if (encryptionType.equals(Algorithms.AES.toString())) {
+			lastUsedEncryption = Algorithms.AES;
 			log.debug("Encryption: AES.");
 			encryptionClass = new AESEncryption(jsonEncryptionKey);
-		} else {  // encryption is string reverse
+		} else if (encryptionType.equals(Algorithms.REVERSE.toString())) {  // encryption is string reverse
+			lastUsedEncryption = Algorithms.REVERSE;
 			log.debug("Encryption: Reverse string.");
 			encryptionClass = new ReverseStringEncryption();
+		} else { //if encryption is none
+			lastUsedEncryption = Algorithms.REVERSE;
+			log.debug("Encryption: None.");
+			encryptionClass = new NoneEncryption();
 		}
 
+		System.out.println(incomingJson.getString(JSONKeys.ENCRYPTED_MESSAGE.toString()));
 		String originalMessage = encryptionClass.decrypt(incomingJson.getString(JSONKeys.ENCRYPTED_MESSAGE.toString()));
 		return originalMessage;
 	}
@@ -356,17 +365,20 @@ public class Communication {
 	 * @param message string to be encrypted
 	 * @return encrypted string
 	 */
-	private String encrypt(String message, Algorithms encryptionAlg) {
+	private String encrypt(String message) {
 		JSONObject jsonForConnection = new JSONObject();
-		jsonForConnection.put(JSONKeys.ENCRYPTION.toString(), encryptionAlg.toString());
+		jsonForConnection.put(JSONKeys.ENCRYPTION.toString(), lastUsedEncryption.toString());
 		Encryption encryptionClass;
 
-		if (encryptionAlg.equals(Algorithms.AES)) {
+		if (lastUsedEncryption.equals(Algorithms.AES)) {
 			log.debug("Encryption: AES.");
 			encryptionClass = new AESEncryption(jsonEncryptionKey);
-		} else { // encryption is string reverse
+		} else if (lastUsedEncryption.equals(Algorithms.REVERSE)) { // encryption is string reverse
 			log.debug("Encryption: Reverse string.");
 			encryptionClass = new ReverseStringEncryption();
+		}else {//if none encryption
+			log.debug("Encryption: None.");
+			encryptionClass = new NoneEncryption();
 		}
 
 		jsonForConnection.put(JSONKeys.ENCRYPTED_MESSAGE.toString(), encryptionClass.encrypt(message));

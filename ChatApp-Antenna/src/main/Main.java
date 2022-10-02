@@ -9,6 +9,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import logging.NullLogging;
 
 public class Main extends Application {
 	public static void main(String[] args) {
@@ -26,6 +27,13 @@ public class Main extends Application {
 		if (authList.isEmpty()) {
 			System.err.println("APPLICATION REQUIRES AUTH PLUGIN!");
 			return;
+		LinkedList<LoggingInterface> loggersList = PluginLoader.loadClasses(pluginFolder, LoggingInterface.class);
+		LoggingInterface logger = null;
+		if(loggersList.isEmpty()) {
+			logger = new NullLogging();
+		} else {
+			logger = loggersList.getFirst();
+			logger.Init();
 		}
 
 		UIInterface ui = uiList.getFirst();
@@ -34,7 +42,7 @@ public class Main extends Application {
 		if (ui.usesJavafx()) {
 			launch(args);
 		} else {
-			ui.start(auth);
+			ui.start(auth, logger);
 		}
 	}
 
@@ -55,10 +63,19 @@ public class Main extends Application {
 			System.err.println("APPLICATION REQUIRES AUTH PLUGIN!");
 			return;
 		}
+		LinkedList<LoggingInterface> loggersList = PluginLoader.loadClasses(pluginFolder, LoggingInterface.class);
+		LoggingInterface logger = null;
+		if(loggersList.isEmpty()) {
+			logger = new NullLogging();
+		} else {
+			logger = loggersList.getFirst();
+			logger.Init();
+		}
+
 
 		UIInterface ui = uiList.getFirst();
 		AuthenticationInterface auth = authList.getFirst();
 
-		ui.javaFXStart(primaryStage, auth);
+		ui.javaFXStart(primaryStage, auth, logger);
 	}
 }

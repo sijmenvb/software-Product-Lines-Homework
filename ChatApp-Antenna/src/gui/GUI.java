@@ -12,6 +12,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import main.LoggingInterface;
 import main.UIInterface;
 
 public class GUI implements UIInterface {
@@ -31,11 +32,11 @@ public class GUI implements UIInterface {
 	}
 
 	@Override
-	public void javaFXStart(Stage primaryStage, AuthenticationInterface auth) {
+	public void javaFXStart(Stage primaryStage, AuthenticationInterface auth, LoggingInterface logger) {
 		JavaFXPrimaryStage = primaryStage;
-		ServerConnection serverConnection = new ServerConnection(this);
+		ServerConnection serverConnection = new ServerConnection(this, logger);
 
-		this.chatWindow = new ChatWindow(serverConnection);
+		this.chatWindow = new ChatWindow(serverConnection, logger);
 		serverConnection.init();
 
 		auth.setServerConnection(serverConnection);
@@ -89,7 +90,7 @@ public class GUI implements UIInterface {
 	}
 
 	@Override
-	public void start(AuthenticationInterface auth) {
+	public void start(AuthenticationInterface auth, LoggingInterface logger) {
 		throw new UnsupportedOperationException("this interface uses JavaFX use javaFXStart() instead");
 
 	}
