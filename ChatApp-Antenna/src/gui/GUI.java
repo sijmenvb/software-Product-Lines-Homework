@@ -4,45 +4,54 @@ import java.beans.PropertyChangeListener;
 
 import org.json.JSONArray;
 
+import authentication_plugins.AdminUserAuthentication;
+import authentication_plugins.CLIAuthentication;
+import authentication_plugins.GUIAuthentication;
 import backend.ServerConnection;
 import javafx.animation.AnimationTimer;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import main.UIInterface;
 
 public class GUI implements UIInterface {
-	
+
 	private final long[] frameTimes = new long[100];
 	private int frameTimeIndex = 0;
 	private boolean arrayFilled = false;
-	
+
 	private ChatWindow chatWindow;
-	private Authentication authentication;
-	
-	
+	// private AuthenticationInterface authentication;
+
 	Stage JavaFXPrimaryStage;
+
 	@Override
 	public boolean usesJavafx() {
 		return true;
 	}
 
 	@Override
-	public void javaFXStart(Stage primaryStage) {
+	public void javaFXStart(Stage primaryStage, AuthenticationInterface auth) {
 		JavaFXPrimaryStage = primaryStage;
 		ServerConnection serverConnection = new ServerConnection(this);
-		
+
 		this.chatWindow = new ChatWindow(serverConnection);
-		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), serverConnection);
-		
+		serverConnection.init();
+
+		auth.setServerConnection(serverConnection);
+		auth.setPrimaryStage(primaryStage);
+		auth.setNextScene(new Scene(this.chatWindow, 1280, 720));
+		auth.start();
 
 		primaryStage.setTitle("Hello World!");
-		// #if Authentication
-		Authentication root = authentication;
-		// #else
-//@		serverConnection.firstAuthentication("admin", "admin");
-//@		ChatWindow root = serverConnection.getChatWindow();
-		// #endif
-		primaryStage.setScene(new Scene(root, 1280, 720));
+		if (auth.usesJavafx()) {
+			primaryStage.setScene(new Scene((Parent) auth, 1280, 720));
+		} else {
+			if (auth.userIsLoggedIn()) {
+				primaryStage.setScene(new Scene(this.chatWindow, 1280, 720));
+			} 
+		}
+
 		primaryStage.show();
 
 		// frame rate source:
@@ -68,10 +77,10 @@ public class GUI implements UIInterface {
 
 		frameRateMeter.start();
 	}
-	
+
 	@Override
 	public PropertyChangeListener getPropertyChangeListener() {
-		return chatWindow;
+		return this.chatWindow;
 	}
 
 	@Override
@@ -80,10 +89,9 @@ public class GUI implements UIInterface {
 	}
 
 	@Override
-	public void start() {
+	public void start(AuthenticationInterface auth) {
 		throw new UnsupportedOperationException("this interface uses JavaFX use javaFXStart() instead");
-		
+
 	}
-	
 
 }

@@ -1,4 +1,4 @@
-//#if !CLI
+
 package authentication_plugins;
 
 import javafx.scene.control.PasswordField;
@@ -25,59 +25,59 @@ public class GUIAuthentication extends VBox implements AuthenticationInterface {
 	// initialize button, panel, label, and text field
 	Button b1;
 	Label userLabel, passLabel, feedbackLabel;
-	final TextField textField1;
-	final PasswordField textField2;
+	private TextField textField1;
+	private PasswordField textField2;
 
 	private int loginAttempts = 0;
 	private boolean isLoggedIn = false;
-	private static boolean isJafaFX = true;
+	private static boolean usesJavafx = true;
 
 	private Stage primaryStage;
 	private Scene nextScene;
 
 	//#if Logging
-//@	static Logger log = Logger.getLogger(Authentication.class.getName());
+//@	static Logger log = Logger.getLogger(GUIAuthentication.class.getName());
 	//#endif
 
 	// calling constructor
-	public GUIAuthentication(Stage primaryStage, Scene nextScene, ServerConnection serverConnection) {
+	public GUIAuthentication() {
 		//#if Logging
 //@		log.debug("Authentication window created.");
 		//#endif
-		serverConnectionRef = serverConnection;
 		// set the next page
-		this.primaryStage = primaryStage;
-		this.nextScene = nextScene;
-
+	}
+	
+	@Override
+	public void start() {
 		// create label for username
-		userLabel = new Label();
-		userLabel.setText("Username"); // set label value for textField1
+				userLabel = new Label();
+				userLabel.setText("Username"); // set label value for textField1
 
-		// create text field to get username from the user
-		textField1 = new TextField();
+				// create text field to get username from the user
+				textField1 = new TextField();
 
-		// create label for password
-		passLabel = new Label();
-		passLabel.setText("Password"); // set label value for textField2
+				// create label for password
+				passLabel = new Label();
+				passLabel.setText("Password"); // set label value for textField2
 
-		// create text field to get password from the user
-		textField2 = new PasswordField();
+				// create text field to get password from the user
+				textField2 = new PasswordField();
 
-		// create submit button
-		b1 = new Button("SUBMIT"); // set label to button
+				// create submit button
+				b1 = new Button("SUBMIT"); // set label to button
 
-		// create label for feedback to the user
-		feedbackLabel = new Label();
+				// create label for feedback to the user
+				feedbackLabel = new Label();
 
-		// create panel to put form elements
-		this.getChildren().addAll(userLabel, textField1, passLabel, textField2, b1, feedbackLabel);
+				// create panel to put form elements
+				this.getChildren().addAll(userLabel, textField1, passLabel, textField2, b1, feedbackLabel);
 
-		// perform action on button click
-		b1.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent arg0) {
-				handleCredentials(textField1.getText(), textField2.getText());
-			}
-		});
+				// perform action on button click
+				b1.setOnAction(new EventHandler<ActionEvent>() {
+					public void handle(ActionEvent arg0) {
+						handleCredentials(textField1.getText(), textField2.getText());
+					}
+				});	
 	}
 
 	// verify the credentials entered by the user
@@ -111,9 +111,25 @@ public class GUIAuthentication extends VBox implements AuthenticationInterface {
 	}
 	
 	@Override
-	public boolean isJafaFX() {
-		return isJafaFX;
+	public boolean usesJavafx() {
+		return usesJavafx;
 	}
 
+	@Override
+	public void setServerConnection(ServerConnection serverConnection) {
+		serverConnectionRef = serverConnection;
+	}
+
+	@Override
+	public void setPrimaryStage(Stage primaryStage) {
+		this.primaryStage = primaryStage;		
+	}
+
+	@Override
+	public void setNextScene(Scene nextScene) {
+		this.nextScene = nextScene;		
+	}
+	
+
+
 }
-//#endif

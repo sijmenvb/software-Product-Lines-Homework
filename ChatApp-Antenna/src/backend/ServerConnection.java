@@ -51,6 +51,9 @@ public class ServerConnection
 	public ServerConnection(UIInterface ui) {
 		this.ui = ui;
 		this.chatBackEnd = new ChatBackEnd(this);
+	}
+
+	public void init() {
 		this.chatBackEnd.addPropertyChangeListener(ui.getPropertyChangeListener());
 	}
 

@@ -10,27 +10,31 @@ import javafx.stage.Stage;
 public class CLIAuthentication implements AuthenticationInterface {
 
 	private boolean isLoggedIn = false;
-	private static boolean isJafaFX = false;
+	private static boolean usesJavafx = false;
 
 	private ServerConnection serverConnectionRef;
 
-	public CLIAuthentication(ServerConnection serverConnection) {
-
-		serverConnectionRef = serverConnection;
+	public CLIAuthentication() {
+	}
+	
+	@Override
+	public void start() {
 		Scanner consoleInput = new Scanner(System.in);
-
 		while (!isLoggedIn) {
 			System.out.println("username:");
 			String username = consoleInput.nextLine();
 			System.out.println("password:");
 			String password = consoleInput.nextLine();
-			consoleInput.nextLine();
 
 			if (verifyCredential(username, password)) {
 				serverConnectionRef.updateMessages();
 				isLoggedIn = true;
 			}
+			else {				
+				System.out.println("username/password invalid");
+			}
 		}
+		consoleInput.close();		
 	}
 
 	@Override
@@ -44,8 +48,23 @@ public class CLIAuthentication implements AuthenticationInterface {
 	}
 	
 	@Override
-	public boolean isJafaFX() {
-		return isJafaFX;
+	public boolean usesJavafx() {
+		return usesJavafx;
+	}
+	
+	@Override
+	public void setServerConnection(ServerConnection serverConnection) {
+		serverConnectionRef = serverConnection;
+	}
+
+	@Override
+	public void setPrimaryStage(Stage primaryStage) {
+		throw new UnsupportedOperationException("this interface does not use JavaFX");
+	}
+
+	@Override
+	public void setNextScene(Scene nextScene) {
+		throw new UnsupportedOperationException("this interface does not use JavaFX");
 	}
 
 }
