@@ -78,11 +78,7 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		// create message input, send button and color selector and refresh button.
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
-		//#if Encryption
-		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
-		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
-		encryptionComboBox.setValue(Algorithms.AES.toString());
-		//#endif
+
 		
 		File pluginFolder = new File("Plugins");
 		pluginFolder.mkdir();
@@ -92,9 +88,6 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		Button refreshButton = new Button("Refresh");
 
 		HBox textInputContainer = new HBox(SPACING, textInput, sendButton
-				//#if Encryption
-				, encryptionComboBox
-				//#endif
 				, refreshButton);
 		for (ButtonInterface buttonInterface : buttonInterfaceList) {
 			textInputContainer.getChildren().add(buttonInterface.getNode());
@@ -111,11 +104,6 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 				send(textInput.getText()
 						, retrieveColorFromButtonInterfaceList(Color.BLACK)
-						//#if Encryption
-						, encryptionComboBox.getValue()
-						//#else
-//@						, Algorithms.None.toString()
-						//#endif
 						);
 				textInput.clear();
 			}
@@ -202,11 +190,11 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	 * @param color      the selected color.
 	 * @param encryption algorithm used.
 	 */
-	private void send(String text, Color color, String encryption) {
+	private void send(String text, Color color) {
 		//#if Logging
 //@		log.info(String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
 		//#endif
-		serverConnectionRef.sendMessage(text + "\n", color, Algorithms.fromString(encryption));
+		serverConnectionRef.sendMessage(text + "\n", color);
 	}
 
 	@Override

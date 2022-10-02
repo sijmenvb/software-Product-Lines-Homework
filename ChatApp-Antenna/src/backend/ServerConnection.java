@@ -3,10 +3,12 @@ package backend;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 import org.json.JSONArray;
@@ -17,8 +19,7 @@ import org.json.JSONObject;
 //@import org.apache.commons.lang3.exception.ExceptionUtils;
 //#endif
 
-import encryption.AESEncryption;
-import encryption.ReverseStringEncryption;
+import encryption.NoneEncryption;//default encryption
 import enums.ActionType;
 import enums.Algorithms;
 import enums.JSONKeys;
@@ -29,6 +30,7 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import main.EncryptionInterface;
+import main.PluginLoader;
 import main.UIInterface;
 
 public class ServerConnection
@@ -44,12 +46,23 @@ public class ServerConnection
 
 	private String username = "";
 	private String password = "";
-	private final String jsonEncryptionKey = "p:=l,]kHGv'eByu";
-
+	private EncryptionInterface encryptionClass;
+	
 	
 	public ServerConnection(UIInterface ui) {
 		this.ui = ui;
 		this.chatBackEnd = new ChatBackEnd(this);
+		
+		//load the encryption algorithm
+		File pluginFolder = new File("Plugins");
+		LinkedList<EncryptionInterface> uiList = PluginLoader.loadClasses(pluginFolder, EncryptionInterface.class);
+		if (uiList.isEmpty()) {
+			encryptionClass = new NoneEncryption();//default encryption
+		}else {
+			encryptionClass = uiList.getFirst();
+		}
+		
+		
 	}
 	
 	public void init() {
@@ -88,7 +101,7 @@ public class ServerConnection
 		// #if Logging
 //@		log.debug(String.format("User '%s' is trying to log in. Response from the server received.", username));
 		// #endif
-		JSONObject res = sendData(encrypt(message.toString(), Algorithms.AES));
+		JSONObject res = sendData(encrypt(message.toString()));
 
 		try {
 			if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {// if authentication
@@ -136,7 +149,7 @@ public class ServerConnection
 		// #if Logging
 //@		log.debug("Messages are tried to be updated. Response from the server received.");
 		// #endif
-		JSONObject res = sendData(encrypt(message.toString(), Algorithms.AES));
+		JSONObject res = sendData(encrypt(message.toString()));
 
 		// if message sending was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
@@ -169,7 +182,7 @@ public class ServerConnection
 	 * sendMessage()
 	 * 
 	 */
-	public void sendMessage(String text, Color color, Algorithms encryptionAlg) {
+	public void sendMessage(String text, Color color) {
 		JSONObject message = new JSONObject();
 		message.put(JSONKeys.ACTION_TYPE.toString(), ActionType.SEND_MESSAGE.toString());
 		message.put(JSONKeys.TOKEN.toString(), token);
@@ -180,7 +193,7 @@ public class ServerConnection
 		// #if Logging
 //@		log.debug("Message is tried to be sent.");
 		// #endif
-		JSONObject res = sendData(encrypt(message.toString(), encryptionAlg));
+		JSONObject res = sendData(encrypt(message.toString()));
 
 		// if message sending was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
@@ -259,24 +272,23 @@ public class ServerConnection
 	 * function that decrypts the input applying the decryption algorithm specified
 	 * in json
 	 * 
-	 * @param s encrypted string
+	 * @param encryptedMessage encrypted string
 	 * @return decrypted string
 	 */
 	private String decrypt(String encryptedMessage) {
 		JSONObject incomingJson = new JSONObject(encryptedMessage);
 		String encryptionType = incomingJson.getString(JSONKeys.ENCRYPTION.toString());
-		EncryptionInterface encryptionClass;
-
+		
+		//TODO: add log for none encryption
 		if (encryptionType.equals(Algorithms.AES.toString())) {
 			// #if Logging
 //@			log.debug("Encryption: AES.");
 			// #endif
-			encryptionClass = new AESEncryption(jsonEncryptionKey);
+			
 		} else { // encryption is string reverse
 			// #if Logging
 //@			log.debug("Encryption: Reverse string.");
 			// #endif
-			encryptionClass = new ReverseStringEncryption();
 		}
 		String originalMessage = encryptionClass.decrypt(incomingJson.getString(JSONKeys.ENCRYPTED_MESSAGE.toString()));
 		// #if Logging
@@ -285,21 +297,18 @@ public class ServerConnection
 		return originalMessage;
 	}
 
-	private String encrypt(String message, Algorithms encryptionAlg) {
+	private String encrypt(String message) {
 		JSONObject jsonForConnection = new JSONObject();
-		jsonForConnection.put(JSONKeys.ENCRYPTION.toString(), encryptionAlg.toString());
-		EncryptionInterface encryptionClass;
-
-		if (encryptionAlg.equals(Algorithms.AES)) {
+		jsonForConnection.put(JSONKeys.ENCRYPTION.toString(), encryptionClass.getEncryptionType().toString());
+		//TODO: add log for none encryption
+		if (encryptionClass.getEncryptionType().equals(Algorithms.AES)) {
 			// #if Logging
 //@			log.debug("Encryption: AES.");
 			// #endif
-			encryptionClass = new AESEncryption(jsonEncryptionKey);
 		} else { // encryption is string reverse
 			// #if Logging
 //@			log.debug("Encryption: Reverse string.");
 			// #endif
-			encryptionClass = new ReverseStringEncryption();
 		}
 
 		jsonForConnection.put(JSONKeys.ENCRYPTED_MESSAGE.toString(), encryptionClass.encrypt(message));
