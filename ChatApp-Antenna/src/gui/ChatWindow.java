@@ -5,9 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.LinkedList;
 
-//#if Logging
-//@import org.apache.log4j.Logger;
-//#endif
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,7 +14,7 @@ import enums.Algorithms;
 import enums.JSONKeys;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;	
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -33,6 +30,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import main.ButtonInterface;
+import main.LoggingInterface;
 import main.PluginLoader;
 import main.UIInterface;
 
@@ -40,7 +38,7 @@ import main.UIInterface;
 public class ChatWindow extends VBox implements PropertyChangeListener {
 	private final int SPACING = 5;// how much space is between the different elements.
 	private ServerConnection serverConnectionRef;
-	
+
 	private LinkedList<ButtonInterface> buttonInterfaceList;
 
 	// font settings
@@ -49,18 +47,15 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 	private TextFlow textFlow;// special box to combine and display formatted (e.g. colored) text.
 
-	//#if Logging
-//@	static Logger log = Logger.getLogger(ChatWindow.class.getName());
-	//#endif
+	private LoggingInterface logger;
 
 	/**
 	 * a window providing a view of messages and an input field + send button.
 	 * 
 	 */
-	public ChatWindow(ServerConnection serverConnection) {
-		//#if Logging
-//@		log.debug("ChatWindow created.");
-		//#endif
+	public ChatWindow(ServerConnection serverConnection, LoggingInterface logger) {
+		this.logger = logger;
+		this.logger.debug(this.getClass().getName(), "ChatWindow created.");
 
 		serverConnectionRef = serverConnection;
 
@@ -78,12 +73,12 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		// create message input, send button and color selector and refresh button.
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
-		//#if Encryption
+		// #if Encryption
 		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
 		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
 		encryptionComboBox.setValue(Algorithms.AES.toString());
-		//#endif
-		
+		// #endif
+
 		File pluginFolder = new File("Plugins");
 		pluginFolder.mkdir();
 
@@ -92,9 +87,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		Button refreshButton = new Button("Refresh");
 
 		HBox textInputContainer = new HBox(SPACING, textInput, sendButton
-				//#if Encryption
+		// #if Encryption
 				, encryptionComboBox
-				//#endif
+				// #endif
 				, refreshButton);
 		for (ButtonInterface buttonInterface : buttonInterfaceList) {
 			textInputContainer.getChildren().add(buttonInterface.getNode());
@@ -104,28 +99,22 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		// text input.
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				//#if Logging
-//@				log.debug("Send button pressed.");
-				//#endif
-				
+				logger.debug(this.getClass().getName(), "Send button pressed.");
 
-				send(textInput.getText()
-						, retrieveColorFromButtonInterfaceList(Color.BLACK)
-						//#if Encryption
-						, encryptionComboBox.getValue()
-						//#else
+				send(textInput.getText(), retrieveColorFromButtonInterfaceList(Color.BLACK)
+				// #if Encryption
+				, encryptionComboBox.getValue()
+				// #else
 //@						, Algorithms.None.toString()
-						//#endif
-						);
+				// #endif
+				);
 				textInput.clear();
 			}
 		});
 
 		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				//#if Logging
-//@				log.debug("Refresh button pressed.");
-				//#endif
+				logger.debug(this.getClass().getName(), "Refresh button pressed.");
 				serverConnectionRef.updateMessages();
 			}
 		});
@@ -140,9 +129,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 	public void updateMessages(JSONArray messages) {
 		Platform.runLater(new Runnable() {
-		    public void run() {
-		    	textFlow.getChildren().clear();
-		    }
+			public void run() {
+				textFlow.getChildren().clear();
+			}
 		});
 
 		// TODO: add user name to text.
@@ -156,7 +145,6 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 			}
 		}
 	}
-	
 
 	/**
 	 * adds text to the chat dialogue. does NOT add nextLines implicitly.
@@ -183,16 +171,15 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 		text.setFont(Font.font(fontFamily, weight, posture, fontSize));
 
-		//textFlow.getChildren().add(text);
-		
+		// textFlow.getChildren().add(text);
+
 		Platform.runLater(new Runnable() {
-		    public void run() {
-		    	textFlow.getChildren().add(text);
-		    }
+			public void run() {
+				textFlow.getChildren().add(text);
+			}
 		});
-		
-		
-		//textFlow.getChildren().add(text);// add this text to the chat dialogue.
+
+		// textFlow.getChildren().add(text);// add this text to the chat dialogue.
 	}
 
 	/**
@@ -203,21 +190,20 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	 * @param encryption algorithm used.
 	 */
 	private void send(String text, Color color, String encryption) {
-		//#if Logging
-//@		log.info(String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
-		//#endif
+		logger.info(this.getClass().getName(),
+				String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
 		serverConnectionRef.sendMessage(text + "\n", color, Algorithms.fromString(encryption));
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		updateMessages((JSONArray) evt.getNewValue());		
+		updateMessages((JSONArray) evt.getNewValue());
 	}
-	
+
 	private Color retrieveColorFromButtonInterfaceList(Color defaultColor) {
 		for (ButtonInterface buttonInterface : buttonInterfaceList) {
 			Color color = buttonInterface.getColor();
-			if(color != null) {
+			if (color != null) {
 				return color;
 			}
 		}

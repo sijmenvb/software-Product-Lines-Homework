@@ -4,6 +4,6 @@
 	<feature manual="selected" name="Authentication"/>
 	<feature manual="selected" name="Color"/>
 	<feature manual="selected" name="Encryption"/>
-	<feature name="Logging"/>
+	<feature manual="selected" name="Logging"/>
 	<feature automatic="unselected" name="CLI"/>
 </configuration>

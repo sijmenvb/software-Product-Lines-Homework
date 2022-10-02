@@ -10,14 +10,14 @@ import org.json.JSONObject;
 import backend.ServerConnection;
 import enums.JSONKeys;
 import javafx.stage.Stage;
+import main.LoggingInterface;
 import main.UIInterface;
 
 public class CLI implements UIInterface, PropertyChangeListener {
 
 	@Override
-	public void start() {
-		ServerConnection serverConnection = new ServerConnection(this);
-		serverConnection.init();
+	public void start(LoggingInterface logger) {
+		ServerConnection serverConnection = new ServerConnection(this, logger);
 
 		Scanner consoleInput = new Scanner(System.in);
 		// #if Authentication
@@ -27,7 +27,7 @@ public class CLI implements UIInterface, PropertyChangeListener {
 		String password = consoleInput.nextLine();
 		serverConnection.firstAuthentication(username, password);
 		// #else
-		// @ serverConnection.firstAuthentication("admin", "admin");
+//@		 serverConnection.firstAuthentication("admin", "admin");
 		// #endif
 		serverConnection.updateMessages();
 
@@ -53,7 +53,7 @@ public class CLI implements UIInterface, PropertyChangeListener {
 	}
 
 	@Override
-	public void javaFXStart(Stage primaryStage) {
+	public void javaFXStart(Stage primaryStage, LoggingInterface logger) {
 		throw new UnsupportedOperationException("this interface does not use JavaFX");
 	}
 

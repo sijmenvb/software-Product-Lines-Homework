@@ -8,6 +8,7 @@ import backend.ServerConnection;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import main.LoggingInterface;
 import main.UIInterface;
 
 public class GUI implements UIInterface {
@@ -27,21 +28,19 @@ public class GUI implements UIInterface {
 	}
 
 	@Override
-	public void javaFXStart(Stage primaryStage) {
+	public void javaFXStart(Stage primaryStage, LoggingInterface logger) {
 		JavaFXPrimaryStage = primaryStage;
-		ServerConnection serverConnection = new ServerConnection(this);
+		ServerConnection serverConnection = new ServerConnection(this, logger);
 		
-		this.chatWindow = new ChatWindow(serverConnection);
-		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), serverConnection);
-		serverConnection.init();//makes sure the chatWindow is available
+		this.chatWindow = new ChatWindow(serverConnection, logger);
 		
-
-		primaryStage.setTitle("Hello World!");
+		primaryStage.setTitle("AmazingChatApp!");
 		// #if Authentication
+		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), serverConnection, logger);
 		Authentication root = authentication;
 		// #else
 //@		serverConnection.firstAuthentication("admin", "admin");
-//@		ChatWindow root = serverConnection.getChatWindow();
+//@		ChatWindow root = this.chatWindow;
 		// #endif
 		primaryStage.setScene(new Scene(root, 1280, 720));
 		primaryStage.show();
@@ -81,7 +80,7 @@ public class GUI implements UIInterface {
 	}
 
 	@Override
-	public void start() {
+	public void start(LoggingInterface logger) {
 		throw new UnsupportedOperationException("this interface uses JavaFX use javaFXStart() instead");
 		
 	}
