@@ -21,13 +21,13 @@ public class CLI implements UIInterface, PropertyChangeListener {
 
 		Scanner consoleInput = new Scanner(System.in);
 		// #if Authentication
-		System.out.println("username:");
-		String username = consoleInput.nextLine();
-		System.out.println("password:");
-		String password = consoleInput.nextLine();
-		serverConnection.firstAuthentication(username, password);
+//@		System.out.println("username:");
+//@		String username = consoleInput.nextLine();
+//@		System.out.println("password:");
+//@		String password = consoleInput.nextLine();
+//@		serverConnection.firstAuthentication(username, password);
 		// #else
-//@		 serverConnection.firstAuthentication("admin", "admin");
+		 serverConnection.firstAuthentication("admin", "admin");
 		// #endif
 		serverConnection.updateMessages();
 

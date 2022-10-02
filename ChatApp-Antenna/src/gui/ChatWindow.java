@@ -15,6 +15,7 @@ import enums.JSONKeys;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -33,11 +34,13 @@ import main.ButtonInterface;
 import main.LoggingInterface;
 import main.PluginLoader;
 import main.UIInterface;
+import main.LoggingInterface;
 
 //extends VBox so it is a javaFX element and can be used as such.
 public class ChatWindow extends VBox implements PropertyChangeListener {
 	private final int SPACING = 5;// how much space is between the different elements.
 	private ServerConnection serverConnectionRef;
+	private LoggingInterface logger;
 
 	private LinkedList<ButtonInterface> buttonInterfaceList;
 
@@ -47,7 +50,6 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 	private TextFlow textFlow;// special box to combine and display formatted (e.g. colored) text.
 
-	private LoggingInterface logger;
 
 	/**
 	 * a window providing a view of messages and an input field + send button.
@@ -74,9 +76,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
 		// #if Encryption
-		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
-		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
-		encryptionComboBox.setValue(Algorithms.AES.toString());
+//@		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
+//@		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
+//@		encryptionComboBox.setValue(Algorithms.AES.toString());
 		// #endif
 
 		File pluginFolder = new File("Plugins");
@@ -88,7 +90,7 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 		HBox textInputContainer = new HBox(SPACING, textInput, sendButton
 		// #if Encryption
-				, encryptionComboBox
+//@				, encryptionComboBox
 				// #endif
 				, refreshButton);
 		for (ButtonInterface buttonInterface : buttonInterfaceList) {
@@ -100,12 +102,11 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
 				logger.debug(this.getClass().getName(), "Send button pressed.");
-
 				send(textInput.getText(), retrieveColorFromButtonInterfaceList(Color.BLACK)
 				// #if Encryption
-				, encryptionComboBox.getValue()
+//@				, encryptionComboBox.getValue()
 				// #else
-//@						, Algorithms.None.toString()
+						, Algorithms.None.toString()
 				// #endif
 				);
 				textInput.clear();

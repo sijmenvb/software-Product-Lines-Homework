@@ -36,11 +36,11 @@ public class GUI implements UIInterface {
 		
 		primaryStage.setTitle("AmazingChatApp!");
 		// #if Authentication
-		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), serverConnection, logger);
-		Authentication root = authentication;
+//@		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), serverConnection, logger);
+//@		Authentication root = authentication;
 		// #else
-//@		serverConnection.firstAuthentication("admin", "admin");
-//@		ChatWindow root = this.chatWindow;
+		serverConnection.firstAuthentication("admin", "admin");
+		ChatWindow root = this.chatWindow;
 		// #endif
 		primaryStage.setScene(new Scene(root, 1280, 720));
 		primaryStage.show();
