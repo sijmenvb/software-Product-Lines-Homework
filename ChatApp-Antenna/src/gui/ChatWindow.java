@@ -3,6 +3,9 @@ package gui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 //#if Logging
 //@import org.apache.log4j.Logger;
 //#endif
@@ -41,7 +44,7 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	private final int SPACING = 5;// how much space is between the different elements.
 	private ServerConnection serverConnectionRef;
 	
-	private ButtonInterface ci;
+	private LinkedList<ButtonInterface> buttonInterfaceList;
 
 	// font settings
 	private String fontFamily = "Helvetica";
@@ -83,7 +86,8 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
 		encryptionComboBox.setValue(Algorithms.AES.toString());
 		//#endif
-		ci = new ColorButton();
+		buttonInterfaceList = new LinkedList<ButtonInterface>();
+		buttonInterfaceList.add(new ColorButton());
 
 		Button refreshButton = new Button("Refresh");
 
@@ -92,7 +96,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 				, encryptionComboBox
 				//#endif
 				, refreshButton);
-		textInputContainer.getChildren().add(ci.getNode());
+		for (ButtonInterface buttonInterface : buttonInterfaceList) {
+			textInputContainer.getChildren().add(buttonInterface.getNode());
+		}
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
@@ -102,8 +108,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 //@				log.debug("Send button pressed.");
 				//#endif
 				
+
 				send(textInput.getText()
-						, ci.getColor()
+						, retrieveColorFromButtonInterfaceList(Color.BLACK)
 						//#if Encryption
 						, encryptionComboBox.getValue()
 						//#else
@@ -205,6 +212,16 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		updateMessages((JSONArray) evt.getNewValue());		
+	}
+	
+	private Color retrieveColorFromButtonInterfaceList(Color defaultColor) {
+		for (ButtonInterface buttonInterface : buttonInterfaceList) {
+			Color color = buttonInterface.getColor();
+			if(color != null) {
+				return color;
+			}
+		}
+		return defaultColor;
 	}
 
 }
