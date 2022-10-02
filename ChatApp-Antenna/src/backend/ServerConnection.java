@@ -51,9 +51,12 @@ public class ServerConnection
 	public ServerConnection(UIInterface ui) {
 		this.ui = ui;
 		this.chatBackEnd = new ChatBackEnd(this);
+	}
+	
+	public void init() {
 		this.chatBackEnd.addPropertyChangeListener(ui.getPropertyChangeListener());
 	}
-
+	
 	public boolean firstAuthentication(String username, String password) {
 		this.username = username;// update the user name
 		this.password = hash(password);// update the password
