@@ -8,6 +8,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import logging.NullLogging;
 
 public class Main extends Application {
 	public static void main(String[] args) {
@@ -20,13 +21,22 @@ public class Main extends Application {
 			System.err.println("APPLICATION REQUIRES UI PLUGIN!");
 			return;
 		}
+		
+		LinkedList<LoggingInterface> loggersList = PluginLoader.loadClasses(pluginFolder, LoggingInterface.class);
+		LoggingInterface logger = null;
+		if(loggersList.isEmpty()) {
+			logger = new NullLogging();
+		} else {
+			logger = loggersList.getFirst();
+			logger.Init();
+		}
 
 		UIInterface ui = uiList.getFirst();
 		
 		if (ui.usesJavafx()) {
 			launch(args);
 		} else {
-			ui.start();
+			ui.start(logger);
 		}
 	}
 
@@ -41,9 +51,19 @@ public class Main extends Application {
 			System.err.println("APPLICATION REQUIRES UI PLUGIN!");
 			return;
 		}
+		
+		LinkedList<LoggingInterface> loggersList = PluginLoader.loadClasses(pluginFolder, LoggingInterface.class);
+		LoggingInterface logger = null;
+		if(loggersList.isEmpty()) {
+			logger = new NullLogging();
+		} else {
+			logger = loggersList.getFirst();
+			logger.Init();
+		}
+
 
 		UIInterface ui = uiList.getFirst();
 
-		ui.javaFXStart(primaryStage);
+		ui.javaFXStart(primaryStage, logger);
 	}
 }

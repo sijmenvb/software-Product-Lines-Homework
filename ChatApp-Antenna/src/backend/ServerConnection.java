@@ -1,7 +1,5 @@
 package backend;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -14,45 +12,48 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-//#if Logging
-//@import org.apache.log4j.Logger;
-//@import org.apache.commons.lang3.exception.ExceptionUtils;
-//#endif
 
 import encryption.NoneEncryption;//default encryption
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import org.json.JSONException;
+import org.json.JSONObject;
+import encryption.AESEncryption;
+import encryption.ReverseStringEncryption;
 import enums.ActionType;
 import enums.Algorithms;
 import enums.JSONKeys;
 import enums.ResultCodes;
 import javafx.scene.paint.Color;
-
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import main.EncryptionInterface;
 import main.PluginLoader;
+import main.LoggingInterface;
+
 import main.UIInterface;
 
-public class ServerConnection
-{
+public class ServerConnection {
 	static final int portNumber = 42069;
 	private UIInterface ui;
 	private ChatBackEnd chatBackEnd;
 	private String token = "";
 
-	// #if Logging
-//@	static Logger log = Logger.getLogger(ServerConnection.class.getName());
-	// #endif
+	private LoggingInterface logger;
 
 	private String username = "";
 	private String password = "";
+
 	private EncryptionInterface encryptionClass;
 	
 	
-	public ServerConnection(UIInterface ui) {
+	public ServerConnection(UIInterface ui,LoggingInterface logger) {
 		this.ui = ui;
 		this.chatBackEnd = new ChatBackEnd(this);
-		
+		this.logger = logger;
 		//load the encryption algorithm
 		File pluginFolder = new File("Plugins");
 		LinkedList<EncryptionInterface> uiList = PluginLoader.loadClasses(pluginFolder, EncryptionInterface.class);
@@ -68,7 +69,7 @@ public class ServerConnection
 	public void init() {
 		this.chatBackEnd.addPropertyChangeListener(ui.getPropertyChangeListener());
 	}
-	
+
 	public boolean firstAuthentication(String username, String password) {
 		this.username = username;// update the user name
 		this.password = hash(password);// update the password
@@ -98,29 +99,24 @@ public class ServerConnection
 		message.put(JSONKeys.USERNAME.toString(), username);
 		message.put(JSONKeys.PASSWORD.toString(), hashedPassword);
 
-		// #if Logging
-//@		log.debug(String.format("User '%s' is trying to log in. Response from the server received.", username));
-		// #endif
+
+		logger.debug(this.getClass().getName(),
+				String.format("User '%s' is trying to log in. Response from the server received.", username));
 		JSONObject res = sendData(encrypt(message.toString()));
 
 		try {
 			if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {// if authentication
 																									// was successful
 				token = res.getString(JSONKeys.TOKEN.toString());// update the token
-				// #if Logging
-//@				log.info(String.format("User '%s' logged in.", username));
-				// #endif
+				logger.info(this.getClass().getName(), String.format("User '%s' logged in.", username));
 				return true;
 			}
 		} catch (JSONException e) {
-			// #if Logging
-//@			log.error(String.format("JSONException occured. %s", ExceptionUtils.getStackTrace(e)));
-			// #endif
+			logger.error(this.getClass().getName(),
+					String.format("JSONException occured. %s", ExceptionUtils.getStackTrace(e)));
 		}
 
-		// #if Logging
-//@		log.error("Failed login attempt.");
-		// #endif
+		logger.error(this.getClass().getName(), "Failed login attempt.");
 		return false;
 	}
 
@@ -146,17 +142,14 @@ public class ServerConnection
 		message.put(JSONKeys.TOKEN.toString(), token);
 		message.put(JSONKeys.USERNAME.toString(), username);
 
-		// #if Logging
-//@		log.debug("Messages are tried to be updated. Response from the server received.");
-		// #endif
+
+		logger.debug(this.getClass().getName(), "Messages are tried to be updated. Response from the server received.");
 		JSONObject res = sendData(encrypt(message.toString()));
+
 
 		// if message sending was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
-			// #if Logging
-//@			log.debug("Messages have been updated");
-			// #endif
-
+			logger.debug(this.getClass().getName(), "Messages have been updated");
 			// refreshUI(res.getJSONArray(JSONKeys.MESSAGES.toString()));
 			chatBackEnd.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
@@ -164,10 +157,10 @@ public class ServerConnection
 		else if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.NotAuthenticated.toString())) {
 			Authenticate(this.username, this.password);
 		} else {
-			// #if Logging
-//@			log.error(String.format("Something went wrong with messages update. Response code: %s.",
-//@					res.getString(JSONKeys.RESULT_CODE.toString())));
-			// #endif
+
+			logger.error(this.getClass().getName(),
+					String.format("Something went wrong with messages update. Response code: %s.",
+							res.getString(JSONKeys.RESULT_CODE.toString())));
 		}
 	}
 
@@ -190,24 +183,25 @@ public class ServerConnection
 		message.put(JSONKeys.COLOR.toString(), color.toString());
 		message.put(JSONKeys.USERNAME.toString(), username);
 
-		// #if Logging
-//@		log.debug("Message is tried to be sent.");
-		// #endif
+
+		logger.debug(this.getClass().getName(), "Message is tried to be sent.");
 		JSONObject res = sendData(encrypt(message.toString()));
+
 
 		// if message sending was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
 			ui.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
-			// #if Logging
-//@			log.info(String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
-			// #endif
+
+			logger.info(this.getClass().getName(),
+					String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
 		} else {
-			// #if Logging
-//@			log.error(String.format("Something went wrong with message sending. Response code: %s",
-//@					res.getString(JSONKeys.RESULT_CODE.toString())));
-			// #endif
+
+			logger.error(this.getClass().getName(),
+					String.format("Something went wrong with message sending. Response code: %s",
+							res.getString(JSONKeys.RESULT_CODE.toString())));
 		}
 	}
+
 	/**
 	 * sends the data to the server and returns the result as a JSONObject.
 	 * 
@@ -219,52 +213,37 @@ public class ServerConnection
 			Socket skt = new Socket("localhost", portNumber);
 			// send the data
 
-			// #if Logging
-//@			log.debug("Socket with localhost opened.");
-			// #endif
+			logger.debug(this.getClass().getName(), "Socket with localhost opened.");
 			PrintWriter out = new PrintWriter(skt.getOutputStream(), true);
 			out.println(data);
-			// #if Logging
-//@			log.debug("Data sent to the server. Waiting for the response.");
-			// #endif
-
+			logger.debug(this.getClass().getName(), "Data sent to the server. Waiting for the response.");
 			// receive the reply.
 			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 			while (!in.ready()) {
 			}
-			// #if Logging
-//@			log.debug("Response from the server is ready.");
-			// #endif
+
+			logger.debug(this.getClass().getName(), "Response from the server is ready.");
 
 			output = new JSONObject(decrypt(in.readLine()));// Read one line, decrypt and output it
-			// #if Logging
-//@			log.debug("Response received.");
-			// #endif
+			logger.debug(this.getClass().getName(), "Response received.");
 			out.close();
 			in.close();
 			skt.close();
-			// #if Logging
-//@			log.debug("Socket, buffer in and printer our are closed.");
-			// #endif
+			logger.debug(this.getClass().getName(), "Socket, buffer in and printer our are closed.");
 		} catch (JSONException e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
-			// #if Logging
-//@			log.error(String.format("JSONParseError occured when trying to send data. %s",
-//@					ExceptionUtils.getStackTrace(e)));
-			// #endif
+			logger.error(this.getClass().getName(), String.format("JSONParseError occured when trying to send data. %s",
+					ExceptionUtils.getStackTrace(e)));
 
 		} catch (Exception e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
-			// #if Logging
-//@			log.error(String.format("An error occured when trying to send data. %s", ExceptionUtils.getStackTrace(e)));
-			// #endif
+			logger.error(this.getClass().getName(),
+					String.format("An error occured when trying to send data. %s", ExceptionUtils.getStackTrace(e)));
 		}
 
-		// #if Logging
-//@		log.debug("Data was successfully sent");
-		// #endif
+		logger.debug(this.getClass().getName(), "Data was successfully sent");
 		return output;
 	}
 
@@ -279,42 +258,34 @@ public class ServerConnection
 		JSONObject incomingJson = new JSONObject(encryptedMessage);
 		String encryptionType = incomingJson.getString(JSONKeys.ENCRYPTION.toString());
 		
-		//TODO: add log for none encryption
+		
 		if (encryptionType.equals(Algorithms.AES.toString())) {
-			// #if Logging
-//@			log.debug("Encryption: AES.");
-			// #endif
-			
-		} else { // encryption is string reverse
-			// #if Logging
-//@			log.debug("Encryption: Reverse string.");
-			// #endif
+			logger.debug(this.getClass().getName(), "Encryption: AES.");
+		} else if (encryptionType.equals(Algorithms.REVERSE.toString())){ // encryption is string reverse
+			logger.debug(this.getClass().getName(), "Encryption: Reverse string.");	
+		}else {
+			logger.debug(this.getClass().getName(), "Encryption: None.");	
 		}
 		String originalMessage = encryptionClass.decrypt(incomingJson.getString(JSONKeys.ENCRYPTED_MESSAGE.toString()));
-		// #if Logging
-//@		log.debug("Data was successfully decrypted.");
-		// #endif
+		logger.debug(this.getClass().getName(), "Data was successfully decrypted.");
 		return originalMessage;
 	}
 
 	private String encrypt(String message) {
 		JSONObject jsonForConnection = new JSONObject();
+
 		jsonForConnection.put(JSONKeys.ENCRYPTION.toString(), encryptionClass.getEncryptionType().toString());
-		//TODO: add log for none encryption
+		
 		if (encryptionClass.getEncryptionType().equals(Algorithms.AES)) {
-			// #if Logging
-//@			log.debug("Encryption: AES.");
-			// #endif
-		} else { // encryption is string reverse
-			// #if Logging
-//@			log.debug("Encryption: Reverse string.");
-			// #endif
+			logger.debug(this.getClass().getName(), "Encryption: AES.");
+		} else if (encryptionClass.getEncryptionType().equals(Algorithms.AES)) { // encryption is string reverse
+			logger.debug(this.getClass().getName(), "Encryption: Reverse string.");
+		} else {
+			logger.debug(this.getClass().getName(), "Encryption: None.");
 		}
 
 		jsonForConnection.put(JSONKeys.ENCRYPTED_MESSAGE.toString(), encryptionClass.encrypt(message));
-		// #if Logging
-//@		log.debug("Data was successfully encrypted.");
-		// #endif
+		logger.debug(this.getClass().getName(), "Data was successfully encrypted.");
 		return jsonForConnection.toString();
 	}
 
