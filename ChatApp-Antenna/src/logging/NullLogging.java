@@ -1,71 +1,62 @@
-package logger;
+package logging;
 
-import org.apache.log4j.Logger;
 import main.ILogging;
 
-public class Logging implements ILogging {
-
-	private Logger logger;
+public class NullLogging implements ILogging {
 
 	@Override
 	public void Init() {
-		logger = Logger.getLogger(Logging.class.getName());
+		return;
 	}
 
 	@Override
 	public void debug(String className, String message) {
-		logger.debug(className + " - " + message);
+		return;
 	}
 
 	@Override
 	public void debug(String className, String message, Throwable throwable) {
-		logger.debug(className + " - " + message, throwable);
+		return;
 	}
 
 	@Override
 	public void info(String className, String message) {
-		logger.info(className + " - " + message);
-
+		return;
 	}
 
 	@Override
 	public void info(String className, String message, Throwable throwable) {
-		logger.info(className + " - " + message, throwable);
-
+		return;
 	}
 
 	@Override
 	public void warn(String className, String message) {
-		logger.warn(className + " - " + message);
-
+		return;
 	}
 
 	@Override
 	public void warn(String className, String message, Throwable throwable) {
-		logger.warn(className + " - " + message, throwable);
-
+		return;
 	}
 
 	@Override
 	public void error(String className, String message) {
-		logger.error(className + " - " + message);
-
+		return;
 	}
 
 	@Override
 	public void error(String className, String message, Throwable throwable) {
-		logger.error(className + " - " + message, throwable);
-
+		return;
 	}
 
 	@Override
 	public void fatal(String className, String message) {
-		logger.fatal(className + " - " + message);
-
+		return;
 	}
 
 	@Override
 	public void fatal(String className, String message, Throwable throwable) {
-		logger.fatal(className + " - " + message, throwable);
+		return;
 	}
+
 }

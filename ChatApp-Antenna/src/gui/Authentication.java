@@ -3,10 +3,6 @@
 //@
 //@import javafx.scene.control.PasswordField;
 //@
-//#if Logging
-//@import org.apache.log4j.Logger;
-//#endif
-//@
 //@import backend.ServerConnection;
 //@import javafx.event.ActionEvent;
 //@import javafx.event.EventHandler;
@@ -14,7 +10,7 @@
 //@import javafx.scene.control.Button;
 //@import javafx.scene.layout.VBox;
 //@import javafx.stage.Stage;
-//@import logger.interfaces.ILogger;
+//@import main.ILogging;
 //@import javafx.scene.control.Label;
 //@import javafx.scene.control.TextField;
 //@
@@ -33,16 +29,12 @@
 //@	private Stage primaryStage;
 //@	private Scene nextScene;
 //@
-	//#if Logging
-//@	private ILogger logger;
-	//#endif
+//@	private ILogging logger;
 //@
 //@	// calling constructor
-//@	public Authentication(Stage primaryStage, Scene nextScene, ServerConnection serverConnection, ILogger logger) {
+//@	public Authentication(Stage primaryStage, Scene nextScene, ServerConnection serverConnection, ILogging logger) {
 //@		this.logger = logger;
-		//#if Logging
 //@		this.logger.debug(this.getClass().getName(), "Authentication window created.");
-		//#endif
 //@		serverConnectionRef = serverConnection;
 //@		// set the next page
 //@		this.primaryStage = primaryStage;
@@ -84,17 +76,12 @@
 //@		if (serverConnectionRef.firstAuthentication(inputUsername, inputPassword)) {
 //@			primaryStage.setScene(nextScene);
 //@			// populate the chatBox
-			//#if Logging
 //@			logger.debug(this.getClass().getName(), "Credentials of the user successfully verified.");
-			//#endif
 //@			return;
 //@		}
 //@		feedbackLabel.setText(String.format("(%d) username/password invalid", loginAttempts));
 //@		loginAttempts++;
-		//#if Logging
 //@		logger.debug(this.getClass().getName(), "Failed credentials verification attempt.");
-		//#endif
-//@
 //@	}
 //@
 //@}

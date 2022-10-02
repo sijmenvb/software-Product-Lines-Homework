@@ -1,6 +1,7 @@
-package logger.interfaces;
+package main;
 
 public interface ILogging {
+	void Init();
 	void debug(String className, String message);
 	void debug(String className, String message, Throwable throwable);
 	void info(String className, String message);

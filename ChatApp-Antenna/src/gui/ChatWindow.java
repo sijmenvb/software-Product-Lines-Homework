@@ -3,9 +3,6 @@
 //@
 //@import java.beans.PropertyChangeEvent;
 //@import java.beans.PropertyChangeListener;
-//#if Logging
-//@import org.apache.log4j.Logger;
-//#endif
 //@import org.json.JSONArray;
 //@import org.json.JSONObject;
 //@
@@ -33,7 +30,7 @@
 //@import javafx.scene.text.FontWeight;
 //@import javafx.scene.text.Text;
 //@import javafx.scene.text.TextFlow;
-//@import logger.interfaces.ILogging;
+//@import main.ILogging;
 //@
 //@//extends VBox so it is a javaFX element and can be used as such.
 //@public class ChatWindow extends VBox implements PropertyChangeListener {
@@ -51,19 +48,15 @@
 //@
 //@	private JSONArray currentMessages = new JSONArray();
 //@
-	// #if Logging
 //@	private ILogging logger;
-	// #endif
 //@
 //@	/**
 //@	 * a window providing a view of messages and an input field + send button.
 //@	 * 
 //@	 */
 //@	public ChatWindow(ServerConnection serverConnection, ILogging logger) {
-		// #if Logging
 //@		this.logger = logger;
 //@		this.logger.debug(this.getClass().getName(), "ChatWindow created.");
-		// #endif
 //@
 //@		serverConnectionRef = serverConnection;
 //@
@@ -104,9 +97,7 @@
 //@		// text input.
 //@		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 //@			public void handle(ActionEvent arg0) {
-				// #if Logging
 //@				logger.debug(this.getClass().getName(), "Send button pressed.");
-				// #endif
 //@
 //@				send(textInput.getText()
 				// #if Color
@@ -126,9 +117,7 @@
 //@
 //@		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
 //@			public void handle(ActionEvent arg0) {
-				// #if Logging
 //@				logger.debug(this.getClass().getName(), "Refresh button pressed.");
-				// #endif
 //@				serverConnectionRef.updateMessages();
 //@			}
 //@		});
@@ -204,10 +193,8 @@
 //@	 * @param encryption algorithm used.
 //@	 */
 //@	private void send(String text, Color color, String encryption) {
-		// #if Logging
 //@		logger.info(this.getClass().getName(),
 //@				String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
-		// #endif
 //@		serverConnectionRef.sendMessage(text + "\n", color, Algorithms.fromString(encryption));
 //@	}
 //@

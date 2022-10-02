@@ -1,8 +1,12 @@
 package main;
 
+import java.io.File;
+import java.util.LinkedList;
+
 import backend.ServerConnection;
-import logger.Logging;
-import logger.interfaces.ILogging;
+import logging.NullLogging;
+
+import org.apache.log4j.Logger;
 
 //#if !CLI
 //@import gui.Authentication;
@@ -11,8 +15,6 @@ import logger.interfaces.ILogging;
 //@import javafx.application.Application;
 //@import javafx.scene.Scene;
 //@import javafx.stage.Stage;
-//@import logger.Logging;
-//@import logger.interfaces.ILogger;
 //#endif
 
 public class Main
@@ -22,14 +24,26 @@ public class Main
 {
 
 	private final long[] frameTimes = new long[100];
-	private ILogging logger;
-
 	private int frameTimeIndex = 0;
 	private boolean arrayFilled = false;
 
-	public static void main(String[] args) {
-		// #if CLI
-		ServerConnection serverConnection = new ServerConnection(new Logging());
+	public static void main(String[] args) {		
+		//#if CLI
+		File pluginFolder = new File("Plugins");
+		pluginFolder.mkdir();// create plugins folder in current location.
+		
+		//load the plugins that implement MyInterface
+		LinkedList<ILogging> loggersList = PluginLoader.loadClasses(pluginFolder, ILogging.class);
+		
+		ILogging logger = null;
+		
+		if(loggersList.isEmpty()) {
+			logger = new NullLogging();
+		} else {
+			logger = loggersList.getFirst();
+			logger.Init();
+		}
+		ServerConnection serverConnection = new ServerConnection(logger);
 	}
 	// #else
 //@		launch(args);
@@ -39,7 +53,20 @@ public class Main
 //@
 //@	@Override
 //@	public void start(final Stage primaryStage) {
-//@		ServerConnection serverConnection = new ServerConnection(primaryStage, new Logging());
+//@		File pluginFolder = new File("Plugins");
+//@		pluginFolder.mkdir();// create plugins folder in current location.
+//@		
+//@		LinkedList<ILogging> loggersList = PluginLoader.loadClasses(pluginFolder, ILogging.class);
+//@		
+//@		ILogging logger = null;
+//@		if(loggersList.isEmpty()) {
+//@			logger = new NullLogging();
+//@		} else {
+//@			logger = loggersList.getFirst();
+//@			logger.Init();
+//@		}
+//@		
+//@		ServerConnection serverConnection = new ServerConnection(primaryStage, logger);
 //@
 //@		primaryStage.setTitle("Hello World!");
 	// #if Authentication
