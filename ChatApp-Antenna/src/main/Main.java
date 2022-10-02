@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.LinkedList;
 
 import backend.ServerConnection;
+import gui.AuthenticationInterface;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -20,13 +21,20 @@ public class Main extends Application {
 			System.err.println("APPLICATION REQUIRES UI PLUGIN!");
 			return;
 		}
+		
+		LinkedList<AuthenticationInterface> authList = PluginLoader.loadClasses(pluginFolder, AuthenticationInterface.class);
+		if (authList.isEmpty()) {
+			System.err.println("APPLICATION REQUIRES AUTH PLUGIN!");
+			return;
+		}
 
 		UIInterface ui = uiList.getFirst();
+		AuthenticationInterface auth = authList.getFirst();
 		
 		if (ui.usesJavafx()) {
 			launch(args);
 		} else {
-			ui.start();
+			ui.start(auth);
 		}
 	}
 
@@ -41,9 +49,16 @@ public class Main extends Application {
 			System.err.println("APPLICATION REQUIRES UI PLUGIN!");
 			return;
 		}
+		
+		LinkedList<AuthenticationInterface> authList = PluginLoader.loadClasses(pluginFolder, AuthenticationInterface.class);
+		if (authList.isEmpty()) {
+			System.err.println("APPLICATION REQUIRES AUTH PLUGIN!");
+			return;
+		}
 
 		UIInterface ui = uiList.getFirst();
+		AuthenticationInterface auth = authList.getFirst();
 
-		ui.javaFXStart(primaryStage);
+		ui.javaFXStart(primaryStage, auth);
 	}
 }
