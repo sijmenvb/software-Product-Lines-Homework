@@ -1,8 +1,10 @@
-//#if !CLI
 package gui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.util.LinkedList;
+
 //#if Logging
 //@import org.apache.log4j.Logger;
 //#endif
@@ -10,16 +12,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import backend.ServerConnection;
-import buttons.ColorButton;
 import javafx.application.Platform;
 import enums.Algorithms;
 import enums.JSONKeys;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;	
-//#if Color
-import javafx.scene.control.ColorPicker;
-//#endif
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -35,13 +33,15 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import main.ButtonInterface;
+import main.PluginLoader;
+import main.UIInterface;
 
 //extends VBox so it is a javaFX element and can be used as such.
 public class ChatWindow extends VBox implements PropertyChangeListener {
 	private final int SPACING = 5;// how much space is between the different elements.
 	private ServerConnection serverConnectionRef;
 	
-	private ButtonInterface ci;
+	private LinkedList<ButtonInterface> buttonInterfaceList;
 
 	// font settings
 	private String fontFamily = "Helvetica";
@@ -83,7 +83,11 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
 		encryptionComboBox.setValue(Algorithms.AES.toString());
 		//#endif
-		ci = new ColorButton();
+		
+		File pluginFolder = new File("Plugins");
+		pluginFolder.mkdir();
+
+		buttonInterfaceList = PluginLoader.loadClasses(pluginFolder, ButtonInterface.class);
 
 		Button refreshButton = new Button("Refresh");
 
@@ -92,7 +96,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 				, encryptionComboBox
 				//#endif
 				, refreshButton);
-		textInputContainer.getChildren().add(ci.getNode());
+		for (ButtonInterface buttonInterface : buttonInterfaceList) {
+			textInputContainer.getChildren().add(buttonInterface.getNode());
+		}
 
 		// make send button run the send function with the provided text and clear the
 		// text input.
@@ -102,8 +108,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 //@				log.debug("Send button pressed.");
 				//#endif
 				
+
 				send(textInput.getText()
-						, ci.getColor()
+						, retrieveColorFromButtonInterfaceList(Color.BLACK)
 						//#if Encryption
 						, encryptionComboBox.getValue()
 						//#else
@@ -206,6 +213,15 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	public void propertyChange(PropertyChangeEvent evt) {
 		updateMessages((JSONArray) evt.getNewValue());		
 	}
+	
+	private Color retrieveColorFromButtonInterfaceList(Color defaultColor) {
+		for (ButtonInterface buttonInterface : buttonInterfaceList) {
+			Color color = buttonInterface.getColor();
+			if(color != null) {
+				return color;
+			}
+		}
+		return defaultColor;
+	}
 
 }
-//#endif
