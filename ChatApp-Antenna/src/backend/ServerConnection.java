@@ -56,52 +56,15 @@ public class ServerConnection
 	private String password = "";
 	private final String jsonEncryptionKey = "p:=l,]kHGv'eByu";
 
-	// #if CLI
-//@	public ServerConnection() {
-//@		this.chatBackEnd = new ChatBackEnd(this);
-//@		this.chatBackEnd.addPropertyChangeListener(this);
-//@		Scanner consoleInput = new Scanner(System.in);
-	// #if Authentication
-//@		System.out.println("username:");
-//@		String username = consoleInput.nextLine();
-//@		System.out.println("password:");
-//@		String password = consoleInput.nextLine();
-//@		firstAuthentication(username, password);
-	// #else
-//@		firstAuthentication("admin", "admin");
-	// #endif
-//@		updateMessages();
-//@
-//@		
-//@		consoleInput.nextLine();
-//@	}
-//@	
-//@	//TODO: make the update actually work!
-//@	@Override
-//@	public void propertyChange(PropertyChangeEvent evt) {
-//@		System.out.println("event name:"+evt.getPropertyName());
-//@		refreshUI((JSONArray) evt.getNewValue());
-//@	}
-//@
-//@	private void refreshUI(JSONArray messages) {
-//@		System.out.println("\n\n\n\n\n\n");//clear the console
-//@		for (Object object : messages) {
-//@			if (object instanceof JSONObject) {
-//@				JSONObject textObject = (JSONObject) object;// cast to jsonObject
-//@				System.out.print(textObject.getString(JSONKeys.TEXT.toString()));
-//@			}
-//@		}
-//@	}
-	// #else
+	
 	public ServerConnection(UIInterface ui) {
 		this.ui = ui;
+		this.chatBackEnd = new ChatBackEnd(this);
+		this.chatBackEnd.addPropertyChangeListener(ui.getPropertyChangeListener());
 		if (ui.usesJavafx()) {
 			Stage primaryStage = ui.getJavaFXPrimaryStage();
-			this.chatBackEnd = new ChatBackEnd(this);
-			this.chatBackEnd.addPropertyChangeListener(ui.getPropertyChangeListener());
 		}
 	}
-	// #endif
 
 	public boolean firstAuthentication(String username, String password) {
 		this.username = username;// update the user name

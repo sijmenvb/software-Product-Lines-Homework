@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import org.json.JSONArray;
 
 import backend.ServerConnection;
-import enums.JSONKeys;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -83,6 +82,12 @@ public class GUI implements UIInterface {
 	@Override
 	public void updateMessages(JSONArray messages) {
 		chatWindow.updateMessages(messages);
+	}
+
+	@Override
+	public void start() {
+		throw new UnsupportedOperationException("this interface uses JavaFX use javaFXStart() instead");
+		
 	}
 	
 

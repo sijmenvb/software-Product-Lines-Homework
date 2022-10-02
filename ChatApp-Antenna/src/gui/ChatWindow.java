@@ -48,8 +48,6 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	private ColorPicker colorSelector;
 	//#endif
 
-	private JSONArray currentMessages = new JSONArray();
-
 	//#if Logging
 //@	static Logger log = Logger.getLogger(ChatWindow.class.getName());
 	//#endif

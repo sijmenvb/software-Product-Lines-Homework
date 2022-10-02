@@ -13,6 +13,8 @@ public interface UIInterface {
 	
 	public void javaFXStart(final Stage primaryStage);//will also set JavaFXPrimaryStage
 	
+	public void start();
+	
 	public PropertyChangeListener getPropertyChangeListener();
 	
 	public void updateMessages(JSONArray messages);
