@@ -1,7 +1,7 @@
 package encryption;
-import encryption.Interfaces.Encryption;
+import main.EncryptionInterface;
 
-public class NoneEncryption implements Encryption {
+public class NoneEncryption implements EncryptionInterface {
 
 	@Override
 	public String encrypt(String message) {

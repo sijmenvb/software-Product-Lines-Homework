@@ -1,8 +1,8 @@
 package encryption;
 
-import encryption.Interfaces.Encryption;
+import main.EncryptionInterface;
 
-public class ReverseStringEncryption implements Encryption {
+public class ReverseStringEncryption implements EncryptionInterface {
 
 	@Override
 	public String encrypt(String message) {

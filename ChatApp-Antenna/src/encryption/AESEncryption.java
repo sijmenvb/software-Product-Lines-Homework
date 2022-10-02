@@ -9,9 +9,9 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import encryption.Interfaces.Encryption;
+import main.EncryptionInterface;
 
-public class AESEncryption implements Encryption {
+public class AESEncryption implements EncryptionInterface {
 	private static SecretKeySpec secretKey;
 	private static byte[] key;
 

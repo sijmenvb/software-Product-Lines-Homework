@@ -1,6 +1,6 @@
-package encryption.Interfaces;
+package main;
 
-public interface Encryption {
+public interface EncryptionInterface {
 	String encrypt(final String message);
 	String decrypt(final String message);
 }

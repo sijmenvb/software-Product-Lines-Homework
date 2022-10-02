@@ -19,7 +19,6 @@ import org.json.JSONObject;
 
 import encryption.AESEncryption;
 import encryption.ReverseStringEncryption;
-import encryption.Interfaces.Encryption;
 import enums.ActionType;
 import enums.Algorithms;
 import enums.JSONKeys;
@@ -29,7 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
+import main.EncryptionInterface;
 import main.UIInterface;
 
 public class ServerConnection
@@ -263,7 +262,7 @@ public class ServerConnection
 	private String decrypt(String encryptedMessage) {
 		JSONObject incomingJson = new JSONObject(encryptedMessage);
 		String encryptionType = incomingJson.getString(JSONKeys.ENCRYPTION.toString());
-		Encryption encryptionClass;
+		EncryptionInterface encryptionClass;
 
 		if (encryptionType.equals(Algorithms.AES.toString())) {
 			// #if Logging
@@ -286,7 +285,7 @@ public class ServerConnection
 	private String encrypt(String message, Algorithms encryptionAlg) {
 		JSONObject jsonForConnection = new JSONObject();
 		jsonForConnection.put(JSONKeys.ENCRYPTION.toString(), encryptionAlg.toString());
-		Encryption encryptionClass;
+		EncryptionInterface encryptionClass;
 
 		if (encryptionAlg.equals(Algorithms.AES)) {
 			// #if Logging
