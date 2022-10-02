@@ -27,12 +27,11 @@ import enums.ResultCodes;
 import javafx.scene.paint.Color;
 
 //#if !CLI
-import gui.Authentication;
-import gui.ChatWindow;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 //#endif
+import main.UIInterface;
 
 public class ServerConnection
 //#if CLI
@@ -40,10 +39,10 @@ public class ServerConnection
 //#endif
 {
 	static final int portNumber = 42069;
+	private UIInterface ui;
 	// #if !CLI
-	private ChatWindow chatWindow;
+	
 	// #if Authentication
-//@	private Authentication authentication;
 	// #endif
 	// #endif
 	private ChatBackEnd chatBackEnd;
@@ -62,15 +61,15 @@ public class ServerConnection
 //@		this.chatBackEnd = new ChatBackEnd(this);
 //@		this.chatBackEnd.addPropertyChangeListener(this);
 //@		Scanner consoleInput = new Scanner(System.in);
-		// #if Authentication
+	// #if Authentication
 //@		System.out.println("username:");
 //@		String username = consoleInput.nextLine();
 //@		System.out.println("password:");
 //@		String password = consoleInput.nextLine();
 //@		firstAuthentication(username, password);
-		// #else
+	// #else
 //@		firstAuthentication("admin", "admin");
-		// #endif
+	// #endif
 //@		updateMessages();
 //@
 //@		
@@ -94,13 +93,13 @@ public class ServerConnection
 //@		}
 //@	}
 	// #else
-	public ServerConnection(Stage primaryStage) {
-		this.chatWindow = new ChatWindow(this);
-		this.chatBackEnd = new ChatBackEnd(this);
-		this.chatBackEnd.addPropertyChangeListener(chatWindow);
-		// #if Authentication
-//@		this.authentication = new Authentication(primaryStage, new Scene(chatWindow, 1280, 720), this);
-		// #endif
+	public ServerConnection(UIInterface ui) {
+		this.ui = ui;
+		if (ui.usesJavafx()) {
+			Stage primaryStage = ui.getJavaFXPrimaryStage();
+			this.chatBackEnd = new ChatBackEnd(this);
+			this.chatBackEnd.addPropertyChangeListener(ui.getPropertyChangeListener());
+		}
 	}
 	// #endif
 
@@ -191,8 +190,8 @@ public class ServerConnection
 			// #if Logging
 //@			log.debug("Messages have been updated");
 			// #endif
-			
-			//refreshUI(res.getJSONArray(JSONKeys.MESSAGES.toString()));
+
+			// refreshUI(res.getJSONArray(JSONKeys.MESSAGES.toString()));
 			chatBackEnd.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
 		// try to reauthenticate when server returns NotAuthenticated ResultCode
@@ -226,24 +225,25 @@ public class ServerConnection
 		message.put(JSONKeys.COLOR.toString(), color.toString());
 		message.put(JSONKeys.USERNAME.toString(), username);
 
-	// #if Logging
+		// #if Logging
 //@		log.debug("Message is tried to be sent.");
-	// #endif
+		// #endif
 		JSONObject res = sendData(encrypt(message.toString(), encryptionAlg));
 
 		// if message sending was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
-			chatWindow.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
-	// #if Logging
+			ui.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
+			// #if Logging
 //@			log.info(String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
-	// #endif
+			// #endif
 		} else {
-	// #if Logging
+			// #if Logging
 //@			log.error(String.format("Something went wrong with message sending. Response code: %s",
 //@					res.getString(JSONKeys.RESULT_CODE.toString())));
-	// #endif
+			// #endif
 		}
 	}
+
 	// #endif
 	/**
 	 * sends the data to the server and returns the result as a JSONObject.
@@ -304,18 +304,6 @@ public class ServerConnection
 		// #endif
 		return output;
 	}
-
-	// #if !CLI
-	public ChatWindow getChatWindow() {
-			return chatWindow;
-	}
-
-	// #if Authentication
-//@	public Authentication getAuthentication() {
-//@		return authentication;
-//@	}
-	// #endif
-	// #endif
 
 	/**
 	 * function that decrypts the input applying the decryption algorithm specified

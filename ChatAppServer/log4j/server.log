@@ -28,3 +28,16 @@
 '.
 [INFO] 2022-09-25 14:14:40,764 backend.Communication login - User 'admin' logged in successfully.
 [INFO] 2022-09-25 14:15:31,824 backend.Communication login - User 'admin' logged in successfully.
+[INFO] 2022-10-02 17:35:26,880 backend.Communication login - User 'admin' logged in successfully.
+[ERROR] 2022-10-02 17:37:43,484 backend.Communication communication - Error occured while running the server. java.net.BindException: Address already in use: bind
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.base/sun.nio.ch.Net.bind(Net.java:555)
+	at java.base/sun.nio.ch.Net.bind(Net.java:544)
+	at java.base/sun.nio.ch.NioSocketImpl.bind(NioSocketImpl.java:643)
+	at java.base/java.net.ServerSocket.bind(ServerSocket.java:388)
+	at java.base/java.net.ServerSocket.<init>(ServerSocket.java:274)
+	at java.base/java.net.ServerSocket.<init>(ServerSocket.java:167)
+	at backend.Communication.communication(Communication.java:73)
+	at main.Main.main(Main.java:30)
+
+[INFO] 2022-10-02 17:38:07,562 backend.Communication login - User 'admin' logged in successfully.

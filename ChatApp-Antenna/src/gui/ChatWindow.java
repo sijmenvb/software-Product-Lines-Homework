@@ -80,9 +80,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
 		//#if Encryption
-//@		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
-//@		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
-//@		encryptionComboBox.setValue(Algorithms.AES.toString());
+		final ComboBox<String> encryptionComboBox = new ComboBox<String>();
+		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
+		encryptionComboBox.setValue(Algorithms.AES.toString());
 		//#endif
 		//#if Color
 		colorSelector = new ColorPicker(Color.BLACK);
@@ -94,7 +94,7 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 				, colorSelector
 				//#endif
 				//#if Encryption
-//@				, encryptionComboBox
+				, encryptionComboBox
 				//#endif
 				, refreshButton);
 
@@ -114,9 +114,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 //@						, Color.BLACK
 						//#endif
 						//#if Encryption
-//@						, encryptionComboBox.getValue()
+						, encryptionComboBox.getValue()
 						//#else
-						, Algorithms.None.toString()
+//@						, Algorithms.None.toString()
 						//#endif
 						);
 				textInput.clear();
