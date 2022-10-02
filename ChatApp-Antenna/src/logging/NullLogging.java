@@ -1,8 +1,8 @@
 package logging;
 
-import main.ILogging;
+import main.LoggingInterface;
 
-public class NullLogging implements ILogging {
+public class NullLogging implements LoggingInterface {
 
 	@Override
 	public void Init() {

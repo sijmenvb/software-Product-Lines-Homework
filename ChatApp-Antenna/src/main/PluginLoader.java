@@ -40,7 +40,6 @@ public class PluginLoader {
 						
 						list.add(el);
 						System.out.println(String.format("Successfully loaded %s from \"%s\"", classpath, file.getName()));
-						
 					} catch (Exception e) {
 						// Fail silently
 						// e.printStackTrace();

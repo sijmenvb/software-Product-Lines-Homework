@@ -1,9 +1,9 @@
 package logger;
 
 import org.apache.log4j.Logger;
-import main.ILogging;
+import main.LoggingInterface;
 
-public class Logging implements ILogging {
+public class Logging implements LoggingInterface {
 
 	private Logger logger;
 

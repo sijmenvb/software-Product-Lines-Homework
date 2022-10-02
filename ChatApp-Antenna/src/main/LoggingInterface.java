@@ -1,6 +1,6 @@
 package main;
 
-public interface ILogging {
+public interface LoggingInterface {
 	void Init();
 	void debug(String className, String message);
 	void debug(String className, String message, Throwable throwable);
