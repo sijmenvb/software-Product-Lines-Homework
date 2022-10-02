@@ -3,6 +3,7 @@ package gui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -13,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import backend.ServerConnection;
-import buttons.ColorButton;
 import javafx.application.Platform;
 import enums.Algorithms;
 import enums.JSONKeys;
@@ -38,6 +38,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import main.ButtonInterface;
+import main.PluginLoader;
+import main.UIInterface;
 
 //extends VBox so it is a javaFX element and can be used as such.
 public class ChatWindow extends VBox implements PropertyChangeListener {
@@ -86,8 +88,11 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		encryptionComboBox.getItems().addAll(Algorithms.AES.toString(), Algorithms.REVERSE.toString());
 		encryptionComboBox.setValue(Algorithms.AES.toString());
 		//#endif
-		buttonInterfaceList = new LinkedList<ButtonInterface>();
-		buttonInterfaceList.add(new ColorButton());
+		
+		File pluginFolder = new File("Plugins");
+		pluginFolder.mkdir();
+
+		buttonInterfaceList = PluginLoader.loadClasses(pluginFolder, ButtonInterface.class);
 
 		Button refreshButton = new Button("Refresh");
 
