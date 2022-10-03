@@ -11,6 +11,8 @@ public class Main {
 	static Logger log = Logger.getLogger(Main.class.getName());
 	static String user = "admin";
 	static String pass = "admin";
+	static String noauth = "noauth";
+	static String noauthpass = "noauth";
 
 	/**
 	 * Main function of the server. Runs the SocketServer at the specified port and
@@ -23,6 +25,7 @@ public class Main {
 	public static void main(String args[]) {
 		try {
 			Users.insert(user, pass);
+			Users.insert(noauth, noauthpass);
 		} catch (Exception e) {
 			log.error(String.format("Error occured while adding user. %s", ExceptionUtils.getStackTrace(e)));
 		}
