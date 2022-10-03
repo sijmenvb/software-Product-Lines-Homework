@@ -1,0 +1,9 @@
+A small example project was made: https://github.com/sijmenvb/pluginLoaderExample/tree/master for loading the plugins. This was quite difficult to get right.
+To implement this and actually make the plugins was done by taking our existing code. 
+Replacing the object/classes that we wanted to put in the plugin by a empty interface for said plugin.
+This would result in errors which we would solve by adding functionality to the interface. 
+this was a relatively simple process but it was quite time consuming.
+
+we did not define an interface before implementing it. so we changed the interface every time it required new functionality in an agile manner.
+one notable exception where big changes where needed was in the UI since javafx requires the main function to implement Application. 
+Using the #ifdev's we could make extending optional while with the plugins we needed a structure that could provide both platforms (javaFX and no javaFX). 
