@@ -7,8 +7,10 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import authentication_plugins.AdminUserAuthentication;
 import backend.ServerConnection;
 import enums.JSONKeys;
+import gui.AuthenticationInterface;
 import javafx.stage.Stage;
 import main.LoggingInterface;
 import main.UIInterface;
@@ -16,23 +18,12 @@ import main.UIInterface;
 public class CLI implements UIInterface, PropertyChangeListener {
 
 	@Override
-	public void start(LoggingInterface logger) {
+	public void start(AuthenticationInterface auth, LoggingInterface logger) {
 		ServerConnection serverConnection = new ServerConnection(this, logger);
-
-		Scanner consoleInput = new Scanner(System.in);
-		// #if Authentication
-//@		System.out.println("username:");
-//@		String username = consoleInput.nextLine();
-//@		System.out.println("password:");
-//@		String password = consoleInput.nextLine();
-//@		serverConnection.firstAuthentication(username, password);
-		// #else
-		 serverConnection.firstAuthentication("admin", "admin");
-		// #endif
-		serverConnection.updateMessages();
-
-		consoleInput.nextLine();
-		consoleInput.close();
+		serverConnection.init();
+		
+		auth.setServerConnection(serverConnection);
+		auth.start();
 	}
 
 	// TODO: make the update actually work!
@@ -53,7 +44,7 @@ public class CLI implements UIInterface, PropertyChangeListener {
 	}
 
 	@Override
-	public void javaFXStart(Stage primaryStage, LoggingInterface logger) {
+	public void javaFXStart(Stage primaryStage, AuthenticationInterface auth, LoggingInterface logger) {
 		throw new UnsupportedOperationException("this interface does not use JavaFX");
 	}
 

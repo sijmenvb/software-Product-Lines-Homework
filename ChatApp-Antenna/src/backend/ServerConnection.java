@@ -53,6 +53,7 @@ public class ServerConnection {
 	public ServerConnection(UIInterface ui,LoggingInterface logger) {
 		this.ui = ui;
 		this.chatBackEnd = new ChatBackEnd(this);
+
 		this.logger = logger;
 		//load the encryption algorithm
 		File pluginFolder = new File("Plugins");
