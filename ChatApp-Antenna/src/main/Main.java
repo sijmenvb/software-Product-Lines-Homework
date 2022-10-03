@@ -13,7 +13,7 @@ import logging.NullLogging;
 
 public class Main extends Application {
 	public static void main(String[] args) {
-		
+
 		File pluginFolder = new File("Plugins");
 		pluginFolder.mkdir();
 
@@ -22,14 +22,16 @@ public class Main extends Application {
 			System.err.println("APPLICATION REQUIRES UI PLUGIN!");
 			return;
 		}
-		
-		LinkedList<AuthenticationInterface> authList = PluginLoader.loadClasses(pluginFolder, AuthenticationInterface.class);
+
+		LinkedList<AuthenticationInterface> authList = PluginLoader.loadClasses(pluginFolder,
+				AuthenticationInterface.class);
 		if (authList.isEmpty()) {
 			System.err.println("APPLICATION REQUIRES AUTH PLUGIN!");
 			return;
+		}
 		LinkedList<LoggingInterface> loggersList = PluginLoader.loadClasses(pluginFolder, LoggingInterface.class);
 		LoggingInterface logger = null;
-		if(loggersList.isEmpty()) {
+		if (loggersList.isEmpty()) {
 			logger = new NullLogging();
 		} else {
 			logger = loggersList.getFirst();
@@ -38,17 +40,19 @@ public class Main extends Application {
 
 		UIInterface ui = uiList.getFirst();
 		AuthenticationInterface auth = authList.getFirst();
-		
+
 		if (ui.usesJavafx()) {
 			launch(args);
 		} else {
 			ui.start(auth, logger);
 		}
+
 	}
 
 	@Override
 	public void start(final Stage primaryStage) {
-		//unfortunately we have to load the ui again since we can not pass it in a static context.
+		// unfortunately we have to load the ui again since we can not pass it in a
+		// static context.
 		File pluginFolder = new File("Plugins");
 		pluginFolder.mkdir();
 
@@ -57,21 +61,21 @@ public class Main extends Application {
 			System.err.println("APPLICATION REQUIRES UI PLUGIN!");
 			return;
 		}
-		
-		LinkedList<AuthenticationInterface> authList = PluginLoader.loadClasses(pluginFolder, AuthenticationInterface.class);
+
+		LinkedList<AuthenticationInterface> authList = PluginLoader.loadClasses(pluginFolder,
+				AuthenticationInterface.class);
 		if (authList.isEmpty()) {
 			System.err.println("APPLICATION REQUIRES AUTH PLUGIN!");
 			return;
 		}
 		LinkedList<LoggingInterface> loggersList = PluginLoader.loadClasses(pluginFolder, LoggingInterface.class);
 		LoggingInterface logger = null;
-		if(loggersList.isEmpty()) {
+		if (loggersList.isEmpty()) {
 			logger = new NullLogging();
 		} else {
 			logger = loggersList.getFirst();
 			logger.Init();
 		}
-
 
 		UIInterface ui = uiList.getFirst();
 		AuthenticationInterface auth = authList.getFirst();

@@ -40,17 +40,18 @@ public class GUI implements UIInterface {
 		serverConnection.init();
 
 		auth.setServerConnection(serverConnection);
-		auth.setPrimaryStage(primaryStage);
-		auth.setNextScene(new Scene(this.chatWindow, 1280, 720));
-		auth.start();
 
 		primaryStage.setTitle("Hello World!");
 		if (auth.usesJavafx()) {
+			auth.setPrimaryStage(primaryStage);
+			auth.setNextScene(new Scene(this.chatWindow, 1280, 720));
+			auth.start();
 			primaryStage.setScene(new Scene((Parent) auth, 1280, 720));
 		} else {
+			auth.start();
 			if (auth.userIsLoggedIn()) {
 				primaryStage.setScene(new Scene(this.chatWindow, 1280, 720));
-			} 
+			}
 		}
 
 		primaryStage.show();
