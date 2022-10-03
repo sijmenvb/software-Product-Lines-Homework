@@ -1,9 +1,9 @@
-A small example project was made: https://github.com/sijmenvb/pluginLoaderExample/tree/master for loading the plugins. This was quite difficult to get right.
-To implement this and actually make the plugins was done by taking our existing code. 
-Replacing the object/classes that we wanted to put in the plugin by a empty interface for said plugin.
-This would result in errors which we would solve by adding functionality to the interface. 
-this was a relatively simple process but it was quite time consuming.
+A small example project for loading the plugins was made: https://github.com/sijmenvb/pluginLoaderExample/tree/master. It was quite difficult to get it right in the begining.
+To implement the plugin approach and actually make the plugins, we took the existing code with preprocessor support. 
+We started with replacing the object/classes, which we wanted to put into the plugin, in the places they were used by a empty interface for said plugin.
+This resulted in errors which we would solve by adding functionality to the interface. 
+It was a relatively simple process, but it was quite time consuming at the end.
 
-we did not define an interface before implementing it. so we changed the interface every time it required new functionality in an agile manner.
-one notable exception where big changes where needed was in the UI since javafx requires the main function to implement Application. 
-Using the #ifdev's we could make extending optional while with the plugins we needed a structure that could provide both platforms (javaFX and no javaFX). 
+We did not define an interface before implementing it, but rather changed it every time it required a new functionality (in an agile manner).
+One notable exceptiosn, where big changes where needed, were in the UI classes, because javaFX requires the main function to implement Application. 
+Using the #if's we could make program extention optional, but with the plugins we needed a structure that could support both platforms (javaFX and no javaFX). 
