@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<featureModel>
+	<properties>
+		<graphics key="autolayoutconstraints" value="false"/>
+		<graphics key="legendposition" value="2366,44"/>
+		<graphics key="legendautolayout" value="false"/>
+		<graphics key="showshortnames" value="false"/>
+		<graphics key="layout" value="horizontal"/>
+		<graphics key="showcollapsedconstraints" value="true"/>
+		<graphics key="legendhidden" value="false"/>
+		<graphics key="layoutalgorithm" value="1"/>
+	</properties>
+	<struct>
+		<and abstract="true" mandatory="true" name="ChatAppAntenna">
+			<feature mandatory="true" name="Base"/>
+			<alt abstract="true" mandatory="true" name="UI">
+				<feature name="CLI"/>
+				<feature name="GUI"/>
+			</alt>
+			<alt abstract="true" name="Authentication">
+				<feature name="NoUserAuthentication"/>
+				<feature name="CLIAuthentication"/>
+				<feature name="AdminUserAuthentication"/>
+				<feature name="GUIAuthentication"/>
+			</alt>
+			<feature name="Color"/>
+			<alt abstract="true" mandatory="true" name="Encryption">
+				<feature name="NoneEncryption"/>
+				<feature name="AES"/>
+				<feature name="ReverseString"/>
+			</alt>
+			<alt abstract="true" name="logger">
+				<feature name="NoneLogging"/>
+				<feature name="Logging"/>
+			</alt>
+		</and>
+	</struct>
+	<constraints>
+		<rule>
+			<imp>
+				<var>CLI</var>
+				<not>
+					<var>Color</var>
+				</not>
+			</imp>
+		</rule>
+	</constraints>
+</featureModel>
