@@ -21,14 +21,8 @@ public class GUI implements UIInterface {
 	// private AuthenticationInterface authentication;
 
 	Stage JavaFXPrimaryStage;
-
-	@Override
-	public boolean usesJavafx() {
-		return true;
-	}
-
-	@Override
-	public void javaFXStart(Stage primaryStage, AuthenticationInterface auth, LoggingInterface logger) {
+	
+	public void javaFXStart(final Stage primaryStage, AuthenticationInterface auth, LoggingInterface logger) {
 		JavaFXPrimaryStage = primaryStage;
 		ServerConnection serverConnection = new ServerConnection(this, logger);
 
@@ -76,17 +70,17 @@ public class GUI implements UIInterface {
 		frameRateMeter.start();
 	}
 
-	@Override
+
 	public PropertyChangeListener getPropertyChangeListener() {
 		return this.chatWindow;
 	}
 
-	@Override
+
 	public void updateMessages(JSONArray messages) {
 		chatWindow.updateMessages(messages);
 	}
 
-	@Override
+
 	public void start(AuthenticationInterface auth, LoggingInterface logger) {
 		throw new UnsupportedOperationException("this interface uses JavaFX use javaFXStart() instead");
 

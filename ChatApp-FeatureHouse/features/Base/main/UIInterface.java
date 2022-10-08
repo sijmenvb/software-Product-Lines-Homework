@@ -8,7 +8,6 @@ import gui.AuthenticationInterface;
 import javafx.stage.Stage;
 
 public interface UIInterface {
-	public boolean usesJavafx();
 	
 	public void javaFXStart(final Stage primaryStage, AuthenticationInterface auth, LoggingInterface logger);//will also set JavaFXPrimaryStage
 	

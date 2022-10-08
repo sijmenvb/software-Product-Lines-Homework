@@ -1,53 +1,68 @@
-package gui;
+package gui; 
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.util.LinkedList;
+import java.beans.PropertyChangeEvent; 
+import java.beans.PropertyChangeListener; 
+import java.io.File; 
+import java.util.LinkedList; 
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONArray; 
+import org.json.JSONObject; 
 
-import backend.ServerConnection;
-import javafx.application.Platform;
-import enums.Algorithms;
-import enums.JSONKeys;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Button;
+import backend.ServerConnection; 
+import javafx.application.Platform; 
+import enums.Algorithms; 
+import enums.JSONKeys; 
+import javafx.event.ActionEvent; 
+import javafx.event.EventHandler; 
+import javafx.scene.control.Button; 
 
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
-import main.ButtonInterface;
-import main.LoggingInterface;
-import main.PluginLoader;
-import main.UIInterface;
+import javafx.scene.control.ComboBox; 
+import javafx.scene.control.ScrollPane; 
+import javafx.scene.control.ScrollPane.ScrollBarPolicy; 
+import javafx.scene.control.TextField; 
+import javafx.scene.layout.HBox; 
+import javafx.scene.layout.Region; 
+import javafx.scene.layout.VBox; 
+import javafx.scene.paint.Color; 
+import javafx.scene.paint.Paint; 
+import javafx.scene.text.Font; 
+import javafx.scene.text.FontPosture; 
+import javafx.scene.text.FontWeight; 
+import javafx.scene.text.Text; 
+import javafx.scene.text.TextFlow; 
+import main.ButtonInterface; 
+import main.LoggingInterface; 
+import main.PluginLoader; 
+import main.UIInterface; 
 
 //extends VBox so it is a javaFX element and can be used as such.
-public class ChatWindow extends VBox implements PropertyChangeListener {
-	private final int SPACING = 5;// how much space is between the different elements.
+public  class  ChatWindow  extends VBox  implements PropertyChangeListener {
+	
+	private final int SPACING = 5;
+
+	// how much space is between the different elements.
 	private ServerConnection serverConnectionRef;
+
+	
 	private LoggingInterface logger;
+
+	
 
 	private LinkedList<ButtonInterface> buttonInterfaceList;
 
+	
+
 	// font settings
 	private String fontFamily = "Helvetica";
+
+	
 	private double fontSize = 20;
 
-	private TextFlow textFlow;// special box to combine and display formatted (e.g. colored) text.
+	
+
+	private TextFlow textFlow;
+
+	// special box to combine and display formatted (e.g. colored) text.
 
 
 	/**
@@ -118,6 +133,8 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 	}
 
+	
+
 	public void updateMessages(JSONArray messages) {
 		Platform.runLater(new Runnable() {
 			public void run() {
@@ -137,6 +154,8 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		}
 	}
 
+	
+
 	/**
 	 * adds text to the chat dialogue. does NOT add nextLines implicitly.
 	 * 
@@ -145,6 +164,8 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 	private void addText(String contents) {
 		addText(contents, Color.BLACK);
 	}
+
+	
 
 	/**
 	 * adds text to the chat dialogue. does NOT add nextLines implicitly.
@@ -173,6 +194,8 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		// textFlow.getChildren().add(text);// add this text to the chat dialogue.
 	}
 
+	
+
 	/**
 	 * function that gets run when the button is clicked.
 	 * 
@@ -186,10 +209,14 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		serverConnectionRef.sendMessage(text + "\n", color);
 	}
 
+	
+
 
 	public void propertyChange(PropertyChangeEvent evt) {
 		updateMessages((JSONArray) evt.getNewValue());
 	}
+
+	
 
 	private Color retrieveColorFromButtonInterfaceList(Color defaultColor) {
 		for (ButtonInterface buttonInterface : buttonInterfaceList) {
@@ -200,5 +227,6 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		}
 		return defaultColor;
 	}
+
 
 }
