@@ -1,10 +1,13 @@
 package main;
 
 import gui.AuthenticationInterface;
-import logging.NullLogging;
+import logging.Logging;
 
 public class Main {
 	private LoggingInterface getlogger() {
-		return new NullLogging();
+		Logging logger = new Logging();
+		logger.Init();
+		return logger;
 	}
 }
+

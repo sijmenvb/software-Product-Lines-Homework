@@ -5,7 +5,7 @@
 	<feature automatic="selected" name="UI"/>
 	<feature automatic="unselected" name="CLI"/>
 	<feature manual="selected" name="GUI"/>
-	<feature automatic="selected" manual="selected" name="Authentication"/>
+	<feature automatic="selected" name="Authentication"/>
 	<feature manual="selected" name="NoUserAuthentication"/>
 	<feature automatic="unselected" name="CLIAuthentication"/>
 	<feature automatic="unselected" name="AdminUserAuthentication"/>
@@ -15,7 +15,7 @@
 	<feature manual="selected" name="NoneEncryption"/>
 	<feature automatic="unselected" name="AES"/>
 	<feature automatic="unselected" name="ReverseString"/>
-	<feature automatic="selected" name="logger"/>
-	<feature manual="selected" name="NoneLogging"/>
-	<feature automatic="unselected" name="Logging"/>
+	<feature automatic="selected" manual="selected" name="logger"/>
+	<feature automatic="unselected" name="NoneLogging"/>
+	<feature manual="selected" name="Logging"/>
 </configuration>
