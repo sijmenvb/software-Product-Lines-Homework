@@ -4,12 +4,12 @@
 	<feature automatic="selected" name="Base"/>
 	<feature automatic="selected" name="UI"/>
 	<feature automatic="unselected" name="CLI"/>
-	<feature manual="selected" name="GUI"/>
+	<feature automatic="selected" manual="selected" name="GUI"/>
 	<feature automatic="selected" name="Authentication"/>
-	<feature manual="selected" name="NoUserAuthentication"/>
+	<feature automatic="unselected" name="NoUserAuthentication"/>
 	<feature automatic="unselected" name="CLIAuthentication"/>
 	<feature automatic="unselected" name="AdminUserAuthentication"/>
-	<feature automatic="unselected" name="GUIAuthentication"/>
+	<feature manual="selected" name="GUIAuthentication"/>
 	<feature name="Color"/>
 	<feature automatic="selected" name="Encryption"/>
 	<feature manual="selected" name="NoneEncryption"/>
