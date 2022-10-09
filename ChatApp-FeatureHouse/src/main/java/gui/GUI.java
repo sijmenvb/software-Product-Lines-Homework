@@ -1,27 +1,38 @@
-package gui;
+package gui; 
 
-import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeListener; 
 
-import org.json.JSONArray;
-import backend.ServerConnection;
-import javafx.animation.AnimationTimer;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import main.LoggingInterface;
-import main.UIInterface;
-import main.AuthenticationInterface;
+import org.json.JSONArray; 
+import backend.ServerConnection; 
+import javafx.animation.AnimationTimer; 
+import javafx.scene.Parent; 
+import javafx.scene.Scene; 
+import javafx.stage.Stage; 
+import main.LoggingInterface; 
+import main.UIInterface; 
+import main.AuthenticationInterface; 
 
-public class GUI implements UIInterface {
+public  class  GUI  implements UIInterface {
+	
 
 	private final long[] frameTimes = new long[100];
+
+	
 	private int frameTimeIndex = 0;
+
+	
 	private boolean arrayFilled = false;
 
+	
+
 	private ChatWindow chatWindow;
+
+	
 	// private AuthenticationInterface authentication;
 
 	Stage JavaFXPrimaryStage;
+
+	
 	
 	public void javaFXStart(final Stage primaryStage, AuthenticationInterface auth, LoggingInterface logger) {
 		JavaFXPrimaryStage = primaryStage;
@@ -71,20 +82,27 @@ public class GUI implements UIInterface {
 		frameRateMeter.start();
 	}
 
+	
+
 
 	public PropertyChangeListener getPropertyChangeListener() {
 		return this.chatWindow;
 	}
+
+	
 
 
 	public void updateMessages(JSONArray messages) {
 		chatWindow.updateMessages(messages);
 	}
 
+	
+
 
 	public void start(AuthenticationInterface auth, LoggingInterface logger) {
 		throw new UnsupportedOperationException("this interface uses JavaFX use javaFXStart() instead");
 
 	}
+
 
 }

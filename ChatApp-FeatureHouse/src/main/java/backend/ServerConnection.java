@@ -1,51 +1,68 @@
-package backend;
+package backend; 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.io.BufferedReader; 
+import java.io.File; 
+import java.io.IOException; 
+import java.io.InputStreamReader; 
+import java.io.PrintWriter; 
+import java.net.Socket; 
+import java.util.LinkedList; 
+import java.util.Scanner; 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.JSONArray; 
+import org.json.JSONException; 
+import org.json.JSONObject; 
 
-import encryption.AESEncryption;//default encryption
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import org.json.JSONException;
-import org.json.JSONObject;
-import enums.ActionType;
-import enums.Algorithms;
-import enums.JSONKeys;
-import enums.ResultCodes;
-import javafx.scene.paint.Color;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import main.EncryptionInterface;
-import main.PluginLoader;
-import main.LoggingInterface;
+import encryption.AESEncryption; //default encryption
+import java.io.InputStreamReader; 
+import java.io.PrintWriter; 
+import java.net.Socket; 
+import org.json.JSONException; 
+import org.json.JSONObject; 
+import enums.ActionType; 
+import enums.Algorithms; 
+import enums.JSONKeys; 
+import enums.ResultCodes; 
+import javafx.scene.paint.Color; 
+import org.apache.commons.lang3.exception.ExceptionUtils; 
+import javafx.scene.Scene; 
+import javafx.scene.paint.Color; 
+import javafx.stage.Stage; 
+import main.EncryptionInterface; 
+import main.PluginLoader; 
+import main.LoggingInterface; 
 
-import main.UIInterface;
+import main.UIInterface; 
 
-public class ServerConnection {
+public  class  ServerConnection {
+	
 	static final int portNumber = 42069;
+
+	
 	private UIInterface ui;
+
+	
 	private ChatBackEnd chatBackEnd;
+
+	
 	private String token = "";
+
+	
 
 	private LoggingInterface logger;
 
+	
+
 	private String username = "";
+
+	
 	private String password = "";
 
+	
+
 	private EncryptionInterface encryptionClass;
+
+	
 	
 	
 	public ServerConnection(UIInterface ui,LoggingInterface logger) {
@@ -62,10 +79,14 @@ public class ServerConnection {
 		
 		
 	}
+
+	
 	
 	public void init() {
 		this.chatBackEnd.addPropertyChangeListener(ui.getPropertyChangeListener());
 	}
+
+	
 
 	public boolean firstAuthentication(String username, String password) {
 		this.username = username;// update the user name
@@ -80,6 +101,8 @@ public class ServerConnection {
 		}
 		return false;
 	}
+
+	
 
 	/**
 	 * sends { "actionType" : "authentication", "username" : username, "password" :
@@ -117,10 +140,14 @@ public class ServerConnection {
 		return false;
 	}
 
+	
+
 	// TODO: actually add password hashing
 	private String hash(String s) {
 		return s;
 	}
+
+	
 
 	/**
 	 * sends { "actionType" : "updateMessages", "token" : token, "username" :
@@ -161,6 +188,8 @@ public class ServerConnection {
 		}
 	}
 
+	
+
 	/**
 	 * sends { "actionType" : "sendMessage", "token" : token, "text" : text, "color"
 	 * : color,"username" : username}
@@ -198,6 +227,8 @@ public class ServerConnection {
 							res.getString(JSONKeys.RESULT_CODE.toString())));
 		}
 	}
+
+	
 
 	/**
 	 * sends the data to the server and returns the result as a JSONObject.
@@ -244,6 +275,8 @@ public class ServerConnection {
 		return output;
 	}
 
+	
+
 	/**
 	 * function that decrypts the input applying the decryption algorithm specified
 	 * in json
@@ -268,6 +301,8 @@ public class ServerConnection {
 		return originalMessage;
 	}
 
+	
+
 	private String encrypt(String message) {
 		JSONObject jsonForConnection = new JSONObject();
 
@@ -285,5 +320,6 @@ public class ServerConnection {
 		logger.debug(this.getClass().getName(), "Data was successfully encrypted.");
 		return jsonForConnection.toString();
 	}
+
 
 }

@@ -4,7 +4,7 @@ import java.beans.PropertyChangeListener;
 
 import org.json.JSONArray;
 
-import gui.AuthenticationInterface;
+import main.AuthenticationInterface;
 import javafx.stage.Stage;
 
 public interface UIInterface {

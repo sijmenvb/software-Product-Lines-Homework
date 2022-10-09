@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.LinkedList;
 
 import backend.ServerConnection;
-import gui.AuthenticationInterface;
+import main.AuthenticationInterface;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import gui.GUI;
