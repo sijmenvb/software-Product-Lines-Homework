@@ -4,17 +4,16 @@ import java.io.File;
 import java.util.LinkedList; 
 
 import backend.ServerConnection; 
+
 import main.AuthenticationInterface; 
 import javafx.animation.AnimationTimer; 
 import javafx.application.Application; 
 import gui.GUI; 
 import javafx.scene.Scene; 
 import javafx.stage.Stage; 
-import logging.NullLogging; 
 
 import authentication.NoUserAuthentication; 
-
-import main.LoggingInterface; 
+import logging.Logging; 
 
 public   class  Main  extends Application {
 	
@@ -44,7 +43,9 @@ public   class  Main  extends Application {
 
 	
 	private static LoggingInterface getlogger() {
-		return new NullLogging();
+		Logging logger = new Logging();
+		logger.Init();
+		return logger;
 	}
 
 

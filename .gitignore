@@ -64,3 +64,8 @@ chatapp.db
 # Typically, this file would be tracked if it contains build/dependency configurations:
 .project
 chat app/deployment/
+
+ChatApp-FeatureHouse/target/
+ChatApp-FeatureHouse/src/
+ChatApp-FeatureHouse/.settings/
+

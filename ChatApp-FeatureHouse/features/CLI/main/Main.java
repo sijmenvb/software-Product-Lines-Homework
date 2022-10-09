@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 import backend.ServerConnection;
 import cli.CLI;
-import logging.NullLogging;
 
 public class Main {
 	public static void main(String[] args) {
