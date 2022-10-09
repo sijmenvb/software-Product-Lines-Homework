@@ -4,8 +4,7 @@ import java.io.File;
 import java.util.LinkedList; 
 
 import backend.ServerConnection; 
-
-import gui.AuthenticationInterface; 
+import main.AuthenticationInterface; 
 import javafx.animation.AnimationTimer; 
 import javafx.application.Application; 
 import gui.GUI; 
@@ -14,6 +13,8 @@ import javafx.stage.Stage;
 import logging.NullLogging; 
 
 import authentication.NoUserAuthentication; 
+
+import main.LoggingInterface; 
 
 public   class  Main  extends Application {
 	
@@ -37,12 +38,12 @@ public   class  Main  extends Application {
 	}
 
 	
-	private AuthenticationInterface getAuthenticator() {
+	private static AuthenticationInterface getAuthenticator() {
 		return new NoUserAuthentication();
 	}
 
 	
-	private LoggingInterface getlogger() {
+	private static LoggingInterface getlogger() {
 		return new NullLogging();
 	}
 

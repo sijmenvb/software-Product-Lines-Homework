@@ -13,7 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import encryption.NoneEncryption;//default encryption
+import encryption.AESEncryption;//default encryption
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -56,12 +56,9 @@ public class ServerConnection {
 		//load the encryption algorithm
 		File pluginFolder = new File("Plugins");
 		pluginFolder.mkdir();
-		LinkedList<EncryptionInterface> uiList = PluginLoader.loadClasses(pluginFolder, EncryptionInterface.class);
-		if (uiList.isEmpty()) {
-			encryptionClass = new NoneEncryption();//default encryption
-		}else {
-			encryptionClass = uiList.getFirst();
-		}
+
+		encryptionClass = new AESEncryption();//default encryption
+		
 		
 		
 	}

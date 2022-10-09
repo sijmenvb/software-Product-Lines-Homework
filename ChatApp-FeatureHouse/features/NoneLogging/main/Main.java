@@ -1,10 +1,10 @@
 package main;
 
-import gui.AuthenticationInterface;
+import main.LoggingInterface;
 import logging.NullLogging;
 
-public class Main extends Application {
-	private LoggingInterface getlogger() {
+public class Main {
+	private static LoggingInterface getlogger() {
 		return new NullLogging();
 	}
 }

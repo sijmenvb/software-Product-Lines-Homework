@@ -1,7 +1,7 @@
 package authentication; 
 
 import backend.ServerConnection; 
-import gui.AuthenticationInterface; 
+import main.AuthenticationInterface; 
 import javafx.scene.Scene; 
 import javafx.stage.Stage; 
 

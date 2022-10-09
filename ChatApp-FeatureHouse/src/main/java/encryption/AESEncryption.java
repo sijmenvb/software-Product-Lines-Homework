@@ -1,21 +1,28 @@
-package encryption;
+package encryption; 
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
+import java.io.UnsupportedEncodingException; 
+import java.security.MessageDigest; 
+import java.security.NoSuchAlgorithmException; 
+import java.util.Arrays; 
+import java.util.Base64; 
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.Cipher; 
+import javax.crypto.spec.SecretKeySpec; 
 
-import enums.Algorithms;
-import main.EncryptionInterface;
+import enums.Algorithms; 
+import main.EncryptionInterface; 
 
-public class AESEncryption implements EncryptionInterface {
+public  class  AESEncryption  implements EncryptionInterface {
+	
 	private static SecretKeySpec secretKey;
+
+	
 	private static byte[] key;
+
+	
 	private final String encryptionKey = "p:=l,]kHGv'eByu";
+
+	
 	
 	public AESEncryption() {
 		MessageDigest sha = null;
@@ -30,6 +37,8 @@ public class AESEncryption implements EncryptionInterface {
 		}
 	}
 
+	
+
 
 	public String encrypt(String message) {
 		try {
@@ -41,6 +50,8 @@ public class AESEncryption implements EncryptionInterface {
 		}
 		return null;
 	}
+
+	
 
 
 	public String decrypt(String message) {
@@ -54,8 +65,12 @@ public class AESEncryption implements EncryptionInterface {
 		return null;
 	}
 
+	
+
 
 	public Algorithms getEncryptionType() {
 		return Algorithms.AES;
 	}
+
+
 }

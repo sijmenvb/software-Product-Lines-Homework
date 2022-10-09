@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage; 
 import main.LoggingInterface; 
 import main.UIInterface; 
+import main.AuthenticationInterface; 
 
 public  class  GUI  implements UIInterface {
 	
