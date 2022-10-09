@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import encryption.AESEncryption;//default encryption
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -47,24 +46,22 @@ public class ServerConnection {
 
 	private EncryptionInterface encryptionClass;
 	
-	
 	public ServerConnection(UIInterface ui,LoggingInterface logger) {
 		this.ui = ui;
 		this.chatBackEnd = new ChatBackEnd(this);
 
 		this.logger = logger;
-		//load the encryption algorithm
-		File pluginFolder = new File("Plugins");
-		pluginFolder.mkdir();
-
-		encryptionClass = new AESEncryption();//default encryption
 		
-		
-		
+		setEncryptionMethod();
 	}
 	
 	public void init() {
 		this.chatBackEnd.addPropertyChangeListener(ui.getPropertyChangeListener());
+	}
+	
+
+	private void setEncryptionMethod() {
+		return;//default encryption
 	}
 
 	public boolean firstAuthentication(String username, String password) {
@@ -221,7 +218,7 @@ public class ServerConnection {
 
 			logger.debug(this.getClass().getName(), "Response from the server is ready.");
 
-			output = new JSONObject(decrypt(in.readLine()));// Read one line, decrypt and output it
+			output = new JSONObject(in.readLine());// Read one line, decrypt and output it
 			logger.debug(this.getClass().getName(), "Response received.");
 			out.close();
 			in.close();
@@ -251,7 +248,7 @@ public class ServerConnection {
 	 * @param encryptedMessage encrypted string
 	 * @return decrypted string
 	 */
-	private String decrypt(String encryptedMessage) {
+	/*private String decrypt(String encryptedMessage) {
 		JSONObject incomingJson = new JSONObject(encryptedMessage);
 		String encryptionType = incomingJson.getString(JSONKeys.ENCRYPTION.toString());
 		
@@ -266,7 +263,7 @@ public class ServerConnection {
 		String originalMessage = encryptionClass.decrypt(incomingJson.getString(JSONKeys.ENCRYPTED_MESSAGE.toString()));
 		logger.debug(this.getClass().getName(), "Data was successfully decrypted.");
 		return originalMessage;
-	}
+	}*/
 
 	private String encrypt(String message) {
 		JSONObject jsonForConnection = new JSONObject();
@@ -285,5 +282,4 @@ public class ServerConnection {
 		logger.debug(this.getClass().getName(), "Data was successfully encrypted.");
 		return jsonForConnection.toString();
 	}
-
 }

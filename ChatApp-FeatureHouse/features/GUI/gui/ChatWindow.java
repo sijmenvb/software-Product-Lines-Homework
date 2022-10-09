@@ -16,6 +16,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -74,17 +75,16 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		// create message input, send button and color selector and refresh button.
 		final TextField textInput = new TextField();
 		Button sendButton = new Button("send");
-		File pluginFolder = new File("Plugins");
-		pluginFolder.mkdir();
-
-		buttonInterfaceList = PluginLoader.loadClasses(pluginFolder, ButtonInterface.class);
 
 		Button refreshButton = new Button("Refresh");
 
 		HBox textInputContainer = new HBox(SPACING, textInput, sendButton
 				, refreshButton);
-		for (ButtonInterface buttonInterface : buttonInterfaceList) {
-			textInputContainer.getChildren().add(buttonInterface.getNode());
+		
+		setButtonInterfaceList();
+		
+		for (ButtonInterface button : buttonInterfaceList) {
+			textInputContainer.getChildren().add(button.getNode());
 		}
 
 		// make send button run the send function with the provided text and clear the
@@ -200,5 +200,9 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		}
 		return defaultColor;
 	}
-
+	
+	private void setButtonInterfaceList(){
+		buttonInterfaceList = new LinkedList<ButtonInterface>();
+		return;
+	}
 }
