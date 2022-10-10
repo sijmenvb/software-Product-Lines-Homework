@@ -1,5 +1,6 @@
 package backend;
 
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,6 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import main.EncryptionInterface;
-import main.PluginLoader;
 import main.LoggingInterface;
 
 import main.UIInterface;
@@ -62,6 +62,10 @@ public class ServerConnection {
 
 	private void setEncryptionMethod() {
 		return;//default encryption
+	}
+	
+	private void playSound() {
+		return;//play no sound by default
 	}
 
 	public boolean firstAuthentication(String username, String password) {
@@ -188,6 +192,7 @@ public class ServerConnection {
 
 			logger.info(this.getClass().getName(),
 					String.format("Message with text: '%s' send in color: '%s'.", text, color.toString()));
+			playSound();//play a sound!
 		} else {
 
 			logger.error(this.getClass().getName(),
