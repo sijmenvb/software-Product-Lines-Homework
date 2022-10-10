@@ -14,6 +14,7 @@ local.properties
 log4j/
 target/
 chatapp.db
+src/
 
 # External tool builders
 .externalToolBuilders/
