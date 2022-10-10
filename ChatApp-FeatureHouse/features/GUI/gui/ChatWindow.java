@@ -80,8 +80,11 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 
 		HBox textInputContainer = new HBox(SPACING, textInput, sendButton
 				, refreshButton);
-		for (Node node : getNodes()) {
-			textInputContainer.getChildren().add(node);
+		
+		setButtonInterfaceList();
+		
+		for (ButtonInterface button : buttonInterfaceList) {
+			textInputContainer.getChildren().add(button.getNode());
 		}
 
 		// make send button run the send function with the provided text and clear the
@@ -198,7 +201,8 @@ public class ChatWindow extends VBox implements PropertyChangeListener {
 		return defaultColor;
 	}
 	
-	private LinkedList<Node> getNodes(){
-		return new LinkedList<Node>();
+	private void setButtonInterfaceList(){
+		buttonInterfaceList = new LinkedList<ButtonInterface>();
+		return;
 	}
 }
