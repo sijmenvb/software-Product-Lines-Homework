@@ -21,10 +21,9 @@ public class Main extends Application {
 		// unfortunately we have to load the ui again since we can not pass it in a
 		// static context.
 		
-		
 		UIInterface ui = new GUI();
-		AuthenticationInterface auth = getAuthenticator();
 		LoggingInterface logger = getlogger();
+		AuthenticationInterface auth = getAuthenticator();
 		
 		ui.javaFXStart(primaryStage, auth, logger);
 	}

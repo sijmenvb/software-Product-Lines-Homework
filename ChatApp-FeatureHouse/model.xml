@@ -44,5 +44,21 @@
 				</not>
 			</imp>
 		</rule>
+		<rule>
+			<imp>
+				<var>GUI</var>
+				<not>
+					<var>CLIAuthentication</var>
+				</not>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>CLI</var>
+				<not>
+					<var>GUIAuthentication</var>
+				</not>
+			</imp>
+		</rule>
 	</constraints>
 </featureModel>
