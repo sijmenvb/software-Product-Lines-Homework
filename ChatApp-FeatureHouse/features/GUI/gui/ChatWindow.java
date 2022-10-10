@@ -33,7 +33,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import main.ButtonInterface;
 import main.LoggingInterface;
-import main.PluginLoader;
 import main.UIInterface;
 
 //extends VBox so it is a javaFX element and can be used as such.

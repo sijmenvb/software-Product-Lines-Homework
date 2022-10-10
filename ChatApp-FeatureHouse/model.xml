@@ -33,6 +33,7 @@
 				<feature name="NoneLogging"/>
 				<feature name="Logging"/>
 			</alt>
+			<feature name="Sound"/>
 		</and>
 	</struct>
 	<constraints>
@@ -57,6 +58,14 @@
 				<var>CLI</var>
 				<not>
 					<var>GUIAuthentication</var>
+				</not>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>CLI</var>
+				<not>
+					<var>Sound</var>
 				</not>
 			</imp>
 		</rule>

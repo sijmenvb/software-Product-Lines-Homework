@@ -15,6 +15,10 @@ public class ChatBackEnd extends Thread {
 		this.serverConnectionRef = serverConnectionRef;
 
 	}
+	
+	private void playSound() {
+		return;//play no sound by default
+	}
 
 	@Override
 	public void run() {
@@ -33,6 +37,7 @@ public class ChatBackEnd extends Thread {
 		// check if the messages actually changed		
 		if (!currentMessages.toString().equals(messages.toString())) {			
 			// TODO: add user name to text.
+			playSound();
 			support.firePropertyChange("messages", currentMessages, messages);// notify observers that the property has changed.
 			currentMessages = messages;// update current.
 		}
