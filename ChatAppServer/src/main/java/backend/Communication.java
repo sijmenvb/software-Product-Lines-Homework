@@ -239,7 +239,7 @@ public class Communication {
 		try {
 			log.debug("Sending all the messages to the user.");
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			out.print(encrypt(output.toString()));
+			out.print(output.toString());
 
 			out.close();
 			log.debug("All the messages sent to the client.");
@@ -296,7 +296,7 @@ public class Communication {
 			message.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.OK.toString());
 
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			out.print(encrypt(message.toString()));
+			out.print(message.toString());
 
 			out.close();
 			log.debug(String.format("Token '%s' sent to the client.", token));
@@ -318,7 +318,7 @@ public class Communication {
 			message.put(JSONKeys.RESULT_CODE.toString(), code.toString());
 
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			out.print(encrypt(message.toString()));
+			out.print(message.toString());
 			out.close();
 			log.debug(String.format("%s response sent to the client.", code.toString()));
 		} catch (Exception e) {

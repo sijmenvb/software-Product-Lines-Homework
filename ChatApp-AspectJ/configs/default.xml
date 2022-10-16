@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+	<feature automatic="selected" name="ChatAppAspectJ"/>
+	<feature name="Logging"/>
+	<feature manual="selected" name="ColorAspect"/>
+	<feature manual="selected" name="Authentication"/>
+	<feature automatic="unselected" name="ReverseStringEncryption"/>
+	<feature manual="selected" name="AESEncryption"/>
+</configuration>
