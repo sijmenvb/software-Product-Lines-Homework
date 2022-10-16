@@ -62,5 +62,5 @@ chatapp.db
 
 # Uncomment this line if you wish to ignore the project description file.
 # Typically, this file would be tracked if it contains build/dependency configurations:
-.project
+# .project
 chat app/deployment/
