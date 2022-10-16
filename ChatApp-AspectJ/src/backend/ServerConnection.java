@@ -11,30 +11,36 @@ import enums.JSONKeys;
 import enums.ActionType;
 import enums.Algorithms;
 import enums.ResultCodes;
+import main.Main;
 import main.UIInterface;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 
 public class ServerConnection {
-	
+
 	static final int portNumber = 42069;
 	private UIInterface ui;
 	private ChatBackEnd chatBackEnd;
 	private String token = "";
 
+	private Logger logger;
+
 	private String username = "";
 	private String password = "";
-	
-	
+
 	public ServerConnection(UIInterface ui) {
 		this.ui = ui;
 		this.chatBackEnd = new ChatBackEnd(this);
+		this.logger = Logger.getLogger(ServerConnection.class.getName());
 	}
-	
+
 	public void init() {
 		this.chatBackEnd.addPropertyChangeListener(ui.getPropertyChangeListener());
 	}
 
 	public boolean firstAuthentication(String username, String password) {
+		// log.debug("User authenticated");
 		this.username = username;// update the user name
 		this.password = hash(password);// update the password
 
@@ -63,18 +69,21 @@ public class ServerConnection {
 		message.put(JSONKeys.USERNAME.toString(), username);
 		message.put(JSONKeys.PASSWORD.toString(), hashedPassword);
 
-
+		//logger.debug(String.format("User '%s' is trying to log in. Response from the server received.", username));
 		JSONObject res = sendData(encrypt(message.toString()));
 
 		try {
 			if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {// if authentication
 																									// was successful
 				token = res.getString(JSONKeys.TOKEN.toString());// update the token
+				//logger.info(String.format("User '%s' logged in.", username));
 				return true;
 			}
 		} catch (JSONException e) {
+			//logger.error(String.format("JSONException occured. %s", ExceptionUtils.getStackTrace(e)));
 			throw e;
 		}
+		//logger.error("Failed login attempt.");
 		return false;
 	}
 
@@ -100,19 +109,20 @@ public class ServerConnection {
 		message.put(JSONKeys.TOKEN.toString(), token);
 		message.put(JSONKeys.USERNAME.toString(), username);
 
-
+		//logger.debug("Messages are tried to be updated. Response from the server received.");
 		JSONObject res = sendData(encrypt(message.toString()));
-
 
 		// if message sending was successful
 		if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.OK.toString())) {
+			//logger.debug("Messages have been updated");
 			chatBackEnd.updateMessages(res.getJSONArray(JSONKeys.MESSAGES.toString()));// update all the messages
 		}
 		// try to reauthenticate when server returns NotAuthenticated ResultCode
 		else if (res.getString(JSONKeys.RESULT_CODE.toString()).equals(ResultCodes.NotAuthenticated.toString())) {
 			Authenticate(this.username, this.password);
 		} else {
-			//TODO!
+			//logger.error(String.format("Something went wrong with messages update. Response code: %s.",
+			//		res.getString(JSONKeys.RESULT_CODE.toString())));
 		}
 	}
 
@@ -127,27 +137,37 @@ public class ServerConnection {
 			Socket skt = new Socket("localhost", portNumber);
 			// send the data
 
+			//logger.debug("Socket with localhost opened.");
 			PrintWriter out = new PrintWriter(skt.getOutputStream(), true);
 
 			out.println(data);
+			//logger.debug("Data sent to the server. Waiting for the response.");
 			// receive the reply.
 			BufferedReader in = new BufferedReader(new InputStreamReader(skt.getInputStream()));
 			while (!in.ready()) {
 			}
+			
+			//logger.debug("Response from the server is ready.");
 
 			output = new JSONObject(in.readLine());// Read one line, decrypt and output it
+			//logger.debug("Response received.");
 			out.close();
 			in.close();
 			skt.close();
+			//logger.debug("Socket, buffer in and printer our are closed.");
 		} catch (JSONException e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.JSONParseError.toString());
+			//logger.error(String.format("JSONParseError occured when trying to send data. %s",
+			//		ExceptionUtils.getStackTrace(e)));
 
 		} catch (Exception e) {
 			output = new JSONObject();
 			output.put(JSONKeys.RESULT_CODE.toString(), ResultCodes.Failed.toString());
+			//logger.error(String.format("An error occured when trying to send data. %s", ExceptionUtils.getStackTrace(e)));
 		}
 
+		//logger.debug("Data was successfully sent");
 		return output;
 	}
 
